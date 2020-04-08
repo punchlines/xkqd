@@ -1,0 +1,60 @@
+<template>
+	<view>
+		<div class="tabBg">
+				<div class="tabBox" @click="changeActive(0)"><text class="text" :class="[active === 0 ? 'active' : '']">视频</text></div>
+				<div class="tabBox" @click="changeActive(1)"><text class="text" :class="[active === 1 ? 'active' : '']">图片</text></div>
+		</div>
+	</view>
+</template>
+
+<script>
+	export default {
+		data() {
+			return {
+				active:1
+			}
+		},
+		mounted(){
+			
+		},
+		
+		methods: {
+			changeActive(index){
+				this.active = index;
+				uni.$emit('evv',{index});
+			}
+		}
+	}
+</script>
+
+<style>
+	.tabBg{
+		width: 200px;
+		height: 56px;
+		border-radius: 28px;
+		background-color: rgba(255,255,255,0.8);
+		display: flex;
+		flex-direction: row;
+	}
+	.tabBox{
+		
+		width: 100px;
+		height: 56px;
+		
+	}
+	.text{
+		font-size: 24px;
+		width: 100px;
+		height: 56px;
+		line-height: 56px;
+		text-align: center;
+		
+		background-color: transparent;
+		color: #000000;
+	}
+	
+	.active{
+		background-color: #7483FF;
+		color: #ffffff;
+	}
+</style>
