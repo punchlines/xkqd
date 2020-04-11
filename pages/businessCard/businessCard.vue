@@ -94,7 +94,7 @@
 				<wx-view>
 					<view class="fx-column fx-row-center" @click="toThematic">
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/zhuanti.png'" mode="widthFix"></image>
-						<text class="nav_ti">专题数据</text>
+						<text class="nav_ti">VIP设置</text>
 					</view>
 				</wx-view>
 			</view>

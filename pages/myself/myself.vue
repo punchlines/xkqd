@@ -209,6 +209,7 @@
 	export default {
 		data() {
 			return {
+				isNormalUser:true,
 				aa: 'https://xk.gzskxx.com/myqcloud/cardImages/other/bgwhite.png',
 				bb: 'https://xk.gzskxx.com/myqcloud/cardImages/card/bg.png',
 				cc: 'https://xk.gzskxx.com/myqcloud/cardImages/card/bg2.png',
@@ -296,6 +297,12 @@
 						title: '我的钱包',
 						num: ''
 					},
+					{
+							id: 1,
+							image: 'https://xk.gzskxx.com/myqcloud/cardImages/my/qianbao.png',
+							title: 'VIP设置',
+							num: ''
+						},
 					// {
 					// 	id: 1,
 					// 	image: 'https://xk.gzskxx.com/myqcloud/cardImages/my/youhuiquan.png',
@@ -303,7 +310,7 @@
 					// 	num: '0个'
 					// },
 					{
-						id: 1,
+						id: 2,
 						image: 'https://xk.gzskxx.com/myqcloud/cardImages/my/jifen.png',
 						title: '我的积分',
 						num: '0'
@@ -430,12 +437,39 @@
 						url: '../../item_my/myself_myWallet/myself_myWallet'
 					})
 				}  else if (index == 1) {
-					uni.navigateTo({
-						url: '../../item_my/myself_MyIntegral/myself_MyIntegral'
-					})
+					
+					if (this.isNormalUser==false) {
+						uni.showModal({
+							title: '提示',
+							content: '该功能对VIP开放，去开通VIP',
+							success: (res) => {
+								if (res.confirm) {
+									uni.navigateTo({
+										url:'/item_businessCard/businessCard_VIP/businessCard_VIP_New',
+									})
+								} else if (res.cancel) {
+									console.log('用户点击取消');
+								}
+							}
+						});
+						return;
+					}else{
+						let shopId = uni.getStorageSync('shopId');
+						this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+							shopId: shopId,
+							userId: this.userId,
+							cardUserId: this.cardUserId,
+							recommendId: this.cardUserId
+						})
+						// uni.navigateTo({
+						// 	url:'/item_businessCard/businessCard_VIP/VipCenter',
+							
+						// })
+					}
 				} else if (index == 2) {
 					uni.navigateTo({
-						url: '../../item_my/myself_myInvoice/myself_myInvoice'
+						//url: '../../item_my/myself_myInvoice/myself_myInvoice'
+						url: '../../item_my/myself_MyIntegral/myself_MyIntegral'
 					});
 				}
 				

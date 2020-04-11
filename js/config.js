@@ -7,7 +7,7 @@ export default {
 	// 是否使用线上生产环境的 api
 	PRODUCT: false,
 
-	API_HOST: 'https://xk.gzskxx.com',
-	// API_HOST: 'https://xk-test.gzskxx.com',
+	//API_HOST: 'https://xk.gzskxx.com',
+	 API_HOST: 'https://xk-test.gzskxx.com',
 	DEV: false,
 }

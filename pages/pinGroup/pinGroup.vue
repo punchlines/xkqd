@@ -268,7 +268,7 @@
 				this.loading=true;
 				action.then(res=>{
 				
-					console.log(res)
+					console.log(123,res)
 					this.currentPage++;
 					if(res.length==0){
 						this.loading=false;

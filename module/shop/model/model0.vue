@@ -221,7 +221,7 @@
 			init(options){
 				this.userId = uni.getStorageSync('userId')
 				//console.log(this.userId,this.$store.state.currentUser)
-				console.log("aaaa")
+				console.log(options)
 				this.shopIdOtherPeople = options.shopIdOtherPeople || options.shopId;
 				if (!this.checkHasLogin(`/module/shop/home/home?shopId=${this.shopIdOtherPeople}`,true)) {
 					//console.log('123')

@@ -375,7 +375,7 @@ const store = new Vuex.Store({
 				
 					uni.getSystemInfo({
 						success:  (systemInfo)=> {
-								console.log(JSON.stringify(systemInfo))
+								console.log(1213,JSON.stringify(systemInfo))
 								commit('setSystemInfo', systemInfo)
 						}
 					});

@@ -99,15 +99,15 @@
       itemStyle: {
         color: 'rgb(234, 128, 252)'
       },
-      areaStyle: {
-        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
-          offset: 0,
-          color: 'rgba(234, 128, 252, 0.5)'
-        }, {
-          offset: 1,
-          color: 'rgba(234, 128, 252, 0)'
-        }])
-      },
+      // areaStyle: {
+      //   color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+      //     offset: 0,
+      //     color: 'rgba(234, 128, 252, 0.5)'
+      //   }, {
+      //     offset: 1,
+      //     color: 'rgba(234, 128, 252, 0)'
+      //   }])
+      // },
       data: []
     },]
   };

@@ -121,15 +121,13 @@ Vue.mixin({
 							successCallback(false);
 							return;
 						}
-					
-					
 						uni.login({
 							  provider: 'weixin',
 							  success: loginRes => {
-								
 									this.$api.GetUserId(loginRes.code).then(res=>{
 											uni.setStorageSync('token', res.token);
 											uni.setStorageSync('tokenTime',new Date().getTime());
+											console.log(123,res)
 											//登录成功
 											if(res.userId){
 												uni.setStorageSync('userId', res.userId);
@@ -148,7 +146,7 @@ Vue.mixin({
 											
 									}).catch(error=>{
 											//successCallback(false);
-											setTimeout(()=>{this.doLoginHandle(successCallback)},3000)
+											setTimeout(()=>{this.doLoginHandle(successCallback)},30000)
 											//uni.hideLoading();
 									});
 									
