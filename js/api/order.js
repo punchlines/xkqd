@@ -44,9 +44,12 @@ api.insertCircleOrder = (circleId, importUserId) => post('pay/ordergroup', { cir
 api.paymentStatusCallback  = (orderNum, type,pinId=null,groupId=null) => post('pay/paymentStatusCallback', { orderNum, type,pinId,groupId});
 api.sendOrderDetail = (orderId) => post('orderCenter/sendOrderDetail', {orderId});//待发货详情
 
+//会员续费
+api.saveUpgradeOrRenewVipOrder = (type,grade) => post('pay/saveUpgradeOrRenewVipOrder', {type,grade});
+//微信支付
+api.callwechatpay = (outTradeNo,openId,authCode,sour) => post('pay/callwechatpay', {outTradeNo,openId,authCode,sour});
 
-
-
+	
 api.judgeOrderDetail = (orderId) => post('orderCenter/judgeOrderDetail', {orderId});//待评价详情
 
 api.saleGoodsStatus = (type,pageNumber=1,pageSize=20) => post('orderCenter/saleGoodsStatus', {type,pageNumber,pageSize});//销售订单( type:类型:(1.待发货 2待收货 4待评价))

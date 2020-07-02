@@ -10,7 +10,7 @@
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/register/like.png'" v-else></image>
 						<text>{{userDetails.praiseNum}}</text>
 					</view>
-					<view class="shouCang">
+					<view class="shouCang" @click="test">
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/register/shoucang2.png'" v-if="collectState==1"></image>
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/register/shoucang.png'" v-else></image>
 						<text>{{userDetails.collectNum}}</text>
@@ -24,7 +24,7 @@
 					</button>
 					<!--  #endif -->
 					<!--  #ifdef  MP-WEIXIN -->
-					<button class="shareBtn" open-type="share">
+					<button class="shareBtn" open-type="share" @click="test">
 						<view class="hShare">
 							<image class="HLimage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/34_share.png'" alt=""></image>
 							分享
@@ -63,7 +63,7 @@
 
 			<view class="nav-item">
 				<wx-view>
-					<button class="fx-column fx-row-center" open-type="share" style="border: none; padding: 0; background: none; line-height: inherit;">
+					<button class="fx-column fx-row-center" open-type="share" style="border: none; padding: 0; background: none; line-height: inherit;" @click="test">
 						<image src="http://card-1254165941.cosgz.myqcloud.com/images/home_share_icon.png" mode="widthFix"></image>
 						<text class="nav_ti">分享</text>
 					</button>
@@ -104,7 +104,7 @@
 		<wx-view>
 			<view class="open-vip-container" :class="{ 'guideShow': guideStep === 3 }" @click="businessCard_VIP">
 				<image class="invite-banner" :src="userType<=1?'http://card-1254165941.cosgz.myqcloud.com/3.gif':'http://card-1254165941.cosgz.myqcloud.com/2.gif'"></image>
-			</view>
+			</view>	
 		</wx-view>
 
 		<!-- 个人视频 -->
@@ -215,19 +215,19 @@
 							</view>
 
 						</view>
-
+						
 					</view>
 
 					<uni-load-more :loading-type="loadingType2" v-if="showLoadMore2"></uni-load-more>
 
 
 				</view>
-				
+
 				<view style="margin-top: 50upx;" v-else>
 					<view class="shopping">
 						<button class="btn-primary" style="width: 579upx;font-size: 36upx;" @click="businessCard_VIP">购买任意商品马上开店</button>
 					</view>
-					
+
 				</view>
 
 			</view>
@@ -357,6 +357,8 @@
 				collectState: 0,
 				praiseState: 0,
 				viewNum: 0,
+				shares:'',
+				isVipStatus:'',
 				shopId: '',
 				cardShopData: {}, //店铺信息
 				userId: '', //缓存中的用户ID
@@ -396,11 +398,12 @@
 				//用户视频
 				videoResult: {},
 				currentNum: 0,
+				isMemberCenter: '',
 				showPhone: '',
 				vipUserId: 0,
 				cardUserId: '',
 				unreadCount: 0,
-				isLogin: false,//是否初始化完成
+				isLogin: false, //是否初始化完成
 				longitude: '',
 				latitude: '',
 				currentWebview: null,
@@ -432,33 +435,33 @@
 
 
 		onLoad(option) {
-			
-			
+
+          
 
 			uni.showLoading({
 				title: '加载中',
 				mask: true
 			});
-			
+              
 			// #ifdef APP-PLUS
 			let view = new appView('test', {
-					left: 620,
-					bottom: 180,
-					height: 100,
-					width: 100
-				});
+				left: 620,
+				bottom: 180,
+				height: 100,
+				width: 100
+			});
 			this.appNoticeBtn = view;
 			// #endif
-			
-			
-			
+
+
+
 
 			this.doLoginHandle(hasRegister => {
 				if (hasRegister) {
 					this.init(option);
 				} else this.otherPeople();
 			});
-
+            
 
 			// #ifdef  APP-PLUS
 
@@ -482,16 +485,16 @@
 				}
 			});
 			// #endif
-
+			
 		},
 		onShow() {
-			
+
 			this.userId = uni.getStorageSync('userId');
 
 			// #ifdef APP-PLUS
 			if (this.appNoticeBtn) {
 				this.appNoticeBtn.show();
-				
+
 			}
 
 			if (this.appCameraBtn && this.audiTitleActive == 1) {
@@ -499,10 +502,10 @@
 			}
 
 			// #endif
-
+            
 			this.journalOnShow();
 			this.goodsOnShow();
-
+           // this.test()
 
 			if (uni.getStorageSync('_needUpateUserInfo')) {
 				//refetch UserInfo
@@ -518,8 +521,8 @@
 				});
 			}
 
-			if(this.isLogin){
-				
+			if (this.isLogin) {
+
 				this.unreadCount = 0;
 				var sessMap = webim.MsgStore.sessMap();
 				for (var i in sessMap) {
@@ -529,9 +532,9 @@
 				}
 
 				this.getSystemMessageCount();
-				
+
 			}
-			
+
 		},
 
 		onReachBottom() {
@@ -560,16 +563,16 @@
 
 			// #endif
 		},
-
+		
 		onPageScroll(e) {
-			if(e.scrollTop>=uni.upx2px(390)){
+			if (e.scrollTop >= uni.upx2px(390)) {
 				uni.setNavigationBarColor({
-					frontColor:"#000000",
+					frontColor: "#000000",
 					backgroundColor: '#ffffff'
 				})
-			}else{
-					uni.setNavigationBarColor({
-					frontColor:"#ffffff",
+			} else {
+				uni.setNavigationBarColor({
+					frontColor: "#ffffff",
 					backgroundColor: '#787df5'
 				})
 			}
@@ -614,7 +617,7 @@
 
 			},
 
-
+            
 			drawAppNotice(messageCount) {
 				//绘制APP端 原生notice按钮 
 
@@ -622,32 +625,32 @@
 				//messageCount = 9;
 
 				const view = this.appNoticeBtn;
-					if(this.isLogin){
+				if (this.isLogin) {
 					if (messageCount > 0) {
-							view.drawRectUpx({
-								radius: 17,
-								color: "#FF0000"
-							}, {
-								top: 0,
-								left: 66,
-								width: 34,
-								height: 34
-							}, 'messageCircle');
-							view.drawTextUpx(messageCount, {
-								top: 0,
-								left: 66,
-								width: 34,
-								height: 34
-							}, {
-								size: 21,
-								color: '#FFFFFF'
-							}, 'messageText');
+						view.drawRectUpx({
+							radius: 17,
+							color: "#FF0000"
+						}, {
+							top: 0,
+							left: 66,
+							width: 34,
+							height: 34
+						}, 'messageCircle');
+						view.drawTextUpx(messageCount, {
+							top: 0,
+							left: 66,
+							width: 34,
+							height: 34
+						}, {
+							size: 21,
+							color: '#FFFFFF'
+						}, 'messageText');
 					}
 					return;
-				
+
 				}
-				
-				
+
+
 				view.drawRectUpx({
 					radius: 50
 				}, {
@@ -685,7 +688,7 @@
 								color: '#FFFFFF'
 							}, 'messageText');
 						}
-						
+
 						this.isLogin = true;
 						//view.show();
 					}
@@ -721,14 +724,15 @@
 					uni.hideLoading()
 				})
 			},
+			
 			// 初始化
 			init(option) {
 				uni.showLoading({
 					mask: true
 				});
-				
-		
-				
+
+
+
 				var userId = uni.getStorageSync('userId');
 				// 地理位置授权
 				if (!uni.getStorageSync('longitude')) {
@@ -768,15 +772,20 @@
 					this.userDetails = result.userMap;
 					//去掉换行符
 					this.userDetails.autograph = this.userDetails.autograph.replace(/<\/?.+?>/g, "").replace(/[\r\n]/g, "");
-
+					this.isMemberCenter = result.isMemberCenter
+					this.isVipStatus=result.isVipStatus
+					uni.setStorageSync('IsMemberCenter', this.isMemberCenter);
 					this.viewNum = result.viewNum;
 					this.collectState = result.collectState;
 					this.praiseState = result.praiseState;
 					this.shopId = this.userDetails.shopId;
+					
+					
 					uni.setStorageSync('shopId', this.shopId)
 					//默认展示日志
-					if(result.logStatus==1){
-						this.changeTitle(null,1)
+					
+					if (result.logStatus == 1) {
+						this.changeTitle(null, 1)
 					}
 					this.showPhone = this.isHidePhone ?
 						this.hidePhone(this.userDetails.phone) :
@@ -790,13 +799,13 @@
 					console.info(this.userDetails)
 					//获取用户视频
 					this.getUserCardShowVideo();
-
+                   
 					//#是否填写显示vip开通成功模态框
 					//TODO
 					if (option.showFirstVipModal == 1) {
 						this.showVIPModal = true;
 					}
-					
+
 
 					uni.hideLoading();
 
@@ -823,7 +832,7 @@
 							console.log(config)
 							webim.login(config, listeners, {}, () => {
 								console.log('tim 登录成功')
-								
+
 								const options = {
 									"ProfileItem": [{
 											"Tag": "Tag_Profile_IM_Nick",
@@ -921,7 +930,7 @@
 			getSystemMessageCount() {
 				if (!this.currentUser.id) return;
 				this.$api.getSystemMessageCount().then(res => {
-					
+
 					this.messageCount = res.messageCount || 0
 
 					// #ifdef APP-PLUS
@@ -933,7 +942,8 @@
 
 			//开通VIP
 			businessCard_VIP() {
-				this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_New');
+				console.log(this.isMemberCenter)
+				this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_New?isMemberCenter='+ this.isMemberCenter);
 			},
 
 			listCardShop() {
@@ -946,11 +956,11 @@
 				});
 			},
 			changeVideoTitle(index) { // 切换视频标题
-		
+
 				this.VideoList.VTitleActive = index;
 			},
 			changeTitle(e, index) { //切换标题(日志，商品)
-				
+
 				this.audiTitleActive = index;
 				// #ifdef APP-PLUS
 				if (index == 1) {
@@ -986,11 +996,21 @@
 					url: '../../item_businessCard/businessCard_MyCustomer/businessCard_MyCustomer?userId=' + this.userId
 				});
 			},
-			toThematic() { //专题数据
-				if (this.isNormalUser) {
+			test(){
+				console.log('测试成功')
+					uni.requestSubscribeMessage({
+						tmplIds: ['cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU','9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
+						success(res) {
+							console.log('test', res)
+							this.shares=share
+						}
+					})
+			},
+			toThematic() { //vip设置isMemberCenter
+				if (this.isMemberCenter == 0) {
 					uni.showModal({
 						title: '提示',
-						content: '该功能对VIP开放，去开通VIP',
+						content: '尚未开通店铺，请先开通店铺',
 						success: (res) => {
 							if (res.confirm) {
 								this.businessCard_VIP();
@@ -1000,16 +1020,20 @@
 						}
 					});
 					return;
+				} else {
+					// 如果没有填写店铺资料
+					let shopId = uni.getStorageSync('shopId');
+					// if (!shopId && this.isVipUser) {
+					// 	this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
+					// 	return;
+					// }
+					this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+						shopId: shopId,
+						userId: this.userId,
+						cardUserId: this.cardUserId,
+						recommendId: this.cardUserId
+					})
 				}
-				// 如果没有填写店铺资料
-				let shopId = uni.getStorageSync('shopId');
-				if (!shopId && this.isVipUser) {
-					this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
-					return;
-				}
-				uni.navigateTo({
-					url: '../../item_businessCard/businessCard_DataTopic/businessCard_DataTopic?userId=' + this.userId
-				});
 			},
 			tosearchCard() { //搜索名片
 				if (!isLog()) {
@@ -1033,6 +1057,7 @@
 				});
 			},
 			editCard() { //编辑自己的资料
+			
 				if (this.guideStep === 1) return;
 				this.showVIPModal = false;
 				uni.navigateTo({
@@ -1055,6 +1080,7 @@
 				// 	url: '../../item_businessCard/businessCard_EditCard/businessCard_EditCard?userId=' + this.userId,
 				// });
 			},
+			
 			toShop() {
 				// #ifdef APP-PLUS
 				if (!this.userId) {
@@ -1096,9 +1122,9 @@
 				}
 
 			},
-			
-			
-			
+
+
+
 			changeSwiperNum(event) { // 轮播图图片数量
 				// console.log(event.detail.current);
 				this.currentNum = event.detail.current;
@@ -1131,7 +1157,7 @@
 				// 				uni.navigateTo({
 				// 					url: './share'
 				// 				});
-
+                 
 				let recommendId = '';
 				if (this.shopId === this.currentUser.shopId && !this.isVipUser) {
 					recommendId = this.userId;
@@ -1150,19 +1176,26 @@
 		 */
 		// 微信小程序
 		onShareAppMessage(res) {
+			console.log(123)
+			
 			const journalId = res.target ? res.target.dataset.id : ''
 
 			let recommendId = this.userId;
 			// 日志的分享
 			if (journalId) {
-				this.$api.share(journalId, 4);
+				this.$api.share(journalId, 4).then(res=>{
+					
+				});
 				return {
 					path: '/pages/businessCard2/businessCard2?cardUserId=' + this.cardUserId + '&journalId=' + journalId +
 						'&recommendId=' + recommendId,
 				}
 			}
 			// 名片的分享
-			this.$api.share(this.userId, 1);
+			this.$api.share(this.userId, 1)
+			.then(res=>{
+				
+			});
 
 			return {
 				title: '您好，这是我的名片，请惠存！',
@@ -1312,7 +1345,7 @@
 			height: 390upx;
 			background-color: white;
 			background-image: url(https://card-1254165941.cos.ap-guangzhou.myqcloud.com/homebg.jpg);
-			background-size:100% 390rpx; 
+			background-size: 100% 390rpx;
 			background-repeat: no-repeat;
 			// background: -webkit-linear-gradient(90deg, #8D8DF1, #5670FF);
 			display: flex;
@@ -1669,19 +1702,21 @@
 	}
 
 
-// 购买商品
-	.shopping{
+	// 购买商品
+	.shopping {
 		width: 100%;
 		height: 1139upx;
 		background-image: url('https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/shop.jpg');
-		background-size:100% 100%;
+		background-size: 100% 100%;
 		position: relative;
-		.btn-primary{
+
+		.btn-primary {
 			position: absolute;
 			bottom: 51upx;
 			left: 52upx;
 		}
 	}
+
 	// 创建按钮
 	.createCon {
 		position: fixed;

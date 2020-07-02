@@ -580,6 +580,22 @@
 				    }
 				},
 				{
+				    "path" : "businessCard_VIP/VipCenter",
+				    "style" : {
+						"navigationBarTitleText" : "会员中心",
+						"navigationBarBackgroundColor" : "#FFFFFF",
+						"navigationBarTextStyle" : "black"
+				    }
+				},
+				{
+				    "path" : "businessCard_VIP/businessCard_VIP_Opening_record",
+				    "style" : {
+						"navigationBarTitleText" : "付款记录",
+						"navigationBarBackgroundColor" : "#FFFFFF",
+						"navigationBarTextStyle" : "black"
+				    }
+				},
+				{
                     "path" : "businessCard_VIP/VIPOrderAddressAdd",
                     "style" : {
                         "navigationStyle": "custom",
@@ -601,14 +617,6 @@
 						}
                     }
                 },
-				{
-				    "path" : "businessCard_VIP/VipCenter",
-				    "style" : {
-						"navigationBarTitleText" : "VIP中心",
-						"navigationBarBackgroundColor" : "#FFFFFF",
-						"navigationBarTextStyle" : "black"
-				    }
-				},
 				{
                     "path" : "businessCard_VIP/businessCard_VIP_Finish",
                     "style" : {
@@ -711,7 +719,14 @@
 						}
                     }
                 },
-				
+				{
+				    "path" : "businessCard_BusinessAttestation/businessCard_BusinessAttestation",
+				    "style" : {
+				        "navigationBarTitleText" : "企业认证",
+				        "navigationBarBackgroundColor" : "#FFFFFF",
+				        "navigationBarTextStyle" : "black"
+				    }
+				},
 				
                 {
                     "path" : "businessCard_BindBankcard/businessCard_BindBankcard",
@@ -1005,7 +1020,8 @@
                     "style" : {
                         "navigationBarTitleText" : "转让管理员",
                         "navigationBarBackgroundColor" : "#FFFFFF",
-                        "navigationBarTextStyle" : "black"
+                        "navigationBarTextStyle" : "black",
+						"onReachBottomDistance":126
                     }
                 },
                 {
@@ -1145,6 +1161,7 @@
 						"navigationBarTextStyle" : "black"
 					}
 				},
+				
 				{
 					"path" : "myself_waitPayDetail/myself_waitPayDetail",
 					"style" : {
@@ -1695,11 +1712,11 @@
                 "path": "item_businessCard/businessCard_VIP/businessCard_VIP_New",
                 "query": "refundId=66" //启动参数，在页面的onLoad函数里面得到
             },
-			{
-			    "name": "VIP中心", //模式名称
-			    "path": "item_businessCard/businessCard_VIP/VipCenter",
-			    "query": "refundId=66" //启动参数，在页面的onLoad函数里面得到
-			},
+			// {
+			//     "name": "会员中心", //模式名称
+			//     "path": "item_businessCard/businessCard_VIP/VipCenter",
+			//     "query": "refundId=66" //启动参数，在页面的onLoad函数里面得到
+			// },
 			{
 				"name": "钱包", //模式名称
 				"path": "item_my/myself_myWallet/myself_myWallet",

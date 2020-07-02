@@ -14,7 +14,7 @@
 							<image :src="userInfor.headImage" class="Pimage"></image>
 						</view>
 						<view class="PFtitleBox" @click="gotoCardDetil(userInfor.userType)">
-							<view class="FBtitle fs3a32">{{userInfor.company}}</view>
+							<view class="FBtitle fs3a32" :style="company">{{userInfor.company}}</view>
 							<view class="FBposition fs6a24">
 								<text>{{userInfor.name}} |</text>
 								<text>&nbsp;&nbsp;{{userInfor.job}}</text>
@@ -51,11 +51,8 @@
 						<!-- 我的钱包：普通用户 -->
 						<view v-if="userInfor.userType==1" class="SOorderNum" v-for="(item,index) in defaultUser" :key="index" @click="gotoMystaff(index)">
 							<view class="OrderNum fs3a32">{{item.num}}</view>
-
 							<view class="OrderTitle fs6a24">{{item.title}}</view>
-
 						</view>
-
 						<view class="SOorderNum" @click="navigateTo('/pages/CardTemplate/CardTemplate')">
 							<!-- <view class="SOorderNum" @click="navigateTo('./canvas')"> -->
 							<view class="OrderNum fs3a32">18</view>
@@ -122,8 +119,6 @@
 						</view>
 					</view>
 				</wx-view>	
-			
-				
 			</view>
 		</view>
 		<!-- 我的人气，员工管理，收藏，设置 -->
@@ -209,7 +204,6 @@
 	export default {
 		data() {
 			return {
-				isNormalUser:true,
 				aa: 'https://xk.gzskxx.com/myqcloud/cardImages/other/bgwhite.png',
 				bb: 'https://xk.gzskxx.com/myqcloud/cardImages/card/bg.png',
 				cc: 'https://xk.gzskxx.com/myqcloud/cardImages/card/bg2.png',
@@ -222,6 +216,7 @@
 				balanceGainAmount: 0, //计算后的未读提成
 				cacheGainAmount: 0, //缓存中的提成
 				getIfHaveGroup: 0,
+				isMemberCenter:'',
 				disableClick: false, //游客时不显示页面信息
 				userInfor: [], //用户信息
 				phone: '', //13046286132  17800009988  13912345678
@@ -249,6 +244,7 @@
 						subtract: '1'
 					}
 				],
+				company:'',
 				// 普通用户钱包
 				defaultUser: [
 					// {
@@ -297,24 +293,26 @@
 						title: '我的钱包',
 						num: ''
 					},
-					{
-							id: 1,
-							image: 'https://xk.gzskxx.com/myqcloud/cardImages/my/qianbao.png',
-							title: 'VIP设置',
-							num: ''
-						},
+					
 					// {
 					// 	id: 1,
 					// 	image: 'https://xk.gzskxx.com/myqcloud/cardImages/my/youhuiquan.png',
 					// 	title: '优惠券',
 					// 	num: '0个'
 					// },
+					
 					{
-						id: 2,
+						id: 1,
 						image: 'https://xk.gzskxx.com/myqcloud/cardImages/my/jifen.png',
 						title: '我的积分',
 						num: '0'
-					}
+					},
+					{
+							id: 2,
+							image: 'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs6LSOwzPnrb6Y59x1azqt5w.SztibkWoOz421f54422d54b425c4bebd4f84be313578.png',
+							title: 'VIP设置',
+							num: ''
+						},
 					// {
 					// 	id: 3,
 					// 	image: 'https://xk.gzskxx.com/myqcloud/cardImages/my/fapiao.png',
@@ -369,6 +367,11 @@
 				this.$api.getUserInfor(userId).then(result => {
 					console.log(result);
 					this.userInfor = result.userMap;
+					if(this.userInfor.company.length>15){
+						this.company="font-size:26rpx; margin-bottom: 5rpx;"
+					}else{
+						this.company=""
+					}		
 					this.hideLoading();
 					if (result.userMap.shopId) {
 						uni.setStorageSync('shopId', result.userMap.shopId);
@@ -401,6 +404,10 @@
 					}
 				});
 			},
+			//开通VIP
+			businessCard_VIP() {
+				this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_New');
+			},
 			// 跳转至编辑名片
 			gotoCardDetil(userType) {
 				// 用户类型。1：普通用户；2：vip1；3：vip2；4：vip3；5：销售总监；6：销售经理
@@ -410,12 +417,49 @@
 						url: '../../item_businessCard/businessCard_EditCard/businessCard_EditCard?userId=' + userId,
 						// url: '../../item_my/myself_storeInform/myself_storeInform'
 					});
-				} else if (userType == 2 || userType == 3 || userType == 4) {
-					uni.navigateTo({
-						url: '../../item_my/myself_storeInform/myself_storeInform',
-						// url: '../../item_businessCard/businessCard_EditCard/businessCard_EditCard',
-					});
+				} else if (this.isMemberCenter!=0) {
+					// uni.navigateTo({
+					// 	url: '../../item_my/myself_storeInform/myself_storeInform',
+					// 	// url: '../../item_businessCard/businessCard_EditCard/businessCard_EditCard',
+					// });
+					let shopId = uni.getStorageSync('shopId');
+						this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+							shopId: shopId,
+							userId: this.userId,
+							cardUserId: this.cardUserId,
+							recommendId: this.cardUserId
+						})
 				}
+				// if (this.isNormalUser) {
+				// 	uni.showModal({
+				// 		title: '提示',
+				// 		content: '该功能对VIP开放，去开通VIP',
+				// 		success: (res) => {
+				// 			if (res.confirm) {
+				// 				this.businessCard_VIP();
+				// 			} else if (res.cancel) {
+				// 				console.log('用户点击取消');
+				// 			}
+				// 		}
+				// 	});
+				// 	return;
+				// }else{
+				// 	let shopId = uni.getStorageSync('shopId');
+				// 	if (!shopId && this.isVipUser) {
+				// 		this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
+				// 		return;
+				// 	}
+				// 	this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+				// 		shopId: shopId,
+				// 		userId: this.userId,
+				// 		cardUserId: this.cardUserId,
+				// 		recommendId: this.cardUserId
+				// 	})
+				// 	// uni.navigateTo({
+				// 	// 	url:'/item_businessCard/businessCard_VIP/VipCenter',
+						
+				// 	// })
+				// }
 			},
 			// 进入购物订单
 			gotoShoppingOrder() {
@@ -436,17 +480,15 @@
 					uni.navigateTo({
 						url: '../../item_my/myself_myWallet/myself_myWallet'
 					})
-				}  else if (index == 1) {
+				}  else if (index == 2) {
 					
-					if (this.isNormalUser==false) {
+					if (this.isMemberCenter==0) {
 						uni.showModal({
 							title: '提示',
-							content: '该功能对VIP开放，去开通VIP',
+							content: '尚未开通店铺，请先开通店铺',
 							success: (res) => {
 								if (res.confirm) {
-									uni.navigateTo({
-										url:'/item_businessCard/businessCard_VIP/businessCard_VIP_New',
-									})
+									this.businessCard_VIP();
 								} else if (res.cancel) {
 									console.log('用户点击取消');
 								}
@@ -455,6 +497,10 @@
 						return;
 					}else{
 						let shopId = uni.getStorageSync('shopId');
+						// if (!shopId && this.isVipUser) {
+						// 	this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
+						// 	return;
+						// }
 						this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
 							shopId: shopId,
 							userId: this.userId,
@@ -466,7 +512,7 @@
 							
 						// })
 					}
-				} else if (index == 2) {
+				} else if (index == 1) {
 					uni.navigateTo({
 						//url: '../../item_my/myself_myInvoice/myself_myInvoice'
 						url: '../../item_my/myself_MyIntegral/myself_MyIntegral'
@@ -559,8 +605,6 @@
 					this.$api.getCountRecord().then(res => {
 						this.hideLoading();
 						let Num = [res.gainAmount, 0, res.customerNum]; //提成、订单、客户总数4
-
-						
 						this.$api.conOrders().then(ress=>{
 							Num[1] = ress.sale_orders;
 							console.log(Num)
@@ -575,7 +619,7 @@
 									this.balanceCustomerNum = res.customerNum - this.cacheCustomerNum;
 									uni.setStorageSync('balanceCustomerNum', res.customerNum);
 									console.log('计算后的缓存中的值：' + this.balanceCustomerNum);
-								}
+								}	
 							}
 							// 计算销售订单未处理的订单数量  balanceOrderNum  cacheOrderNum
 							if (uni.getStorageSync('balanceOrderNum')==undefined) {
@@ -653,6 +697,7 @@
 			
 		},
 		onLoad() {
+			this.isMemberCenter = uni.getStorageSync('IsMemberCenter');
 			// uni.setStorageSync('userId',55);
 			
 			// this.getDataDisplay();
@@ -831,7 +876,7 @@
 						width: 50%;
 						text-align: right;
 						margin-right: 30upx;
-
+                        
 						image {
 							width: 12upx;
 							height: 22upx;

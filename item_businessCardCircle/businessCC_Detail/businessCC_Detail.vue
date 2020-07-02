@@ -460,7 +460,13 @@
 			
 			shareInvitePost(){
 				
-				
+				uni.requestSubscribeMessage({
+					tmplIds: ['cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU','9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
+					success(res) {
+						console.log('test', res)
+						this.shares=share
+					}
+				})
 				this.$api.getCardCircleDetail(this.circleId).then(result => {
 
 					this.navigateTo('/item_businessCardCircle/businessCC_invitePost/businessCC_invitePost',{

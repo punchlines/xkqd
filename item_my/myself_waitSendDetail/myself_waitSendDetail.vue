@@ -33,7 +33,7 @@
 							<view class="PIinformation">
 								<view class="PFheader fx-row fx-row-center fx-row-space-around">
 									<view class="Htitle fs3a28">{{item.title?item.title:""}}</view>
-									<view   v-if="!isUseCoupon && !isCOD && Detail.way==0 &&!isSO && !canceled"  class="Hrefund fsf24"  @click="applyrefund(item)">申请退款</view>
+									<!-- <view   v-if="!isUseCoupon && !isCOD && Detail.way==0 &&!isSO && !canceled"  class="Hrefund fsf24"  @click="applyrefund(item)">申请退款</view> -->
 								</view>
 								<view class="Hdescript fs6a24">
 									{{item.attributesDesc}}

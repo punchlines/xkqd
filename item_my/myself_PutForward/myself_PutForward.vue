@@ -39,7 +39,7 @@
 						<view class="ReasonTitle fs3a32">到账银行卡</view>
 					</view>
 					<view class="ReasonList">
-						<view @click="selectBankCard(item)" class="Litem" v-for="(item,index) in PutForward" :key="index">{{item.title}}</view>
+						<view @click="selectBankCard(item)" class="Litem" v-for="(item,index) in PutForward" :key="index" v-if="acctType==item.acctType">{{item.title}}</view>
 					</view>
 				</view>
 				<!-- 支付密码  TODO-->
@@ -54,7 +54,7 @@
 								为了您的账户安全，请输入支付密码
 							</view>
 
-						</view>
+						</view>	
 						<view class="Ppassward ">
 							<view class="PW fx-row fx-row-center fx-row-space-around"  @click="isFocus = true">
 
@@ -105,7 +105,7 @@
 		account:0,
         password: '',
         confirmHold:false,//键盘收起
-
+        acctType:'',
 		modalType: MODAL_TYPE_ADD,
 		isSetPassword: false,
 
@@ -124,14 +124,26 @@
 
 
     async onLoad (options) {
-	
+	   
 		let {status} = await  this.$api.testUpPassword('000000');
 		this.isSetPassword = Number(status) !== -1;
 		// let {remainMoney} = await this.$api.getRemainMoney();
 		this.account = options.account;
-		
-		this.allMoney = this.account==0?options.nowMoney:options.collectionMoney;
-			
+		if(options.account==0 || options.account==1){
+			this.acctType=1
+		}else{
+			this.acctType=2
+		}
+		console.log(options)
+			if(this.account==0){
+				this.allMoney=options.collectionMoney;
+			}
+			else if(this.account==1){
+				this.allMoney =options.nowMoney
+			}
+			else if(this.account==2){
+				this.allMoney =options.businessMoney
+			}
 		if(this.allMoney>1){
 			this.yuMoney = this.allMoney-1
 		}else{
@@ -147,6 +159,7 @@
         })
         // list.push({ id: -1, title: '使用新卡' })
         this.PutForward = list;
+		console.log(this.PutForward)
       });
 	},
 
@@ -172,6 +185,7 @@
           this.selectCard = card;
         }
       },
+	  
       // 全部提现
       allGetMoney(){
 		  if(this.allMoney>1){
@@ -184,6 +198,7 @@
       },
       // 确定提现
       PutForwardMoney(){
+		  
         const money = Number(this.totalMoney);
         if (!money || money < 0) {
           return this.showError('请输入有效的提现金额');
@@ -207,9 +222,19 @@
         for (var i of this.showItem) {
           i.show = false;
         }
-        this.showItem[0].show = true;
-        this.showItem[2].show = true;
-        this.modalType = this.isSetPassword ? MODAL_TYPE_INPUT : MODAL_TYPE_ADD;
+		let self =this
+		uni.requestSubscribeMessage({
+			tmplIds: ['ePSAKvEfXEOpkWN4OC2VmW1EIGUPHj6tQAymw3Uw9T4','HSkBXdZDtaADZ88TAgDFcnEXeB_aZ42fRgxzlU1CRes','RBYdCLPna_Wi-l1IniftFF1tQMnKUWT11BBzR8dU1JA'],
+			success(res) {
+				
+			},
+			complete(err){
+				self.showItem[0].show = true;
+				self.showItem[2].show = true;
+				self.modalType = self.isSetPassword ? MODAL_TYPE_INPUT : MODAL_TYPE_ADD;
+			}
+		})
+		
       },
       // 确认支付密码,跳转回我的钱包
 			agreePw(){
@@ -220,7 +245,9 @@
 		if (this.password.length !== 6) {
 		  return this.showError('请输入密码');
 		}
-		// 如果是新增密码的情况下
+		
+			
+			// 如果是新增密码的情况下
 		if (this.modalType === MODAL_TYPE_ADD) {
           this.$api.setPassward(MD5.md5(this.password)).then(result => {
             this.postWithdraw()
@@ -263,6 +290,7 @@
 
       },
 	  postWithdraw () {
+		  
         this.$api.withdrawCashes(this.totalMoney, this.selectCard.card_num,this.selectCard.id,this.account).then(result => {
           for(var i of this.showItem){
             i.show=false;
@@ -272,15 +300,22 @@
 			
           uni.showToast({
             title:'申请提现成功',
-            duration: 1000
-          })
+            duration: 1000,
+			success() {
+				uni.navigateBack({
 					
+				})
+			}
+          })
+		
 			this.isPutForwarding = true;
-          setTimeout(() => {
-            uni.navigateTo({
-              url: '../myself_myWallet/myself_myWallet'
-            });
-		  }, 1000)
+    //       setTimeout(() => {
+    //         uni.navigateTo({
+    //           url: '../myself_myWallet/myself_myWallet'
+    //         });
+		  // }, 1000)
+		  
+		 
 		}).catch(error => {
 					for (var i of this.showItem) {
 						i.show = false;

@@ -91,7 +91,7 @@
 			<!-- 确认收货 -->
 			<view class="confirmProduct">
 				<view class="Button fx-row fx-row-right">
-					<view class="checkLigistics gray" v-if="!isCOD" @click="applyrefund()">申请退款</view>
+					<!-- <view class="checkLigistics gray" v-if="!isCOD" @click="applyrefund()">申请退款</view> -->
 					<view class="checkLigistics" @click="checkLogistics(Detail.childId,Detail.expressNum,Detail.expressCompany)">查看物流</view>
 					<view class="confirmGood" @click="gotoGoodsComment(Detail.childId)">去评价</view>
 				</view>

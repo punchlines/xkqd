@@ -406,9 +406,9 @@
 					}
 
 					
-					uni.setNavigationBarTitle({
-						title: this.shop.shopName
-					});
+					// uni.setNavigationBarTitle({
+					// 	title: this.shop.shopName
+					// });
 					this.title = this.shop.shopName;
 					
 					// 获取店家推荐

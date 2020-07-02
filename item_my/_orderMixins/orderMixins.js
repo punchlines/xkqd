@@ -41,7 +41,8 @@ export default {
 		}
 	},
 	onLoad(e) {
-		console.log(e.childId);
+		console.log('1231231',e);
+		//console.log('1231231',uni.getStorageSync('_needUpdateShopOrder'));
 		this.childId=e.childId;
 		this.status = e.status; //>10就是商家订单
 		this._status = e._status;

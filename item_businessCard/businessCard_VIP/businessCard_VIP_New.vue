@@ -59,7 +59,9 @@
 		<view class="footer-action">
 			<button v-if="isNormalUser && currentUser.id" class="btn-primary" @click="buyVip" :disabled="!currentSelectGoods">立即购买</button>
 			<button v-else-if="isNormalUser || !currentUser.id" class="btn-primary"  open-type="getPhoneNumber" @getphonenumber="buyVip" :disabled="!currentSelectGoods">购买任意商品一键开店</button>
+			<button v-else-if="isVipStatus==2" class="btn-primary" @click="openVipSet">续费</button>
 			<button v-else class="btn-primary" @click="openVipShareModal">我要推广</button>
+			
 		</view>
 
 		<vip-share-modal ref="vipShareModal" @channelClick="channelClick"></vip-share-modal>
@@ -141,7 +143,8 @@
 				authShow:false,
 				orderNum:'',
 				black:false,
-				showLoadings:false
+				showLoadings:false,
+				isVipStatus:''
 			};
 		},
 
@@ -210,7 +213,8 @@
 			uni.showLoading({
 				title: '加载中'
 			});
-
+            console.log(option)
+			this.isVipStatus=option.isMemberCenter
 			this.isCreateCircle = option.isCreateCircle==1?1:0;
 			this.referFromHome = option.referFromHome || 0;
 			this.doLoginHandle((hasReg)=>{
@@ -267,7 +271,21 @@
 				sku.select = true;
 				
 			},
-			
+			openVipSet(){
+				// 如果没有填写店铺资料
+				let shopId = uni.getStorageSync('shopId');
+				// if (!shopId && this.isVipUser) {
+				// 	this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
+				// 	return;
+				// }
+				this.navigateTo('./VipCenter', {
+					shopId: shopId,
+					userId: this.userId,
+					cardUserId: this.cardUserId,
+					recommendId: this.cardUserId
+				})
+				
+			},
 			setUserInfo(e){
 				console.log(e)
 					if(e.detail.errMsg == 'getUserInfo:fail auth deny'){
@@ -312,6 +330,13 @@
 
 			openVipShareModal () {
 				this.$refs.vipShareModal.show();
+				uni.requestSubscribeMessage({
+					tmplIds: ['cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU','9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
+					success(res) {
+						console.log('test', res)
+						this.shares=share
+					}
+				})
 			},
 
 			channelClick (channel) {

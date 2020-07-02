@@ -270,6 +270,13 @@
         }
         let data=this.disposeCommit();
         console.info(data)
+		uni.requestSubscribeMessage({
+			tmplIds: ['aBw6JoyVaU8-1iSXbw3tpY80kmTIpqpYh-2NAC19pSs'],
+			success(res) {
+				console.log('test', res)
+				this.shares=share
+			}
+		})
         uni.showLoading()
 				if(!this.orderNum)
 					this.$api.createOrder(data.addressId, data.items,data.msgs, 0).then((res)=>{

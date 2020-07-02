@@ -420,6 +420,7 @@
 					//TODO
 					this.$api.insertCircleOrder(this.circleId, this.recommendId).then(order => {
 						_order = order;
+						console.log(order)
 						return this.$api.unifiedorder(_order)
 					}).then(result => {
 						return this.requestPayment(result.prePayInfo)

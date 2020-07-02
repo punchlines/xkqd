@@ -1,18 +1,17 @@
 <template>
 	<view class="container">
 		<!-- 搜索组件 -->
-		<view class="search">
-			<view class="container1">
-				<view class="CMsearch">
-					<view class="CMimage">
-						<image class="" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/search.png'"></image>
-					</view>
-					<view class="CMinput">
-						<input type="text" class="" placeholder=""></input>
-					</view>
+		<view class="CMsearch-container">
+			<view class="CMsearch">
+				<view class="CMimage">
+					<image class="" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/search.png'"></image>
+				</view>
+				<view class="CMinput">
+					<input type="" class="" placeholder="请输入成员姓名,公司,职位" v-model="searchKey" confirm-type="search" @confirm="search"></input>
 				</view>
 			</view>
 		</view>
+		
 		<!-- 成员列表模板 -->
 		<view class="memberListContainer">
 			<view class="memberBox">
@@ -53,8 +52,9 @@
         currentPage: 1,
         list: [],
         loading: false,
+		searchKey:'',
         noMore: false,
-
+        placeholders:'',
 		currentMemberId: '',
       };
     },
@@ -73,37 +73,58 @@
 	onLoad (option) {
       this.circleId = option.id;
       this.currentMemberId = this.cardCirclePublish.managerUserId
+	  console.log(option)
       this.fetch();
 	},
 
     onReachBottom () {
+		this.fetch();
       if (this.noMore || this.loading) return;
-      this.fetch();
+      
     },
 
 	methods: {
       fetch () {
         if (this.loading) return;
         this.loading = true;
-        this.$api.listCircleMember(this.circleId, this.currentPage).then(result => {
+       const action = this.currentSearch
+       	? this.$api.searchCircleMember(this.circleId, this.currentSearch, this.currentPage)
+       	: this.$api.listCircleMember(this.circleId, this.currentPage)
+       
+       action.then(result => {
           this.loading = false;
           const list = result.memberList;
+		  list.forEach(item => {
+			  
+		    item._showDropDown = false;
+		    item._joinTime = this.formatDate(item.joinTime)
+		  })
           if (list.length === 0) {
             this.noMore = true;
           }
           this.list = this.list.concat(list);
           this.currentPage++;
+		   
 		}).catch(error => {
           this.loading = false;
           this.showTips('加载失败')
           console.error(error);
         })
 	  },
-
+     search () {
+       this.currentSearch = this.searchKey;
+       this.reset();
+       this.fetch();
+     },
       selectMember (user) {
         this.currentMemberId = user.userId;
 	  },
-
+      reset () {
+        this.currentPage = 1;
+        this.list = [];
+        this.loading = false;
+        this.noMore = false;
+      },
       confirm () {
         this.cardCirclePublish.managerUserId = this.currentMemberId;
         uni.navigateBack();
@@ -117,10 +138,11 @@
 <style lang="less">
 
 @import "../../css/jss_base.less";
+
 .container{
 	width: 100%;
 	height: 100%;
-	position: fixed;
+	//position: fixed;
 	top: 0;
 	left: 0;
 	background:#F5F5F5 ;
@@ -146,8 +168,10 @@
 	width: 100%;
 	box-sizing: border-box;
 	padding: 0 30upx;
-	height: 1000upx;
-	overflow-y: scroll;
+	height: 100%;
+	padding-top: 100rpx;
+	
+
 	.memberBox{
 		height: 100%;
 		overflow-y: auto;
@@ -213,14 +237,39 @@
 	}
 }
 
+.CMsearch-container {
+			padding: 0 30upx;
+			height: 110upx;
+			background:@grayBg;
+			position: fixed;
+			z-index: 999;
+		}
 
+ .CMsearch{
 
+			z-index: 999;
 
+            .flex(flex-start);text-align:left;background:#fff;height:72upx;color:#ccc;font-size:28upx;margin: 0 auto;margin-top:20upx;
+
+			.CMimage{
+				margin:0 30upx;
+				image{width:32upx;height: 32upx;vertical-align: middle;}
+			}
+			.CMinput{
+				input{
+					color: #333333;
+					width:600upx;
+				}
+            }
+        }
 
 .container{
   background: #f5f5f5;
   .search{
-    margin: 30upx auto;
+	position: fixed;
+	// margin: 30upx auto;
+	width: 100%;
+	 z-index: 999;
   }
   .sureButton{
     position: fixed;

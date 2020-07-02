@@ -10,23 +10,28 @@
 							<text class="fs3a28">{{item.shopName}}</text>
 							<text class="fs3a28">{{item.title}}</text>
 						</view>
+						
 						<!-- 1.待发货 2.待收货 3.已签收 4.待评价 5.已完成, 6退款/退货 (7.待退货 8.已退货 暂时不用)| todo.itemType,todo.refuseStatus-->
 						<view class="LHorderState fs6a24">
 						{{ item.payStatus }}
 						</view>
 					</view>
-					<view class="ListCenter" @click="gotoOrderDetail(item._status,item.orderId)">
+					<view class="ListCenter" @click="gotoOrderDetail(item._status,item.orderId)">	
 						<view class="LCproductList fx-row fx-row-center">
 							<!--  todo.itemType,todo.refuseStatus-->
 							<view class="PLitem" v-for="(todo,to) in item.goodsItems" :key="to" >
-								<image class="Images" :src="todo.cover"  mode="aspectFill"  lazy-load></image>
-								
+								<image class="Images" :src="todo.cover"  mode="aspectFill"  lazy-load></image>	
+										
 							</view>
 							<!-- <view class="title">123</view> -->
 						</view>
 					</view>
 					<view class="ListBottom ListBottom1 fx-row fx-row-right" v-if="item.goodsItems && item.goodsItems[item.goodsItems.length-1]">
-						<view class="LBproductNum fs3a28">
+						<!-- 订单时间 -->
+						<view class="LHstoreTime fs3a28" style="font-size: 24rpx;">
+							订单时间：{{item.createTime}}
+						</view>
+						<view class="LBproductNum fs3a28" style="font-size: 24rpx;">
 						共{{item.itemNum}}件商品，共¥{{item.payAmount}}
 						</view>
 					</view>
@@ -51,6 +56,8 @@
 <script>
 	import uniLoadMore from '@/template/uni-load-more.vue';
 	import shoppingListMixins from '../_orderMixins/shoppingListMixins.js';
+	import {formatTime} from "../../js/mzl.js";
+	// import orderMixins from '../_orderMixins/orderMixins.js'
 	export default {
 		name:'AllOrder',
 		mixins:[shoppingListMixins],
@@ -76,12 +83,13 @@
 				action.then(res=>{
 					this.hideLoading();
 					this.loading = false;
-					console.log(res);
+					console.log('12123123123213',res);
 					res.forEach(detail=>{
 						const {payType,orderStatus,flowStatus} = detail;
 						const status = Number(payType)*100 + Number(orderStatus)*10 + Number(flowStatus);
 						detail._status = status;
 						detail.payStatus = this.formatStatus(status);
+						detail.createTime = formatTime(detail.createTime);
 					})
 					this.currentPage++;
 					this.Alllist = this.Alllist.concat(res);
@@ -93,7 +101,7 @@
 					}
 					
 				}).catch(error=>{
-					this.hideLoading();
+					this.hideLoading();	
 					this.showError(error);
 					this.loading = false;
 				})
@@ -109,6 +117,7 @@
 	page{width:100%;height: 100%;background:@grayBg;}
 	.AllOrderListBox{
 		margin-top:20upx;
+		
 		.AOLlist{
 			padding:15upx 0;
 			.ListHeader{
@@ -139,10 +148,12 @@
 		.ListBottom{
 			background: #fff;padding:30upx;
 		}
-		.ListBottom{margin-bottom:10upx;}
+		.ListBottom{margin-bottom:10upx;display: flex;
+        justify-content: space-between;}
 	}
 	.default{
 		position: fixed;top:50%;left:50%;margin-top:-86upx;margin-left:-115upx;
 	}
+	
 </style>
 

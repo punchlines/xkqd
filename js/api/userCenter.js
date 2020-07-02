@@ -51,6 +51,8 @@ api.searchNearbyCard=(pageNo,text,longitude,latitude) =>post('card/searchNearbyC
 api.insertPendingCard=(cardUserId) => post('card/insertPendingCard',{cardUserId});
 api.deletePendingCard=(cardUserId) => post('card/deletePendingCard',{cardUserId});
 
+api.getUserCoreInfo=()=> post('user/getUserCoreInfo')//个人中心详情信息
+api.setUserReceivablesAccount=(type)=> post('user/setUserReceivablesAccount',{type})//设置用户收款账户
 api.getUserInfor=(cardUserId) => post('card/getUserCardDetails',{cardUserId});//个人中心名片信息
 
 api.myCollect=(type,pageNo)=>post('user/listMyCollectRecord',{type,pageNo});//我的收藏
@@ -142,6 +144,8 @@ api.updateVideo=(videoId, videoUrl,videoImage,videoType,videoTime,shopId)=>post(
 //删除展示视频
 api.deleteVideo=(videoId)=>post('card/deleteVideo',{videoId});
 
+//获取用户开通/续费/升级VIP付款记录
+api.getUserVipOrderList=(pageNo)=>post('user/getUserVipOrderList',{pageNo});
 
 api.unbindBySubordinate=()=>post('employ/unbindBySubordinate');//解绑企业（下级）
 
@@ -237,6 +241,8 @@ api.getSwVersion = () => post('common/swVersion');
 api.getTransactionRecord = (type,pageNo)=> post('remain/getTransactionRecord',{type,pageNo});
 //注册子商户
 api.registerPersonalMerchant = (data)=> post('user/registerPersonalMerchant',{...data});
+//注册企业商户
+api.registerBusinessMerchant = (data)=> post('user/registerBusinessMerchant',{...data});
 
 //添加图片
 api.addMerchantImg = (picType,images)=> post('user/addMerchantImg',{picType,images});

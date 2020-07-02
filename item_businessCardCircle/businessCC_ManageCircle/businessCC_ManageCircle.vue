@@ -5,7 +5,7 @@
 			<view class="avatarContainer">
 				<view class="box fx-row fx-wrap fx-row-start">
 						<image  v-for="(item,index) in detailImageList"  :key="index" class="avatar"  :src="item"></image>
-						<button  open-type="share"  class="avatar btnshare"></button>
+						<button  open-type="share"  class="avatar btnshare" @click="test"></button>
 				</view>
 				
 				<view class="seeAll" v-if="isPermitSee || hasManagePermission || memberType!=2" @click="lookClick">
@@ -268,6 +268,16 @@
 					memberType:this.memberType
 				});
 			},
+			test(){
+				console.log('测试成功')
+					uni.requestSubscribeMessage({
+						tmplIds: ['cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU','9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
+						success(res) {
+							console.log('test', res)
+							this.shares=share
+						}
+					})
+			},
 			deleteCircle() {
 			
 				const action = () => {
@@ -336,6 +346,13 @@
 				this.navigateTo('../businessCC_CircleCode/businessCC_CircleCode', {
 					id: this.circleId
 				});
+				uni.requestSubscribeMessage({
+					tmplIds: ['cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU','9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
+					success(res) {
+						console.log('test', res)
+						this.shares=share
+					}
+				})
 			},
 			
 			changeAvatar() {

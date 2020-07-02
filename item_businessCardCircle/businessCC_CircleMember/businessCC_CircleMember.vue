@@ -165,6 +165,7 @@
           this.loading = false;
           const list = result.memberList;
           list.forEach(item => {
+			  console.log(item)
             item._showDropDown = false;
             item._joinTime = this.formatDate(item.joinTime)
 		  })

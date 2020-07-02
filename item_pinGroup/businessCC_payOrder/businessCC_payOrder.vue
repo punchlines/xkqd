@@ -207,6 +207,13 @@
 					"goodsName": this.detail.goodName,
 					"identity": this.detail.skuName
 				});
+				uni.requestSubscribeMessage({
+					tmplIds: ['aBw6JoyVaU8-1iSXbw3tpY80kmTIpqpYh-2NAC19pSs'],
+					success(res) {
+						console.log('test', res)
+						this.shares=share
+					}
+				})
 				if(!this.orderNum){
 					this.$api.orderPin(pinId,addressId,msgs,item).then(res=>{
 						this.orderNum = res;
