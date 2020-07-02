@@ -11,3 +11,4 @@ export default {
 	 API_HOST: 'https://xk-test.gzskxx.com',
 	DEV: false,
 }
+	

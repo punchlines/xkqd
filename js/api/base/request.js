@@ -66,7 +66,7 @@ const post = (url, params = {}, noDefault) => {
 			$store.state.requestUid = Math.random().toString(36).substring(2);
 		const uuid = $store.state.requestUid;
 					
-		
+	
     uni.request({
       url: url,
       method: 'POST',
@@ -82,6 +82,7 @@ const post = (url, params = {}, noDefault) => {
         const code = resData['code'];
         if(code === '0000') {
           resolve(resData.result);
+		  
         }else if(code == '8800'  && !uni.getStorageSync('ReLogin')){
 					// #ifdef MP-WEIXIN
 						uni.setStorageSync('token','');

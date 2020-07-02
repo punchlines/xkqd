@@ -264,13 +264,14 @@
     .buttonAll{
       .flex(space-between);width:65%;text-align: center;line-height: 70upx;
       .allRefuse{
-        .buttonRadius(@w:200upx;@h:70upx;@bg:none;);
-        border:1upx solid @logoNote;
+        .buttonRadius(@w:200upx;@h:70upx;@bg:#FF3C31;);
+        // border:1upx solid @logoNote;
+		color: #fff;
       }
       .allAgree{
-        .buttonRadius(@w:200upx;@h:70upx;@bg:none;);
-        color: @tabActive;
-        border:1upx solid @tabActive;
+        .buttonRadius(@w:200upx;@h:70upx;@bg:#2EA1FF;);
+        color: #fff;
+        // border:1upx solid @tabActive;
       }
     }
   }

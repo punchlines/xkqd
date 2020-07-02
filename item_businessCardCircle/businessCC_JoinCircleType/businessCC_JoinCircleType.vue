@@ -1,6 +1,6 @@
 <template>
 	<view class="joinTypeContainer">
-    <view class="selectTitle">请选择加圈方式：</view>
+    <view class="selectTitle">请选择加社群方式：</view>
 
 
       <view class="selectInfo"
@@ -20,7 +20,13 @@
 	    <text class="money">邀请佣金(元)</text>
 	    <input class="monNumber" placeholder="不能大于进群金额" v-model="percent" type="digit" />
 	  </view>
-
+	  
+	<view  class="moneyContainers" v-if="isPay">
+		
+			<p>注：1.邀请佣金不能高于入群支付金额的30%，例：入</p><p style="margin-left: 80rpx;">社群支付10元，则邀请者的佣金不能超过3元.</p>
+			<p style="margin-left: 56rpx;">2.“入群支付金额”与“邀请者佣金”，请到“我的-我的钱包里面查询”</p>    
+			  <p style="text-align: center;">(邀请佣金：群友邀请其他人员进群成功所获得的奖励)</p> 
+	</view>
     <view class="sure" @click="confirm">
       <text class="text">确定</text>
     </view>
@@ -36,19 +42,22 @@
         currentSelect: {},
         price: '',
 		percent:0,
+		circleId:'',
         typeList: [
-          { id: 1, text: '允许任何人加圈' },
+          { id: 1, text: '允许任何人加社群' },
           { id: 2, text: '消息验证并由管理员审核' },
-          { id: 3, text: '只允许圈成员邀请' },
-          { id: 4, text: '付费入圈(仅限会员)' }		
+          { id: 3, text: '只允许社群成员邀请' },
+          { id: 4, text: '付费入社群(仅限会员)' }		
       ],
 			}
     },
 
-    onLoad () {
+    onLoad (options) {
       this.currentSelect = this.cardCirclePublish.joinType;
       this.price = this.cardCirclePublish.joinMoney;
 	  this.percent = this.cardCirclePublish.percent;
+	  this.circleId=options.circleId
+	  console.log(this.circleId)
 			//if(this.currentUser.userType<=1) this.typeList.pop();
     },
 
@@ -69,7 +78,7 @@
 			
       confirm () {
         if (!this.currentSelect.id) {
-          this.showTips('请选择加圈方式');
+          this.showTips('请选择加社群方式');
           return;
         }
         if (this.isPay) {
@@ -90,7 +99,7 @@
 		    this.showError('佣金不能小于 0')
 		    return;
 		  }
-		  if (this.percent >= this.price) {
+		  if (parseInt(this.percent) >= parseInt(this.price)) {
 		    this.showError('提成必须小于进群金额')
 		    return;
 		  }
@@ -98,7 +107,32 @@
         this.cardCirclePublish.joinType = this.currentSelect;
         this.cardCirclePublish.joinMoney = this.price;
 		this.cardCirclePublish.percent = this.percent;
-        uni.navigateBack();
+		if(this.circleId==undefined){
+			uni.navigateBack();
+		}
+		else{
+			const postData = {
+				joinType:this.cardCirclePublish.joinType.id,
+				price:this.cardCirclePublish.joinMoney,
+				percent:this.cardCirclePublish.percent,
+				circleId:this.circleId
+			}
+			uni.showLoading();	
+			this.$api.updateCardCircleDetail(postData).then(result => {
+				uni.hideLoading();
+				uni.showToast({
+					title:'设置成功',
+					duration:2000
+				})
+				
+				uni.navigateBack();
+			}).catch(error => {
+				uni.hideLoading();
+				this.showError(error)
+			})
+		}
+		
+        
       },
     },
 
@@ -130,7 +164,7 @@
     font-family: @ff;
     color: @title;
     position: relative;
-
+	
     &+.selectInfo {
       border-top: 1px solid #eeeeee;
     }
@@ -187,7 +221,10 @@
   }
   .sure{
 		margin: 0 auto;
-    .buttonRadius();
+    width: 686rpx;
+	background-color: #2EA1FF;
+	height: 88rpx;
+	border-radius: 44rpx;
     line-height: 88rpx;
     margin-top: 100rpx;
     text-align: center;
@@ -196,5 +233,13 @@
       color: #ffffff;
     }
   }
+}
+.moneyContainers{
+	margin-top: 20rpx;
+	margin-bottom: 40rpx;
+	background: #f8f8f8;
+	border-radius: 2px;
+	color: #9999;
+	font-size: 14px;
 }
 </style>

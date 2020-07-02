@@ -4,14 +4,18 @@
 		<view class="search-container">
 			<view class="search">
 				<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/search.png'"></image>
-				<input v-model="searchKey" type="text" class="input" placeholder="请输入圈子名字,ID号" placeholder-class="place" confirm-type="search" @confirm="search()">
+				<input v-model="searchKey" type="text" class="input" focus placeholder="请输入关键词，如：防疫、创业、兼职等" placeholder-class="place" confirm-type="search" @confirm="search()" @input="cancel=false" @blur="cancel=true">
+				<image v-if="!cancel" @click="searchKey=''" src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.dhoIDdKklu2j177dc399d1d822dd17eb1ae7ad1f0265.png" style="margin-right: 30rpx;"></image>
+			</view>
+			<view class="cancel" @click="searchAndCancel">
+				{{cancel?'取消':'搜索'}}
 			</view>
 		</view>
 
 
 		<!-- 搜索结果显示 -->
 		<view class="resultContainer">
-			<card-circle-item v-for="item in list" :key="item.id" :datas="item" :add-flag="!isSearch" :highlight="currentSearchKey"></card-circle-item>
+			<card-circle-item v-for="item in list" :key="item.id" :datas="item" :add-flag="!isSearch" :highlight="currentSearchKey" :select="select"></card-circle-item>
 
 			<uni-load-more :loading-type="loadingType"></uni-load-more>
 
@@ -30,10 +34,11 @@
 		currentSearchKey: '',
         circleList: [],
 		isSearch: false,
-
+		cancel:true,
         list: [],
         loading: false,
         noMore: false,
+		select:true,
         currentPage: 1,
       };
     },
@@ -49,7 +54,7 @@
 	onLoad (option) {
       if (option.search) {
         this.isSearch = true;
-        uni.setNavigationBarTitle({ title: '搜索圈子' });
+        uni.setNavigationBarTitle({ title: '搜索社群' });
 	  }
 	},
 
@@ -70,14 +75,14 @@
         this.currentSearchKey = this.searchKey;
 
         const action = this.isSearch
-			? this.$api.searchUserCardCircle(this.currentSearchKey, this.currentPage)
-			: this.$api.searchCardCircle(this.currentSearchKey, this.currentPage);
+			? this.$api.getUserCardCircleList(this.currentPage,this.currentSearchKey)
+			: this.$api.searchCardCircleList(this.currentPage,this.currentSearchKey);
 
         action.then(result => {
           setTimeout(() => {
             this.loading = false;
 		  }, 100)
-          const list = result.cardCircleList || result.userCircleList;
+          const list = result
           if (list.length === 0) this.noMore = true;
           this.list = this.list.concat(list);
           this.currentPage++;
@@ -85,6 +90,16 @@
 		  this.loading = false;
 		})
 	  },
+	  searchAndCancel(){
+		  if(this.cancel==false){
+			  this.search()
+		  }else{
+			  uni.navigateBack({
+			  	
+			  })
+			  this.searchKey=''
+		  }
+	  }
 	},
 
   }
@@ -96,7 +111,7 @@
 		padding-top: 30px;
 		width: 100%;
 		min-height: 100vh;
-		background: #F5F5F5;
+		background: #FFF;
 
 		/*position: fixed;*/
 		top:0;
@@ -104,29 +119,39 @@
 
 		.search-container {
 			position:fixed;
-			background:#F5F5F5;
+			z-index: 10;
 			top:0;
 			left:0;
 			width:100%;
 			padding:30upx 0;
-
+			background-color: #FFFFFF;
 		}
-
+		.cancel{
+			position: fixed;
+			right: 40rpx;
+			top: 20rpx;
+			font-size:32rpx;
+			font-family:PingFangSC-Regular,PingFang SC;
+			font-weight:400;
+			color:rgba(46,161,255,1);
+			line-height:45px;
+			}
 		.search{
-
-				width: 92%;
+				border-radius:4rpx;
+				width: 78%;
 				height: 72upx;
 				display: flex;
-			margin: 0 auto;
+				margin-left: 32rpx;
 				flex-direction: row;
 				justify-content: flex-start;
 				align-items: center;
-				background: #FFFFFF;
+				background: #F2F2F2;
 				&>image{
-					width: 32rpx;
-					height: 32rpx;
+					width: 28rpx;
+					height: 28rpx;
 					margin-left: 30upx;
 				}
+				
 				.input{
 					flex: 1;
 					margin-left: 24upx;
@@ -199,9 +224,8 @@
 			    }
 			}
 			.resultContainer{
-				width: 92%;
-				margin: 0 auto;
-				padding-top: 80upx;
+				width: 100%;
+				padding-top: 70upx;
 			.container1 {
 			    width: 100%;
 			    margin-top: 20upx;

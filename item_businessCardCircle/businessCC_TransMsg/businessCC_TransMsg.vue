@@ -62,8 +62,8 @@
 				if (this.loading) return;
 			
 				this.loading = true;
-				this.$api.listUserCircle(this.currentPage).then(result => {
-					const list = result.userCircleList;
+				this.$api.getUserCardCircleList(this.currentPage).then(result => {
+					const list = result;
 					if (list.length === 0) this.noMore = true;
 					this.list = this.list.concat(list);
 					this.loading = false;
@@ -92,8 +92,6 @@
 		padding-top: 30rpx;
 	}
 	.listContainer {
-		padding: 0 30upx;
-
 		.listOne {
 			margin-bottom: 24upx;
 		}

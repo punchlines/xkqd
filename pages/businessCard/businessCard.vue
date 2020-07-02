@@ -10,7 +10,7 @@
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/register/like.png'" v-else></image>
 						<text>{{userDetails.praiseNum}}</text>
 					</view>
-					<view class="shouCang" @click="test">
+					<view class="shouCang" @tap="test">
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/register/shoucang2.png'" v-if="collectState==1"></image>
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/register/shoucang.png'" v-else></image>
 						<text>{{userDetails.collectNum}}</text>
@@ -63,7 +63,8 @@
 
 			<view class="nav-item">
 				<wx-view>
-					<button class="fx-column fx-row-center" open-type="share" style="border: none; padding: 0; background: none; line-height: inherit;" @click="test">
+					<button class="fx-column fx-row-center" open-type="share" style="border: none; padding: 0; background: none; line-height: inherit;"
+					 @click="test">
 						<image src="http://card-1254165941.cosgz.myqcloud.com/images/home_share_icon.png" mode="widthFix"></image>
 						<text class="nav_ti">分享</text>
 					</button>
@@ -75,7 +76,7 @@
 				<wx-view>
 					<view class="fx-column fx-row-center" @click="toWheel">
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/caifulunp.png'" mode="widthFix"></image>
-						<text class="nav_ti">财富轮盘</text>
+						<text class="nav_ti">发起直播</text>
 					</view>
 				</wx-view>
 			</view>
@@ -102,9 +103,9 @@
 
 		<!-- 判断1 没开店 -->
 		<wx-view>
-			<view class="open-vip-container" :class="{ 'guideShow': guideStep === 3 }" @click="businessCard_VIP">
+			<view class="open-vip-container" :class="{ 'guideShow': guideStep === 3 }" @click="businessCard_VIP1">
 				<image class="invite-banner" :src="userType<=1?'http://card-1254165941.cosgz.myqcloud.com/3.gif':'http://card-1254165941.cosgz.myqcloud.com/2.gif'"></image>
-			</view>	
+			</view>
 		</wx-view>
 
 		<!-- 个人视频 -->
@@ -176,7 +177,7 @@
 				<!-- 判断1——有没有开店（有没有店铺id） -->
 				<view v-if="userType>1">
 					<!-- 店铺logo -->
-					<view class="bannerCon" @click.stop="toShop" v-if="userType>1">
+					<view class="bannerCon" @click.stop="toShop" v-if=" isShopExpired !=1">
 						<default-image :src="cardShopData.logo" custom-class="shoplogo"></default-image>
 						<view class="shopName">
 							<view class="name">{{cardShopData.shopName}}<text class="mod_tag" :class="'PActiveVip' + cardShopData.shopGrade"
@@ -189,7 +190,7 @@
 					<view class="goodsListCon fx-wrap fx-row fx-row-space-between">
 
 						<!-- 判断2——有没有商品  (是否有商品数量)-->
-						<view class="goodsCon" v-for="(item,index) of goodsMixins.list" :key="index" @click.stop="goodsDetail(item)">
+						<view class="goodsCon" v-for="(item,index) of goodsMixins.list" :key="index" @click.stop="goodsDetail(item)" v-if=" isShopExpired !=1">
 							<view class="imgCon">
 								<image :src="item.coverImage"></image>
 								<view v-if="item.score" class="score">评分<text>{{item.score?item.score:0}}</text></view>
@@ -208,14 +209,21 @@
 						</view>
 
 						<!-- 判断2-没有商品-->
-						<view v-if="goodsMixins.list.length === 0 && userType>1" style="align-items: center;width: 100%;">
+						<view v-if="goodsMixins.list.length === 0 && userType>1 && isShopExpired !=1" style="align-items: center;width: 100%;">
 							<view>
 								<!-- 您还没有上传商品哦，赶紧去上传吧~ -->
 								<defaultpage :messageToPage="messageToPage4"></defaultpage>
 							</view>
 
 						</view>
-						
+
+						<view v-if="userType>4 && isShopExpired ==1" style="align-items: center;width: 100%;">
+							<view>
+								<!-- 您还没有上传商品哦，赶紧去上传吧~ -->
+								<defaultpage :messageToPage="messageToPage6"></defaultpage>
+							</view>
+
+						</view>
 					</view>
 
 					<uni-load-more :loading-type="loadingType2" v-if="showLoadMore2"></uni-load-more>
@@ -224,8 +232,8 @@
 				</view>
 
 				<view style="margin-top: 50upx;" v-else>
-					<view class="shopping">
-						<button class="btn-primary" style="width: 579upx;font-size: 36upx;" @click="businessCard_VIP">购买任意商品马上开店</button>
+					<view class="shopping" :style="{backgroundImage: 'url('+ backgroundImage +')'}">
+						<button class="btn-primary" style="width: 579upx;font-size: 36upx;" @click="businessCard_VIP">{{isVipStatus !==2 ?"购买任意商品马上开店":"立即续费或升级店铺"}}</button>
 					</view>
 
 				</view>
@@ -340,7 +348,7 @@
 		userSig: '', //当前用户身份凭证，必须是字符串类型，选填
 	};
 
-	import CardGuide from './CardGuide';
+	//import CardGuide from '../../item_descover/CardGuide.vue';
 	// #ifdef APP-PLUS
 	import appView from '@/js/app-plus/appViewPaint'
 	// #endif
@@ -357,8 +365,10 @@
 				collectState: 0,
 				praiseState: 0,
 				viewNum: 0,
-				shares:'',
-				isVipStatus:'',
+				liveStatus: '', //是否开启直播 0 否 1 是
+				shares: '',
+				backgroundImage: '',
+				isVipStatus: '',
 				shopId: '',
 				cardShopData: {}, //店铺信息
 				userId: '', //缓存中的用户ID
@@ -370,6 +380,10 @@
 				messageToPage5: {
 					image: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/defaultPage/wumingpian.png',
 					title: '您还没有上传视频哦，赶紧去上传吧~'
+				},
+				messageToPage6: {
+					image: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/defaultPage/wumingpian.png',
+					title: '该店铺已过期~'
 				},
 				//商品日志切换
 				auditTitleBox: {
@@ -401,6 +415,7 @@
 				isMemberCenter: '',
 				showPhone: '',
 				vipUserId: 0,
+				isShopExpired: '',
 				cardUserId: '',
 				unreadCount: 0,
 				isLogin: false, //是否初始化完成
@@ -408,7 +423,8 @@
 				latitude: '',
 				currentWebview: null,
 				guideStep: 0,
-				showVIPModal: false
+				showVIPModal: false,
+				option: {}
 			}
 		},
 
@@ -417,7 +433,7 @@
 			defaultpage,
 			uniLoadMore,
 			cardBgItem1,
-			CardGuide
+			//	CardGuide
 		},
 
 		mixins: [journalMixins, goodsMixins],
@@ -426,6 +442,8 @@
 			...mapState(['UPinfo', 'userType', 'cardbgId', 'cardBgImage']),
 
 			shopGrade() {
+				console.log('店铺信息',this.cardShopData)
+				uni.setStorageSync('goodsNum', this.cardShopData.goodsNum);
 				return SHOP_GRADE[Number(this.cardShopData.shopGrade)] || '';
 			},
 			isHidePhone() {
@@ -436,13 +454,14 @@
 
 		onLoad(option) {
 
-          
-
+			console.log(option)
+			this.option = option
+			uni.setStorageSync('option', this.option);
 			uni.showLoading({
 				title: '加载中',
 				mask: true
 			});
-              
+
 			// #ifdef APP-PLUS
 			let view = new appView('test', {
 				left: 620,
@@ -456,12 +475,12 @@
 
 
 
-			this.doLoginHandle(hasRegister => {
-				if (hasRegister) {
-					this.init(option);
-				} else this.otherPeople();
-			});
-            
+			// this.doLoginHandle(hasRegister => {
+			// 	if (hasRegister) {
+			// 		this.init(option);
+			// 	} else this.otherPeople();
+			// });
+
 
 			// #ifdef  APP-PLUS
 
@@ -485,7 +504,7 @@
 				}
 			});
 			// #endif
-			
+
 		},
 		onShow() {
 
@@ -502,10 +521,11 @@
 			}
 
 			// #endif
-            
+
 			this.journalOnShow();
+			this.fetchGoods();
 			this.goodsOnShow();
-           // this.test()
+			// this.test()
 
 			if (uni.getStorageSync('_needUpateUserInfo')) {
 				//refetch UserInfo
@@ -517,6 +537,7 @@
 					this.userDetails = result.userMap;
 					this.userDetails.autograph = this.userDetails.autograph.replace(/<\/?.+?>/g, "").replace(/[\r\n]/g, "");
 					uni.setStorageSync('_needUpateUserInfo', false)
+
 					this.hideLoading();
 				});
 			}
@@ -534,6 +555,15 @@
 				this.getSystemMessageCount();
 
 			}
+			let option = uni.getStorageSync('option');
+			this.doLoginHandle(hasRegister => {
+				if (hasRegister) {
+					this.init(option);
+					this.fetchGoods();
+					this.fetchJournal();
+				} else this.otherPeople();
+			});
+
 
 		},
 
@@ -562,8 +592,9 @@
 			});
 
 			// #endif
+
 		},
-		
+
 		onPageScroll(e) {
 			if (e.scrollTop >= uni.upx2px(390)) {
 				uni.setNavigationBarColor({
@@ -617,7 +648,14 @@
 
 			},
 
-            
+			backgroundImages() {
+				if (this.isVipStatus == 2) {
+					this.backgroundImage =
+						'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.ZzJUXStwe1hz98e7b4e3118464afd0c9e55dbf0abba7.jpg'
+				} else {
+					this.backgroundImage = 'https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/shop.jpg'
+				}
+			},
 			drawAppNotice(messageCount) {
 				//绘制APP端 原生notice按钮 
 
@@ -724,7 +762,7 @@
 					uni.hideLoading()
 				})
 			},
-			
+
 			// 初始化
 			init(option) {
 				uni.showLoading({
@@ -762,28 +800,27 @@
 				if (!this.userId) {
 					return
 				}
-
-
 				this.$api.getUserCardDetails(this.userId).then(result => {
-
 					this.updateCurrentUser(result.userMap);
-
 					this.vipUserId = result.userMap.vipId;
 					this.userDetails = result.userMap;
 					//去掉换行符
 					this.userDetails.autograph = this.userDetails.autograph.replace(/<\/?.+?>/g, "").replace(/[\r\n]/g, "");
 					this.isMemberCenter = result.isMemberCenter
-					this.isVipStatus=result.isVipStatus
+					this.isVipStatus = result.isVipStatus
+					this.isShopExpired = result.isShopExpired
 					uni.setStorageSync('IsMemberCenter', this.isMemberCenter);
+					uni.setStorageSync('IsVipStatus', this.isVipStatus);
+					uni.setStorageSync('headImage', result.userMap.headImage)
+					uni.setStorageSync('liveStatus', result.userMap.liveStatus)
 					this.viewNum = result.viewNum;
+					this.liveStatus = result.userMap.liveStatus
 					this.collectState = result.collectState;
 					this.praiseState = result.praiseState;
 					this.shopId = this.userDetails.shopId;
-					
-					
 					uni.setStorageSync('shopId', this.shopId)
 					//默认展示日志
-					
+					this.backgroundImages()
 					if (result.logStatus == 1) {
 						this.changeTitle(null, 1)
 					}
@@ -796,19 +833,17 @@
 					});
 					this.$store.commit('updateCurrentUser', this.userDetails);
 					this.setUserType(this.userDetails.userType)
+					uni.setStorageSync('userType', this.userDetails.userType)
 					console.info(this.userDetails)
 					//获取用户视频
 					this.getUserCardShowVideo();
-                   
+
 					//#是否填写显示vip开通成功模态框
 					//TODO
 					if (option.showFirstVipModal == 1) {
 						this.showVIPModal = true;
 					}
-
-
 					uni.hideLoading();
-
 					//vuex
 					this.$store.dispatch('setShopRegInfo').then(res => {
 
@@ -825,14 +860,12 @@
 						};
 						config.identifier = this.userId;
 						// config.identifierNick = this.currentUser.name;
-
 						this.$api.getTLSSig().then(result => {
 							config.userSig = result;
 							//uni.hideLoading();
 							console.log(config)
 							webim.login(config, listeners, {}, () => {
 								console.log('tim 登录成功')
-
 								const options = {
 									"ProfileItem": [{
 											"Tag": "Tag_Profile_IM_Nick",
@@ -844,9 +877,6 @@
 										}
 									]
 								}
-
-
-
 								webim.setProfilePortrait(
 									options,
 									(resp) => {
@@ -854,14 +884,11 @@
 									},
 									function(err) {}
 								);
-
-
 								webim.syncMsgs(msgList => {
 									this.unreadCount = msgList.length;
 									//获取系统未读消息
 									this.getSystemMessageCount();
 								});
-
 								//是否填写VIP收货信息
 								this.$api.unFillAddressOrder().then(res => {
 									this.hideLoading();
@@ -880,12 +907,9 @@
 												});
 											}
 										})
-
-
 									}
 
 								})
-
 							}, error => {
 								uni.hideLoading()
 								this.showError(error);
@@ -896,9 +920,6 @@
 					}).catch(error => {
 						uni.hideLoading()
 					})
-
-
-
 				}).catch(error => {
 					//this.showError(error);
 					//this.showError("网络似乎有点问题哦，请关闭打开重试");
@@ -938,14 +959,24 @@
 					// #endif
 				})
 			},
-
-
 			//开通VIP
 			businessCard_VIP() {
 				console.log(this.isMemberCenter)
-				this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_New?isMemberCenter='+ this.isMemberCenter);
+				if (this.isVipStatus == 2) {
+					let shopId = uni.getStorageSync('shopId');
+					this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+						shopId: shopId,
+						userId: this.userId,
+						cardUserId: this.cardUserId,
+						recommendId: this.cardUserId
+					})
+				} else {
+					this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_New?isMemberCenter=' + this.isVipStatus);
+				}
 			},
-
+			businessCard_VIP1() {
+				this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_New?isMemberCenter=' + this.isVipStatus);
+			},
 			listCardShop() {
 
 			},
@@ -956,7 +987,6 @@
 				});
 			},
 			changeVideoTitle(index) { // 切换视频标题
-
 				this.VideoList.VTitleActive = index;
 			},
 			changeTitle(e, index) { //切换标题(日志，商品)
@@ -969,13 +999,82 @@
 					this.appCameraBtn.hide();
 				}
 				// #endif
-
 			},
 
 			toWheel() { //财富轮盘
-				uni.navigateTo({
-					url: '../../item_businessCard/businessCard_Wheel/businessCard_Wheel?userId=' + this.userId
-				});
+				// uni.navigateTo({
+				// 	url: '../../item_businessCard/businessCard_Wheel/businessCard_Wheel?userId=' + this.userId
+				// });
+				let shopId = uni.getStorageSync('shopId');
+				if (this.isVipStatus == 0) {
+					uni.showModal({
+						title: '提示',
+						content: '该功能对VIP开放，去开通VIP',
+						success: (res) => {
+							if (res.confirm) {
+								this.businessCard_VIP();
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+							}
+						}
+					});
+				} else if (this.isVipStatus == 2) {
+					uni.showModal({
+						title: '提示',
+						content: '您的VIP已过期，请去续费',
+						success: (res) => {
+							if (res.confirm) {
+								let shopId = uni.getStorageSync('shopId');
+								this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+									shopId: shopId,
+									userId: this.userId,
+									cardUserId: this.cardUserId,
+									recommendId: this.cardUserId
+								})
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+							}
+						}
+					});
+				} else if (!shopId) {
+					this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
+				} else if (this.liveStatus == 0) {
+					uni.showModal({
+						title: '提示',
+						content: '您尚未支付直播押金，请支付直播押金',
+						success: (res) => {
+							if (res.confirm) {
+								uni.showModal({
+									title: '直播押金',
+									content: '支付金额：500元',
+									success: (res) => {
+										uni.showLoading()
+										this.$api.saveLiveDepositOrder().then(res => {
+											return this.$api.unifiedorder(res)
+												.then(res => {
+													uni.hideLoading()
+													return this.requestPayment(res.prePayInfo)
+														.then(res => {
+															uni.showToast({
+																title: '支付成功',
+																duration: 2000
+															});
+														})
+												})
+										})
+
+									}
+								})
+							} else if (res.cancel) {
+								console.log('用户点击取消');
+							}
+						}
+					});
+				} else {
+					uni.navigateTo({
+						url: '../../item_descover/descover_CreateLive/descover_CreateLive?userId=' + this.userId
+					});
+				}
 			},
 			myCustomer() { //我的客户页面
 				if (this.isNormalUser) {
@@ -996,17 +1095,20 @@
 					url: '../../item_businessCard/businessCard_MyCustomer/businessCard_MyCustomer?userId=' + this.userId
 				});
 			},
-			test(){
+			test() {
+				//'cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU',
 				console.log('测试成功')
-					uni.requestSubscribeMessage({
-						tmplIds: ['cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU','9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
-						success(res) {
-							console.log('test', res)
-							this.shares=share
-						}
-					})
+				uni.requestSubscribeMessage({
+					tmplIds: [ '9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
+					success(res) {
+						console.log('test', res)
+						 this.shares = share
+					}
+				})
 			},
-			toThematic() { //vip设置isMemberCenter
+			toThematic() {
+				//vip设置isMemberCenter
+
 				if (this.isMemberCenter == 0) {
 					uni.showModal({
 						title: '提示',
@@ -1027,12 +1129,19 @@
 					// 	this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
 					// 	return;
 					// }
-					this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
-						shopId: shopId,
-						userId: this.userId,
-						cardUserId: this.cardUserId,
-						recommendId: this.cardUserId
-					})
+					if (!shopId) {
+						this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
+					} else {
+						this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+							shopId: shopId,
+							userId: this.userId,
+							cardUserId: this.cardUserId,
+							recommendId: this.cardUserId
+						})
+					}
+					// uni.navigateTo({
+					// 	url:"../../item_businessCard/livePlayer/livePlayer"
+					// })
 				}
 			},
 			tosearchCard() { //搜索名片
@@ -1057,7 +1166,7 @@
 				});
 			},
 			editCard() { //编辑自己的资料
-			
+
 				if (this.guideStep === 1) return;
 				this.showVIPModal = false;
 				uni.navigateTo({
@@ -1080,7 +1189,7 @@
 				// 	url: '../../item_businessCard/businessCard_EditCard/businessCard_EditCard?userId=' + this.userId,
 				// });
 			},
-			
+
 			toShop() {
 				// #ifdef APP-PLUS
 				if (!this.userId) {
@@ -1099,6 +1208,7 @@
 							shopId: this.shopId,
 							cardUserId: this.cardUserId,
 							recommendId: this.cardUserId,
+							userType: this.userType
 						});
 					} else {
 						// 我的店铺
@@ -1111,7 +1221,8 @@
 								shopId: shopId,
 								userId: this.userId,
 								cardUserId: this.cardUserId,
-								recommendId: this.cardUserId
+								recommendId: this.cardUserId,
+								userType: this.userType
 							})
 
 						}
@@ -1157,7 +1268,7 @@
 				// 				uni.navigateTo({
 				// 					url: './share'
 				// 				});
-                 
+
 				let recommendId = '';
 				if (this.shopId === this.currentUser.shopId && !this.isVipUser) {
 					recommendId = this.userId;
@@ -1177,14 +1288,14 @@
 		// 微信小程序
 		onShareAppMessage(res) {
 			console.log(123)
-			
+
 			const journalId = res.target ? res.target.dataset.id : ''
 
 			let recommendId = this.userId;
 			// 日志的分享
 			if (journalId) {
-				this.$api.share(journalId, 4).then(res=>{
-					
+				this.$api.share(journalId, 4).then(res => {
+
 				});
 				return {
 					path: '/pages/businessCard2/businessCard2?cardUserId=' + this.cardUserId + '&journalId=' + journalId +
@@ -1193,9 +1304,9 @@
 			}
 			// 名片的分享
 			this.$api.share(this.userId, 1)
-			.then(res=>{
-				
-			});
+				.then(res => {
+
+				});
 
 			return {
 				title: '您好，这是我的名片，请惠存！',
@@ -1706,7 +1817,7 @@
 	.shopping {
 		width: 100%;
 		height: 1139upx;
-		background-image: url('https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/shop.jpg');
+
 		background-size: 100% 100%;
 		position: relative;
 

@@ -35,6 +35,7 @@
 				loading: false,
 				recommendList:[],
 				showPraise:true,
+				type:0,
 				messageToPage: {
 					image: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/defaultPage/shoucang.png',
 					title: '当前暂无推荐'
@@ -61,7 +62,9 @@
 			
 			
 		},
-		
+		onShow() {
+			this.fetch();
+		},
 		methods:{
 			onPraise(data){
 				let {index} = data;
@@ -93,18 +96,19 @@
 			},
 			// 获取推荐列表
 			fetch(){
-				console.log("fetch")
 				this.loading = true;
 				this.showLoading();
-				this.$api.getMessage(1, this.currentPage).then(res=>{
+				this.$api.getLiveList(this.type,this.currentPage)
+				.then(result => {
 					//this.hideLoading();
 					// 缓存第一页的数据
-					let list = res.journalMessage;
+					let list = [];
+					list=result
+					console.log(list)
 					if (this.currentPage === 1) {
 						this.recommendList = [];
 						uni.setStorageSync('tempRecommend', list);
 					}
-
 					list.forEach(item => {
 					  try {
 					  	item.praiseType = Number(item.praiseType)
@@ -117,13 +121,10 @@
 						//this.noMore = true;
 						this.$emit("noMore");
 					}
-					
-					
 					this.recommendList = this.recommendList.concat(list);
 					this.$emit("finish");
 					this.loading = false;
 					this.currentPage++;
-					
 					this.hideLoading();
 				}).catch(error => {
 					this.hideLoading();

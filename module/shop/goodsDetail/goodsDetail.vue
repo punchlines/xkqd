@@ -5,13 +5,13 @@
 		<!-- 商品轮播图  -->
 		<view class="goods-banner">
 			<view class="banner-image" v-show="bannerTabActive === 'image'">
-        <view class="banner-image-count">{{ imageBannerCurrent + 1 }}/{{ trundleImageList.length }}</view>
-        <swiper class="swiper" autoplay @change="bannerChange" :current="imageBannerCurrent" v-if="trundleImageList.length > 0">
-          <swiper-item v-for="item in trundleImageList" :key="item">
-            <image :src="item" @click="previewImage(item)" mode="aspectFill"></image>
-          </swiper-item>
-        </swiper>
-      </view>
+				<view class="banner-image-count">{{ imageBannerCurrent + 1 }}/{{ trundleImageList.length }}</view>
+				<swiper class="swiper" autoplay @change="bannerChange" :current="imageBannerCurrent" v-if="trundleImageList.length > 0">
+					<swiper-item v-for="item in trundleImageList" :key="item">
+						<image :src="item" @click="previewImage(item)" mode="aspectFill"></image>
+					</swiper-item>
+				</swiper>
+			</view>
 			<view class="banner-video" v-show="bannerTabActive === 'video' && !isShowModal">
 				<view class="video-cover-container">
 					<video-container :cover="goods.coverImage" :video="goods.coverVideo"></video-container>
@@ -19,15 +19,15 @@
 				<!--<video :src="goods.coverVideo"></video>-->
 			</view>
 			<!-- #ifndef APP-PLUS -->
-				<template v-if="goods.coverVideo && !isShowModal">
-					<cover-view class="banner-tab"></cover-view>
-					<cover-view class="coverView video" :class="{ active: bannerTabActive === 'video' }" @click="bannerTabActive = 'video'">视频</cover-view>
-					<cover-view class="coverView" :class="{ active: bannerTabActive === 'image' }" @click="bannerTabActive = 'image'">图片</cover-view>
-					<!-- <view class="coverView" :class="{ active: bannerTabActive === 'video' }" @click="bannerTabActive = 'video'">视频</view>
+			<template v-if="goods.coverVideo && !isShowModal">
+				<cover-view class="banner-tab"></cover-view>
+				<cover-view class="coverView video" :class="{ active: bannerTabActive === 'video' }" @click="bannerTabActive = 'video'">视频</cover-view>
+				<cover-view class="coverView" :class="{ active: bannerTabActive === 'image' }" @click="bannerTabActive = 'image'">图片</cover-view>
+				<!-- <view class="coverView" :class="{ active: bannerTabActive === 'video' }" @click="bannerTabActive = 'video'">视频</view>
 					<view class="coverView" :class="{ active: bannerTabActive === 'image' }" @click="bannerTabActive = 'image'">图片</view> -->
-				</template>
+			</template>
 			<!-- #endif -->
-		
+
 
 		</view>
 
@@ -40,13 +40,13 @@
 				<view class="old_price">¥{{ originalPriceShow }}</view>
 				<view class="right" v-if="!isGift">
 					<!--  #ifdef  APP-PLUS -->
-					<button class="shareBtn" @click="shareGoods">
+					<button class="shareBtn" @click="shareGoods(1)">
 						<image src="http://card-1254165941.cosgz.myqcloud.com/images/share@2x.png" />
 						<view>分享</view>
 					</button>
 					<!--  #endif -->
 					<!--  #ifdef  MP-WEIXIN -->
-					<button class="shareBtn" open-type="share">
+					<button class="shareBtn" @click="shareGoods(2)">
 						<image src="http://card-1254165941.cosgz.myqcloud.com/images/share@2x.png" />
 						<view>分享</view>
 					</button>
@@ -133,7 +133,7 @@
 		</view>
 
 		<!-- 猜你喜欢 -->
-		 <recommend v-if="!isGift" :shopId="shopId"></recommend>
+		<recommend v-if="!isGift" :shopId="shopId"></recommend>
 
 		<!-- 底部操作按钮 -->
 		<view class="footer_bar" v-if="!isGift">
@@ -161,19 +161,28 @@
 
 		<template v-if="isNormalUser && !!currentUser.id && isGift">
 			<view style="height: 100upx"></view>
-			<button class="footer-button btn-primary"  @click="buyVip">立即购买</button>
+			<button class="footer-button btn-primary" @click="buyVip">立即购买</button>
 		</template>
-
+		
+		<canvas canvas-id="posterCanvas" style="position: absolute; transform: translateX(-2000px); width: 690rpx; height: 1020rpx"
+		 :style="posterCanvasStyle"></canvas>
+		
+		
+		
+		<VipShareModal ref="vipShareModal" @channelClick="channelClick"></VipShareModal>
 
 		<car-float-button v-if="!isGift" :value="cardProductNum"></car-float-button>
 
 		<protection-modal v-if="protectionModalVisible" @close="protectionModalVisible = false" :value="serviceIdList"></protection-modal>
 
+		<vip-share-poster-modal ref="vipSharePosterModal" :path="posterFilePath"></vip-share-poster-modal>
+
 		<goods-params-modal v-if="goodsParamsModalVisible" @close="goodsParamsModalVisible = false" :value='paramsList'></goods-params-modal>
 
-		<goods-sku-select-modal v-if="skuModalVisible" :goods-sku='goodSku' @close="skuModalVisible = false" @select="onSelect" @confirm="confirm" :isGift="isGift"></goods-sku-select-modal>
+		<goods-sku-select-modal v-if="skuModalVisible" :goods-sku='goodSku' @close="skuModalVisible = false" @select="onSelect"
+		 @confirm="confirm" :isGift="isGift"></goods-sku-select-modal>
 
-	<!-- 	<protection-modal v-if="serviceModal" :goods-service="goodService" @cloce="serviceModal = false"></protection-modal> -->
+		<!-- 	<protection-modal v-if="serviceModal" :goods-service="goodService" @cloce="serviceModal = false"></protection-modal> -->
 
 	</view>
 </template>
@@ -182,12 +191,13 @@
 	// #ifdef APP-PLUS
 	import appView from '@/js/app-plus/appViewPaint.js';
 	// #endif
-	
+	import VipShareModal from "../_component/shareModal.vue";
 	import price from '../_component/price.vue';
 	import goodsItem from '@/components/goodsItem.vue'
 	import recommend from '../_component/recommend.vue'
 	import protectionModal from '../_modal/protectionModal.vue';
 	import goodsParamsModal from '../_modal/goodsParamsModal.vue';
+	import VipSharePosterModal from "../_component/sharePosterModal.vue";
 	import goodsSkuSelectModal from '@/components/shop/modal/goodsSkuSelectModal';
 	import carFloatButton from "../_component/carFloatButton";
 	import {
@@ -213,6 +223,7 @@
 		2: '品牌',
 		3: '旗舰',
 	}
+	const VIP_INTRO = 'http://card-1254165941.cosgz.myqcloud.com/vip/vipSharePoster.jpg'
 	export default {
 		components: {
 			price,
@@ -220,7 +231,9 @@
 			protectionModal,
 			goodsParamsModal,
 			recommend,
+			VipShareModal,
 			carFloatButton,
+			VipSharePosterModal,
 			goodsSkuSelectModal
 		},
 		data() {
@@ -240,7 +253,10 @@
 				goodsId: '',
 				commentList: [],
 				commentCount: 0,
+				// preferentialPrice:'',
+				// originalPrice:'',
 				simpleCommentList: [],
+				posterFilePath: '',
 				goodSku: {}, //规格
 				skuData: '', //选择的规格
 				imageBannerCurrent: 0,
@@ -251,54 +267,54 @@
 				cardProductNum: 0,
 				//规格对象
 				callbackData: '',
-				 serviceIdList: [],
+				serviceIdList: [],
 				recommendId: '',
 				cardUserId: '',
-				initial:false,
+				initial: false,
 				// 该商品所属的商家用户 ID
 				goodsUserId: '',
 				// 是否为 VIP
 				isGift: false,
 				vipLevel: 1,
-				bannerTabBtn:null,
-				hasEvent:0
+				bannerTabBtn: null,
+				hasEvent: 0
 			}
 		},
-		
+
 		watch: {
 			// #ifdef APP-PLUS
-				isShowModal(newValue) {
-					if(newValue){
-						//隐藏按钮
-						this.bannerTabBtn.hide();
-					}else if(this.goods.coverVideo){
-						//如果有视频 则在模态框关闭时候显示
-						this.bannerTabBtn.show();
-					}
+			isShowModal(newValue) {
+				if (newValue) {
+					//隐藏按钮
+					this.bannerTabBtn.hide();
+				} else if (this.goods.coverVideo) {
+					//如果有视频 则在模态框关闭时候显示
+					this.bannerTabBtn.show();
 				}
+			}
 			// #endif
-			
+
 		},
-	
+
 
 		onLoad(option) {
-				this.userId = uni.getStorageSync('userId');
-				// #ifdef APP-PLUS
-				this.bannerTabBtn = uni.getSubNVueById('bannerTab');
-				this.bannerTabBtn.hide();
-				// #endif
-				
-				this.doLoginHandle(()=>{
-					this.init(option);
-					
-					//this.hideLoading();
-				});
+			this.userId = uni.getStorageSync('userId');
+			// #ifdef APP-PLUS
+			this.bannerTabBtn = uni.getSubNVueById('bannerTab');
+			this.bannerTabBtn.hide();
+			// #endif
+
+			this.doLoginHandle(() => {
+				this.init(option);
+
+				//this.hideLoading();
+			});
 
 
 		},
-		
 
-		
+
+
 		// 监听页面显示
 		onShow: function() {
 			this.userId = uni.getStorageSync('userId');
@@ -312,27 +328,20 @@
 				uni.removeStorageSync('_tempModifyGoods')
 			}
 		},
-		
-		
 		methods: {
-		
-			
-			
-			onSelect(data){
+			onSelect(data) {
 				//选中
-				const {sIndex,pIndex} = data;
+				const {
+					sIndex,
+					pIndex
+				} = data;
 				let parent = this.goodSku.list[pIndex];
 				let sku = parent.sku[sIndex];
 				parent.sku.forEach(item => item.select = false);
 				sku.select = true;
-				
+
 			},
-			
-			
-			
-			
-			init(option){
-				
+			init(option) {
 				this.goodsId = option.id || option.goodsId;
 				this.shopId = option.shopId;
 				this.SignIn = option.SignIn
@@ -342,11 +351,10 @@
 				// 如果是 VIP 礼品，禁止分享
 				if (this.isGift) {
 					// #ifdef MP-WEIXIN
-						uni.hideShareMenu();
+					uni.hideShareMenu();
 					// #endif
-					
-				}
 
+				}
 				this.recommendId = option.recommendId || '';
 				if (this.shopId === this.currentUser.shopId && !this.isVipUser) {
 					this.recommendId = this.userId;
@@ -354,7 +362,7 @@
 				this.cardUserId = option.cardUserId || '';
 
 				this.getGoodsDetail();
-				
+
 				// 评论
 				this.$api.getGoodsAppraise(this.goodsId).then(result => {
 					console.info(result)
@@ -370,8 +378,6 @@
 				this.showShoppingCart();
 				
 			},
-			
-			
 			getGoodsDetail() {
 				// 商品详情
 				this.$api.getGoodsDetail(this.goodsId).then(result => {
@@ -385,6 +391,9 @@
 					this.serviceIdList = result.serviceIdList
 					this.goods.trundleImages = JSON.parse(result.goodsDetail.trundleImages)
 					this.shop = result.shopDetail
+					// this.preferentialPrice=result.goodsDetail.preferentialPrice
+					// this.originalPrice=result.goodsDetail.originalPrice
+			
 					this.trundleImageList = result.trundleImageList
 					this.goodsUserId = result.shopDetail.userId;
 					this.shopId = result.goodsDetail.shopId;
@@ -405,31 +414,31 @@
 						this.cardUserId = result.vipId
 					}
 
-					
+
 					// uni.setNavigationBarTitle({
 					// 	title: this.shop.shopName
 					// });
 					this.title = this.shop.shopName;
-					
+
 					// 获取店家推荐
-					if(!this.isGift)
+					if (!this.isGift)
 						this.listShopRecommendGoods()
-					
+
 					// #ifdef APP-PLUS
-					if(this.goods.coverVideo){
+					if (this.goods.coverVideo) {
 						this.bannerTabBtn.show();
 					}
-					uni.$off('evv').$on('evv',data=>{
+					uni.$off('evv').$on('evv', data => {
 						let index = data.index;
-						this.bannerTabActive = index==1?'image':'video';
-						
-						
+						this.bannerTabActive = index == 1 ? 'image' : 'video';
+
+
 					})
-					
+
 					// #endif
-					
-					
-					this.$nextTick(()=>{
+
+
+					this.$nextTick(() => {
 						uni.hideLoading();
 					})
 				})
@@ -437,26 +446,25 @@
 			// 点击商品,记录浏览的次数
 			getLookGoodsNum() {
 				if (!this.currentUser.id) {
-				  this.$api.getLookGoodsNum(this.goodsId).then(res => {
-					console.info(res);
-				  })
+					this.$api.getLookGoodsNum(this.goodsId).then(res => {
+						console.info(res);
+					})
 				}
 			},
-		
+
 			async showShoppingCart() {
 				if (!this.checkHasLogin()) {
 					return false
 				}
 				this.cardProductNum = await this.$api.getCarSize();
-				this.initial=true;
+				this.initial = true;
 			},
-			
 			// 首页
 			homeTap() {
 				this.navigateTo('/module/shop/home/home', {
 					shopId: this.shopId,
 					SignIn: this.SignIn,
-					cardUserId:this.cardUserId,
+					cardUserId: this.cardUserId,
 					recommendId: this.recommendId
 				})
 			},
@@ -538,7 +546,7 @@
 				if (!this.checkHasLogin()) {
 					return;
 				}
-				
+
 				//console.log(this.callbackData)
 				let arr1 = this.callbackData.skuName.split('-');
 				var arr1_s = ''
@@ -550,7 +558,7 @@
 					//this.callbackData.skuNum,this.userId,this.callbackData.number,this.goodsId
 					discountPrice: this.goodsPrice,
 					franking: this.goods.franking,
-					skuId:this.callbackData.skuId,
+					skuId: this.callbackData.skuId,
 					goodsId: this.goods.id,
 					goodsImage: this.goods.trundleImages[0],
 					goodsName: this.goods.title,
@@ -617,25 +625,79 @@
 			// 规格
 			getSku(flag) {
 				if (Object.keys(this.goodSku).length > 0 && !flag) {
-				  this.skuModalVisible = true;
-				  return;
+					this.skuModalVisible = true;
+					return;
 				}
 				this.$api.getGoodsSku(this.goodsId).then(result => {
 					this.goodSku = processSkuData(result);
-					if(!flag)
+					if (!flag)
 						this.skuModalVisible = true;
 				}).catch(err => {
 					console.info(err)
 				})
 			},
 			// 服务
-// 			getService(flag){
-// 				if (Object.keys(this.goodService).length > 0 && !flag) {
-// 				  this.serviceModal = true;
-// 				  return;
-// 				}
-// 			},
+			// 			getService(flag){
+			// 				if (Object.keys(this.goodService).length > 0 && !flag) {
+			// 				  this.serviceModal = true;
+			// 				  return;
+			// 				}
+			// 			},
+			getImageInfo(src) {
+				//console.log(src)
+				return new Promise((resolve, reject) => {
+					uni.getImageInfo({
+						src: src,
+						success: (res) => {
+							resolve(res);
+						},
+						fail: (error) => {
+							reject(error)
+						}
+					})
+				});
+			},
+			channelClick(channel) {
+				if (channel === 'poster') {
+					if (this.posterFilePath) {
+						this.$refs.vipSharePosterModal.show();
+						return;
+					}
 
+
+					uni.showLoading();
+					//this.drawPoster()
+					let recommendId = '';
+					if (this.userType != 1) {
+						recommendId = this.userId;
+					}
+					let shopId=this.shopId
+					let userId=this.userId
+					let goodsId= parseInt(this.goodsId)
+					let cardUserId=parseInt(this.cardUserId)
+					console.log(shopId,userId,goodsId,cardUserId,recommendId)
+					this.qrcodeUrl =`https://xk.gzskxx.com/QRCODE/?app=qr.get&data=https://xk.gzskxx.com/joinGoodsInfo/${shopId}_${userId}_${goodsId}_${cardUserId}_${recommendId}&level=L&size=6`;
+						
+
+					this.$api.getVipInviteWXCodeUrlLimitless(1).then(result => {
+						return Promise.all([
+							this.getImageInfo(this.goods.trundleImages[0].replace('http://card-1254165941.cosgz.myqcloud.com/',
+								'https://xk.gzskxx.com/myqcloud/')),
+							this.getImageInfo(this.qrcodeUrl.replace('http://card-1254165941.cosgz.myqcloud.com/',
+								'https://xk.gzskxx.com/myqcloud/')),
+							this.getImageInfo(this.currentUser.headImage.replace('http://card-1254165941.cosgz.myqcloud.com/',
+								'https://xk.gzskxx.com/myqcloud/').replace('https://wx.qlogo.cn/', 'https://xk.gzskxx.com/wechat_image/')),
+						]);
+					}).then(infoList => {
+						const [vipImageInfo, wxCodeImageInfo, avatarInfo] = infoList;
+						console.log(infoList)
+						this.drawPoster(vipImageInfo, wxCodeImageInfo, avatarInfo);
+					}).catch(error => {
+						uni.hideLoading();
+						this.showError(error);
+					})
+				}
+			},
 
 			// 获取商家推荐列表 shopId,pageNo
 			listShopRecommendGoods() {
@@ -671,7 +733,7 @@
 			},
 
 			editGoods() {
-				if(this.hasEvent==1){
+				if (this.hasEvent == 1) {
 					this.showTips("商品正参与拼团不可修改");
 					return
 				}
@@ -681,41 +743,138 @@
 				})
 			},
 
-			shareGoods () {
-				let recommendId = '';
-				if (this.userType != 1) {
-					recommendId = this.userId;
+			shareGoods(a) {
+				if (a == 1) {
+					let recommendId = '';
+					if (this.userType != 1) {
+						recommendId = this.userId;
+					}
+
+					this.$api.share(this.goodsId, 3);
+
+					const path = '/module/shop/goodsDetail/goodsDetail?shopId=' + this.shopId + '&shareId=' + this.userId + '&id=' +
+						this.goodsId + '&cardUserId=' + this.cardUserId + '&recommendId=' + recommendId
+					this.appShare(path, this.goods.title)
+				} else if (a == 2) {
+					this.$refs.vipShareModal.show();
+					//'cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU',
+					uni.requestSubscribeMessage({
+						tmplIds: [ '9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
+						success(res) {
+							console.log('test', res)
+							this.shares = share
+						}
+					})
 				}
 
-				this.$api.share(this.goodsId, 3);
-
-				const path = '/module/shop/goodsDetail/goodsDetail?shopId=' + this.shopId + '&shareId=' + this.userId + '&id=' + this.goodsId + '&cardUserId=' + this.cardUserId + '&recommendId=' + recommendId
-				this.appShare(path, this.goods.title)
 			},
+			drawPoster(vipImageInfo, wxCodeImageInfo, avatarInfo) {
+				const context = uni.createCanvasContext('posterCanvas')
+				context.scale(1, 1)
+				//绘制白色背景
+				context.setFillStyle('#ffffff');
+				context.fillRect(0, 0, 694, 1187);
+				context.fill();
+				
+				context.drawImage(vipImageInfo.path, 30, 80, 290, 280);
+				context.drawImage(wxCodeImageInfo.path, 245, 415, 80, 80);
 
-			buyVip () {
+				const AVATAR_SIZE = 45;
+				const x = 95 / 2 - AVATAR_SIZE / 2;
+				const y = 30;
+				
+				context.save();
+				context.beginPath();
+				context.arc(AVATAR_SIZE / 2 + x, AVATAR_SIZE / 2 + y, AVATAR_SIZE / 2, 0, Math.PI * 2, false);
+				context.clip();
+				context.drawImage(avatarInfo.path, 25, 30, AVATAR_SIZE, AVATAR_SIZE);
+				context.restore();
+				//名字
+				context.setFontSize(18)
+				context.setFillStyle('#333333');
+				// context.setTextAlign('center')
+				context.fillText(this.currentUser.name, 100, 50)
+				//提示
+				context.setFontSize(14)
+				context.setTextAlign('center')
+				context.setFillStyle('#979797');
+				context.fillText('给你分享一个好物', 147, 70)
+				//拼团价
+				// context.setFontSize(15)
+				// context.setTextAlign('center')
+				// context.setFillStyle('#666666');
+				// context.fillText('拼团价：',55, 448)
+				//原价
+				context.setFontSize(14)
+				context.setTextAlign('center')
+				context.setFillStyle('#979797');
+				context.fillText('￥'+this.goods.originalPrice,113, 449)
+				//横线
+				context.setFontSize(14)
+				context.setTextAlign('center')
+				context.setFillStyle('#979797');
+				context.fillText('_______',114, 444)
+				//现价
+				context.setFontSize(22)
+				context.setTextAlign('center')
+				context.setFillStyle('#FF3B30');
+				context.fillText('￥'+this.goods.preferentialPrice,57, 450)
+				//商品名称
+				context.setFontSize(26)
+				 context.setTextAlign('center')
+				context.setFillStyle('#333333');
+				context.font = "bold";
+				context.fillText(this.goods.title,44, 410)
+				
+				this.$nextTick(() => {
+					
+					context.draw(true, () => {
+						uni.canvasToTempFilePath({
+							x: 0,
+							y: 0,
+							width: 1000,
+							height: 1000,
+							canvasId: 'posterCanvas',
+							success: res => {
+								console.log('123123')
+								this.hideLoading();
+								this.posterFilePath = res.tempFilePath;
+								this.$refs.vipSharePosterModal.show();
+								// this.previewPoster();
+							},
+							fail: (err) => {
+								this.showError(err);
+								this.hideLoading();
+							}
+						})
+					});
+				});
+			},
+			buyVip() {
 				// 重新选择规格
 				this.buyType = BUY_TYPE_VIP;
 				// 拿规格
 				this.showSkuModal();
 			},
 
-			buyVipRequest () {
+			buyVipRequest() {
 				if (!this.currentUser.id) {
 					this.reLaunch('/pages/register/register', {
-						redirect: encodeURIComponent(`/item_businessCard/businessCard_VIP/businessCard_VIP_New?recommendId=${this.recommendId}&vipLevel=${this.vipLevel}`),
+						redirect: encodeURIComponent(
+							`/item_businessCard/businessCard_VIP/businessCard_VIP_New?recommendId=${this.recommendId}&vipLevel=${this.vipLevel}`
+						),
 						cardUserId: this.recommendId
 					});
 					return;
 				}
-				
+
 				let data = {
-					currentShowVipLevel:this.vipLevel,
-					skuId:this.callbackData.data.id,
-					recommendId:this.recommendId || 1
+					currentShowVipLevel: this.vipLevel,
+					skuId: this.callbackData.data.id,
+					recommendId: this.recommendId || 1
 				}
-				
-				this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_Addr',data);
+
+				this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_Addr', data);
 
 				//this.showLoading();
 				// this.$api.insertVipOrderNew(this.vipLevel, this.callbackData.data.id, this.recommendId).then(result => {
@@ -745,10 +904,10 @@
 			...mapMutations(['setCardUserId', 'setUPinfo', 'setCarGoods'])
 		},
 		computed: {
-			isShowModal(){
+			isShowModal() {
 				return this.protectionModalVisible || this.goodsParamsModalVisible || this.skuModalVisible;
 			},
-			
+
 			shopGrade() {
 				return SHOP_GRADE_MAP[this.shop.shopGrade];
 			},
@@ -765,9 +924,9 @@
 			goodsParamsName() {
 				return this.paramsList.map(item => item.name).join(' ')
 			},
-			
-			
-			goodsService(){
+
+
+			goodsService() {
 				return this.serviceIdList.map(item => item.serviceKey).join(' ')
 			},
 			isOutOfStock() {
@@ -882,29 +1041,31 @@
 			z-index: 998;
 
 		}
-		.coverView{
-				width: 105upx;
-				height: 58upx;
-				line-height: 58upx;
-				color: #666666;
-				text-align: center;
-				border-radius: 32upx;
+
+		.coverView {
+			width: 105upx;
+			height: 58upx;
+			line-height: 58upx;
+			color: #666666;
+			text-align: center;
+			border-radius: 32upx;
+			font-size: 24upx;
+			vertical-align: middle;
+			position: absolute;
+			bottom: 28upx;
+			left: calc(50% + 47upx);
+			transform: translateX(-50%);
+			z-index: 999;
+
+			&.active {
+				background: #7483FF;
+				color: #ffffff;
 				font-size: 24upx;
-				vertical-align: middle;
-				position: absolute;
-				bottom: 28upx;
-				left: calc(50% + 47upx);
-				transform: translateX(-50%);
-				z-index: 999;
-				&.active {
-					background: #7483FF;
-					color: #ffffff;
-					font-size:24upx;
-				}
-				
-				&.video{
-					left: calc(50% - 47upx);
-				}
+			}
+
+			&.video {
+				left: calc(50% - 47upx);
+			}
 		}
 	}
 
@@ -936,8 +1097,8 @@
 			margin-bottom: 23upx;
 
 			.mod_tag {
-				height:36upx;
-				line-height:36upx;
+				height: 36upx;
+				line-height: 36upx;
 				background: #E0B97A;
 				border-radius: 18upx;
 				padding: 0upx 16upx;
@@ -954,6 +1115,7 @@
 				color: #333333;
 			}
 		}
+
 		.detail_serve {
 			display: flex;
 			width: 100%;
@@ -1253,9 +1415,10 @@
 				border-radius: 0;
 				border: none;
 
-				&.disabled{
+				&.disabled {
 					opacity: 0.5;
 				}
+
 				&[disabled] {
 					opacity: 0.5;
 				}
@@ -1315,16 +1478,20 @@
 		.right {
 			float: right;
 		}
+
 		.shareBtn {
 			border: none;
 			background-color: transparent;
 			border-radius: 0;
 			background: none !important;
 			padding: 0;
-			&:after { display: none }
+
+			&:after {
+				display: none
+			}
 
 			font-size:20upx;
-			color:rgba(102,102,102,1);
+			color:rgba(102, 102, 102, 1);
 			line-height:28upx;
 
 			image {
@@ -1333,7 +1500,7 @@
 				margin-bottom: 8upx;
 			}
 
-			> view {
+			>view {
 				line-height: 28upx;
 			}
 
@@ -1347,5 +1514,4 @@
 		transform: translateX(-50%);
 		width: 620upx;
 	}
-
 </style>

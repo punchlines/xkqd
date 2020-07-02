@@ -89,7 +89,7 @@
     width: 100%;
     background: #FFFFFF;
     z-index: 99999;
-    border-bottom: 1upx solid #E1E1E1;
+    
   }
 
   .title-bar {

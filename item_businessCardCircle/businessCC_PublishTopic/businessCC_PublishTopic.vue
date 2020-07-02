@@ -3,15 +3,15 @@
 		<view class="container">
 			<!-- 头部返回组件 -->
 			<!-- <topTabBarComponents id="topTabBar" bindtap="showToast" title="发布话题" backShow="true"></topTabBarComponents> -->
-			<view class="publishTopTitle">
+			<!-- <view class="publishTopTitle">
 				<view class="PTtitle">标题</view>
 				<view class="PTinput">
 					<input v-model="title" type="text" placeholder="请输入话题标题" :focus="true"></input>
 				</view>
-			</view>
+			</view> -->
 			<!-- 多行文本输入框 -->
 			<view class="publishTextE">
-				<textarea v-model="content"  @click="focusArea" :focus="focus" @blur="blurArea" placeholder="这一刻,你想说点什么" placeholder-class="textarea-placeholder" maxlength="2000">
+				<textarea v-model="content"  @click="focusArea" :focus="focus" @blur="blurArea" placeholder="请输入需求的内容" placeholder-class="textarea-placeholder" maxlength="2000">
 						</textarea>
 				<view class="PTnum">
 					<text class="PTentry">{{ content.length }} / </text>
@@ -21,7 +21,7 @@
 			<!-- 发布按钮 -->
 			<view class="publishTopic top">
 				<view class="ptName" @click="submit">
-					发布话题
+					发布需求
 				</view>
 			</view>
 			<!-- 上传图片 -->
@@ -77,10 +77,10 @@
 			
 			
 			submit() {
-				if (!this.title) {
-					this.showTips('请输入标题！');
-					return;
-				}
+				// if (!this.title) {
+				// 	this.showTips('请输入标题！');
+				// 	return;
+				// }
 				if (!this.content) {
 					this.showTips('请输入内容！');
 					return;
@@ -213,12 +213,14 @@
 
 			.ptName {
 				text-align: center;
-				line-height: 80upx;
+				line-height: 88upx;
 				margin: 0 auto;
 				color: #fff;
-				.buttonRadius(@w: 620upx;
-				@h: 80upx;
-				)
+				background-color: #47ACFF;
+				width: 90%;
+				height: 88rpx;
+				border-radius: 44rpx;
+				
 			}
 		}
 

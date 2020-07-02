@@ -1,7 +1,7 @@
 <template>
 	<view class="container">
 		<view class="introduceInfo">
-			<textarea  @click="focusArea" :focus="focus" @blur="blurArea" placeholder="请输入圈介绍..." maxlength="500" v-model="introduce"></textarea>
+			<textarea  @click="focusArea" :disabled="disabled" :focus="focus" @blur="blurArea" placeholder="请输入社群介绍..." maxlength="500" v-model="introduce"></textarea>
 			<view class="wordNumber">
 				<text>{{ introduce.length }}</text>
 				<text>/</text>
@@ -20,7 +20,10 @@
     data() {
       return {
         introduce: '',
-						focus:true
+		focus:true,
+		isManager:'',
+		disabled:false,
+		circleId:''
       };
     },
 
@@ -30,8 +33,16 @@
       },
     },
 
-	onLoad () {
+	onLoad (option) {
       this.introduce = this.cardCirclePublish.introduce;
+	  this.isManager=option.role
+	  this.circleId=option.circleId
+	  console.log(option)
+	  if(this.isManager==0){
+		  this.disabled=true
+	  }else{
+		  this.disabled=false
+	  }
 	},
 
 	methods: {
@@ -49,7 +60,23 @@
 		
       confirm () {
         this.cardCirclePublish.introduce = this.introduce;
-        uni.navigateBack();
+		const postData = {
+			introduce:this.cardCirclePublish.introduce,
+			circleId:this.circleId
+		}
+		uni.showLoading();	
+		this.$api.updateCardCircleDetail(postData).then(result => {
+			uni.hideLoading();
+			uni.showToast({
+				title:'修改成功',
+				duration:2000
+			})
+			
+			uni.navigateBack();
+		}).catch(error => {
+			uni.hideLoading();
+			this.showError(error)
+		})
 	  },
 	},
 
@@ -83,9 +110,13 @@
     }
   }
   .button{
-    .buttonRadius();
-    margin: 81upx auto;
-    line-height: 88upx;
+    width:686rpx;
+    height:94rpx;
+    background:rgba(46,161,255,1);
+    border-radius:47rpx;
+    background-color: #2EA1FF;
+    margin: 100upx auto;
+    line-height: 94upx;
     text-align: center;
     .text{
       color: #ffffff;

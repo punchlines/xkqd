@@ -1,5 +1,8 @@
 <template>
 	<view  class="container">
+		<view class="selectLive">
+			<input type="text" value="" placeholder="搜索主播"/>
+		</view>
 		<view class="TopbarBox fx-row fx-row-center fx-row-space-around">
 			<view :class="{'TBtitle':true,'TBFactive':tapIndex==topBarIndex}" @click="changeTitle(tapIndex)" v-for="(tapItem,tapIndex) in topBar" :key="tapIndex">{{tapItem.title}}</view>
 		</view>
@@ -13,7 +16,7 @@
 		</view>
 		<!-- 收藏 -->
 		<view class="collectionBox" v-if="topBarIndex==2">
-			<descover-collection :loading-type="loadingType" ref="collection"></descover-collection>
+			<descover-collection :loading-type="loadingType" ref="collection"></descover-collection>	
 		</view>
 		<!-- 动态 -->
 		<!--<view class="trendsBox" v-if="topBarIndex==3">-->
@@ -33,6 +36,9 @@
 				</view>
 			</view>
 		</wx-view>
+		<cover-view class="pop-up camera" @click="publishJournal" v-if="audiTitleActive == 1">
+			<cover-image class="image cameraImg" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/publish1.png'"></cover-image>
+		</cover-view>
 	</view>
 </template>
 
@@ -48,15 +54,15 @@
 				topBar: [
 					{
 						id: 0,
-						title: '推荐'
+						title: '直播'
 					},
 					{
 						id: 1,
-						title: '附近'
+						title: '关注'
 					},
 					{
 						id: 2,
-						title: '收藏'
+						title: '附近'
 					},
 					// {
 					// 	id: 3,
@@ -76,7 +82,9 @@
 	
 		},
 		onShow() {
-				this.reFetch();
+				this.$refs.recommend.fetch()
+				//this.reFetch();
+				//this.fetch()
 		},
 		
 		
@@ -120,9 +128,9 @@
 			
 			// 跳转至发布日志
 			gotoPublic() {
-				uni.navigateTo({
-					url: '../../item_businessCard/businessCard_PublishLog/businessCard_PublishLog',
-				});
+				// uni.navigateTo({
+				// 	url: '../../item_descover/descover_LookLive/descover_LookLive',
+				// });
 			},
 			// 切换标题
 			changeTitle(index) {
@@ -173,7 +181,15 @@
 		height: 100%;
 		background: @grayBg;
 	}
-
+	.pop-up {
+		position: fixed;
+		right: 30upx;
+		bottom: 60upx;
+		// 	  width: 200upx;
+		// 	  height: 200upx;
+		// 	  background-color: red;
+		z-index: 999999;
+			}
 	.container {
 		width: 100%;
 		box-sizing: border-box;
@@ -228,5 +244,17 @@
 				}
 			}
 		}
+	}
+	.selectLive{
+		margin-left: 30rpx;
+		margin-right: 30rpx;
+		margin-top: 40rpx;
+		margin-bottom: 20rpx;
+		background-color: #FFFFFF;
+		height: 70rpx;
+		border-radius: 40rpx;
+		padding-top: 15rpx;
+		padding-left: 30rpx;
+
 	}
 </style>

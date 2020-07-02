@@ -40,6 +40,7 @@
         avatar: '',
         images: '',
         name: '',
+		memberNum:'',
 		tempFilePath:'',
 		canvasContext:null
       };
@@ -55,6 +56,7 @@
         this.avatar = result.mpCardCircle.headImage
         this.images = result.headImage;
         this.name = result.mpCardCircle.name;
+		this.memberNum=result.mpCardCircle.memberNum
 		this.qrcodeUrl = `https://xk.gzskxx.com/QRCODE/?app=qr.get&data=https://xk.gzskxx.com/joinCircle/${id}_${userId}&level=L&size=6`;
 		ctx.textBaseline = "top";
 		//绘制白色背景
@@ -82,8 +84,15 @@
 		ctx.font = "bold";
 		ctx.setFillStyle('#000000');
 		ctx.setFontSize(32);
-		ctx.fillText(this.name,150,64);
+		ctx.fillText(this.name,150,44);
 		
+		ctx.font = "bold";
+		ctx.setFillStyle('#000000');
+		ctx.setFontSize(26);
+		let [errs,resxs] = await uni.getImageInfo({src:'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.ViT1BgebknIX63c298f9e8597b61658b317dcddc2856.png'});
+		let peoplepath = resxs.path;
+		ctx.drawImage(peoplepath,150,100,33,33)
+		ctx.fillText(this.memberNum+'人',190,110);
 		let hasPin = false;
 		
 // 		if(result.mpCardCircle.joinType|0 == 5){

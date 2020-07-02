@@ -8,7 +8,7 @@
 			</view>
 		</view>
 		<!-- 商品列表 -->
-		<view class="productList fx-row fx-row-center fx-row-space-around fx-wrap" v-if="titleActiveIndex==0">
+		<view  v-if="titleActiveIndex==0">
 			<goods-item :GoodsList="GoodsList"></goods-item>
 			<uni-load-more :loading-type="loadingType" v-if="showLoadMore"></uni-load-more>
 		</view>

@@ -107,7 +107,7 @@
 		z-index: 999;
 		.flex();background:#fff;color:#666;font-size:@fsSubTitle;border:5upx solid @grayBg;
 		view{padding:20upx 0;}
-		.ATactive{color:@tabActive;border-bottom:5upx solid @tabActive;box-sizing:border-box;}
+		.ATactive{color:#2EA1FF;border-bottom:5upx solid #2EA1FF;box-sizing:border-box;}
 	}
 	// 复选框列表
 

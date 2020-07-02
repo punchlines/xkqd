@@ -2,11 +2,11 @@
 	<view>
 		<view class="txtList">
 			<view class="circleName">
-				<text class="txt">圈名称</text>
-				<input v-model="cardCirclePublish.circleName" name="input" type="text" placeholder="请输入圈子名称" class="input" />
+				<text class="txt">社群名称</text>
+				<input v-model="cardCirclePublish.circleName" name="input" type="text" placeholder="请输入社群名称" class="input" />
 			</view>
 			<view class="way" @click="openJoinTypeSelect">
-				<text class="txt">加圈方式</text>
+				<text class="txt">加入方式</text>
 				<view class="txtRight">
 					<text class="condition">{{ showSelectJoinType }}</text>
 					<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/right.png'" class="rightImg"></image>
@@ -14,7 +14,7 @@
 			</view>
 		</view>
 		<view class="createBtn" @click="createCircle">
-			<text class="createTxt">创建名片圈</text>
+			<text class="createTxt">创建社群</text>
 		</view>
 
 		<vip-tuan v-if="showModal" @close="showModal=false" @go="go"></vip-tuan>
@@ -215,7 +215,13 @@
 	.createBtn {
 		margin: 132upx auto;
 		text-align: center;
-		.buttonRadius();
+		width: 686rpx;
+		background-color: #2EA1FF;
+		height: 88rpx;
+		
+		line-height: 88rpx;
+		border-radius: 44rpx;
+
 
 		.createTxt {
 			line-height: 88upx;

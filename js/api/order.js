@@ -25,12 +25,20 @@ api.getAddressList = (pageNo = 1) => post('address/get', { pageNo });
 api.deleteAddress = (id) => post('address/del', { id });
 api.addOrUpdateAddress = (addressForm) => post('address/save', addressForm);
 
+api.saveLiveDepositOrder = () => post('pay/saveLiveDepositOrder');//直播押金
+
 //查询所有订单/待发货/待收货
 api.getAllOrderData = (type,pageNo=1) => post('ugo/orderlist',{type,pageNo});
 ///评价/
 ///ugo/waitappraise
 api.getWaitAppraise = (pageNo=1) => post('ugo/waitappraise',{pageNo});
 
+api.getUserGoodsOrderList=(pageNo=1)=>post('ugo/getUserGoodsOrderList',{pageNo});//获取用户已购买过的商品列表
+
+//直播间下单
+api.saveLiveGoodsOrder = (msgs,payType,openId,items,addressId,liveId,anchorId) => post('pay/saveLiveGoodsOrder',{msgs,payType,openId,items,addressId,liveId,anchorId});
+//直播间拼团下单
+api.saveLivePinOrder = (msgs,openId,items,addressId,pinId,liveId,anchorId) => post('pay/saveLivePinOrder',{msgs,openId,items,addressId,pinId,liveId,anchorId});
 
 //商品下单
 // api.createOrder = (shareUserId,userAddressId,orderJson,type, cod = 0) => post('orderCenter/createOrder',{shareUserId,userAddressId,orderJson,type, cod});
@@ -49,7 +57,8 @@ api.saveUpgradeOrRenewVipOrder = (type,grade) => post('pay/saveUpgradeOrRenewVip
 //微信支付
 api.callwechatpay = (outTradeNo,openId,authCode,sour) => post('pay/callwechatpay', {outTradeNo,openId,authCode,sour});
 
-	
+api.getLiveIncome = (anchorUserId) => post('live/getLiveIncome',{anchorUserId});//获取直播总收益	
+
 api.judgeOrderDetail = (orderId) => post('orderCenter/judgeOrderDetail', {orderId});//待评价详情
 
 api.saleGoodsStatus = (type,pageNumber=1,pageSize=20) => post('orderCenter/saleGoodsStatus', {type,pageNumber,pageSize});//销售订单( type:类型:(1.待发货 2待收货 4待评价))

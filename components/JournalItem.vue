@@ -34,14 +34,18 @@
 
 		</view>
 
-		<view class="TBmiddle" v-if="journalMap.images.length > 0">
+		<view class="TBmiddle" v-if="journalMap.images.length > 0|| journalMap.videoUrl.length>0">
 			<swiper @change="changeSwiperNum($event)" indicator-dots :interval="5000" :duration="1000" indicator-color="#E1E1E1"
 			 circular="true" indicator-active-color="#6B7AF8" display-multiple-items="1">
 				<swiper-item v-for="(item, index) in journalMap.images" :key="index" :display-multiple-items="index">
 					<image :src="item" mode="aspectFill" class="journal-image" @click="previewImage(item)"></image>
+					
+				</swiper-item>
+				<swiper-item v-if="journalMap.videoUrl.length>0">
+					<video :src="journalMap.videoUrl" mode="aspectFill" class="journal-image"></video>
 				</swiper-item>
 			</swiper>
-			<view class="TBMswiperNum fsf24">{{ currentNum + 1 }}/{{ journalMap.images.length }}</view>
+			<view class="TBMswiperNum fsf24">{{ currentNum + 1 }}/{{journalMap.videoUrl.length>1?journalMap.images.length+1:journalMap.images.length+0 }}</view>
 		</view>
 
 		<!-- 商品列表 -->

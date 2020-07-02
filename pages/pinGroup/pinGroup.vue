@@ -53,7 +53,7 @@
 							<view class="red">￥{{item.preferentialPrice}}</view>
 							<view class="dis">￥{{item.originalPrice}}</view>
 						</view>
-					
+					    
 						<view class="avatar">
 							<image v-for="(i,d) in item.userCoverList" :key="d" :src="i" mode=""></image>
 							<!-- <image src="/static/chat/biaoqing@2x.png" mode=""></image> -->
@@ -69,7 +69,7 @@
 			
 		</view>
 		
-		<vip-on v-if="showVipModal" @go="goBuyVip" @proxy="proxy" @close="showVipModal=false"></vip-on>
+		<vip-on v-if="showVipModal" @go="goBuyVip" @proxy="proxy" @close="showVipModal=false" :isVipStatus="isVipStatus"></vip-on>
 		
 		<view class="invite" @click="go">
 			规则
@@ -98,7 +98,8 @@
 				key:"",
 				mode:0, // 1-搜索
 				classList:[],
-				classActive:0
+				classActive:0,
+				isVipStatus:''
 			};
 		},
 		onLoad(){
@@ -112,6 +113,8 @@
 					}].concat(res)
 				})
 			 this.fetch();
+			 this.isVipStatus = uni.getStorageSync('IsVipStatus');
+			 console.log(this.isVipStatus)
 		},
 		
 		onShow() {
@@ -165,15 +168,30 @@
 			},
 			
 			goBuyVip(){
-				this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_New');
+				this.isVipStatus = uni.getStorageSync('IsVipStatus');
 				
+				if(this.isVipStatus==2){
+				let shopId = uni.getStorageSync('shopId');
+				// if (!shopId && this.isVipUser) {
+				// 	this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
+				// 	return;
+				// }
+				this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+					shopId: shopId,	
+					userId: this.userId,
+					cardUserId: this.cardUserId,
+					recommendId: this.cardUserId
+				})
+				}else{
+					this.navigateTo('/item_businessCard/businessCard_VIP/businessCard_VIP_New');
+				}
 			},
 			
 			goSharePost(item){
 				console.log(item);
 
 					let shareObject = {
-						goodsName:item.goodsName,
+						goodsName:item.goodsName,	
 						price:item.preferentialPrice,
 						sku:'',
 						cdtext:item.conditionVos.map(it=>`拼到${it.targetNum}人，每人返${it.rebateAmount}元`).join(','),
@@ -200,11 +218,13 @@
 			},
 			
 			proxy(){
+				
 				this.showVipModal=false;
 				this.change(1);
 			},
 			go(){
 				this.navigateTo('/item_pinGroup/businessCC_rule/businessCC_rule');
+				
 			},
 			
 			change(index){
@@ -227,7 +247,7 @@
 				if(this.key==""){
 					this.mode=0;
 				}else this.mode=1;
-
+ 
 				this.reset();
 				this.fetch();
 			},

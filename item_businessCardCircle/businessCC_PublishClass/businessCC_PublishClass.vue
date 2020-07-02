@@ -6,7 +6,11 @@
 			<view class="publishTopTitle">
 				<view class="PTtitle">标题</view>
 				<view class="PTinput">
-					<input v-model="Course.name" type="text" placeholder="请输入课程标题" :focus="true"></input>
+					<input v-model="Course.name" type="text" placeholder="请输入视频标题" :focus="true" maxlength="20"></input>
+					<view class="PTnum">
+						<text class="PTentry">{{ Course.name.length }} / </text>
+						<text class="PTresidue">20</text>
+					</view>
 				</view>
 			</view>
 			<!-- 多行文本输入框 -->
@@ -21,8 +25,9 @@
 			<!-- 发布按钮 -->
 			
 			<template>
-				<view class="btn" @click="delCourse">删除课程</view>
-				<view class="btn save" @click="submit">发布课程</view>
+				<!-- <view class="btn" @click="delCourse">删除课程</view>
+				<view class="btn save" @click="submit">发布课程</view> -->
+				<view class="btns saves" @click="submit">发布视频</view>
 			</template>
 		<!-- 	<view class="publishTopic top">
 				<view class="ptName" @click="submit">
@@ -31,29 +36,33 @@
 			</view> -->
 			
 			<view class="uploadImage noflex">
-				<view style="margin-bottom: 15rpx;">课程封面:</view>
+				<view style="margin-bottom: 15rpx;" class="PTtitles">视频封面</view>
 				
 				<wx-view v-if="!Course.coverUrl">
 					<view class="UIuserinfo" @click="upLoadCover">
 						<image class="addImage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/add.png'"></image>
 					</view>
+					
 				</wx-view>
 				
 				<block v-else class="UImage">
 					<view class="UIimageBox">
 						<image class="UIImage" :src="Course.coverUrl"  mode="aspectFit" />
-						<image @click="removeImage()" class="DelImage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/del_zi.png'"></image>
+						<image @click="removeImage()" class="DelImage" :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.G8p5eQ3mWF7Z2a5177c82fb98de4af6133de4ee9309d.png'"></image>
 					</view>
 				</block>
+				<view class="tips">
+					（尺寸最好是336x212）
+				</view>
 			</view>
 			
 			
-				<view style="margin-bottom: 15rpx;margin-left: 3%;">课程章节:</view>
+				<view style="margin-bottom: 15rpx;margin-left: 3%;" class="PTtitles">视频数量</view>
 				<view class="uploadImage">
 					<block v-for="(item, index) in  Course.nodes" :key="index" class="UImage">
 						<view class="UIimageBox">
 							<image class="UIImage" :src="item.cover" @click="addChapter(index)" :data-index="index" mode="aspectFit" />
-							<image @click="removeChapter(index)" class="DelImage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/del_zi.png'"></image>
+							<image @click="removeChapter(index)" class="DelImage" :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.G8p5eQ3mWF7Z2a5177c82fb98de4af6133de4ee9309d.png'"></image>
 						</view>
 					</block>
 					<wx-view>
@@ -213,15 +222,24 @@
 
 			.PTtitle {
 				width: 18%;
+				font-size: 34rpx;
+				font-weight: 500;
+				
 			}
 
 			.PTinput {
-				width: 80%;
+				width: 60%;
 				color: #ccc;
 				font-size: 32upx;
 
 				input {
 					color: @title;
+				}
+				.PTnum {
+					position: absolute;
+					top: 31rpx;
+					right: 50upx;
+					color: @logoNote;
 				}
 			}
 		}
@@ -249,7 +267,20 @@
 				left: 150rpx;
 			}
 		}
-		
+		.btns{
+			width:686rpx;
+			height:88rpx;
+			background:rgba(71,172,255,1);
+			border-radius:44px;
+			left:39rpx;
+			font-family:PingFangSC-Regular;
+			 text-align: center;
+			 line-height: 88rpx;
+			 color: #fff;
+			 font-size: 36rpx;
+			position: fixed;
+			bottom: 39upx;
+		}
 
 		.publishTextE {
 			position: relative;
@@ -319,7 +350,13 @@
 					height: 220rpx;
 				}
 			}
-
+			.tips{
+				font-size:28rpx;
+				color: #666666;
+				position: absolute;
+				bottom: 628rpx;
+				right: 160rpx;
+			}
 			.UIimageBox {
 				position: relative;
 				width: 220upx;
@@ -348,5 +385,10 @@
 		}
 		
 
+	}
+	.PTtitles{
+		width: 28%;
+		font-size: 34rpx;
+		font-weight: 500;
 	}
 </style>

@@ -1,7 +1,7 @@
 <template>
 	<view class="container1" >
 	  <view class="commentBox">
-	    <view class="CBimage">
+	    <view class="CBimage" @click="goCard(item.userId)">
 	      <image :src="item.userFace" @click="goDetail(item.userId)"></image>
 	    </view>
 	    <view class="commnentList">
@@ -65,7 +65,13 @@
 			},
 			formatTimes(v){
 				return formatTime(v)
-			}
+			},
+			goCard(id){
+					if(id!=this.currentUser.id)
+						this.navigateTo('../businessCard2/businessCard2', {
+							cardUserId: id
+			})
+			},
 		}
 	}
 </script>
@@ -75,22 +81,23 @@
 	@import '../../css/mzl_base.less';
 	.container1{
 	  border-bottom:1px solid #EEEEEE;
+	  padding-bottom: 30rpx;
 	  .commentBox{
 	    display: flex;
 	    .flex(@alignIt:top;);padding:30upx;box-sizing: border-box;
 	    padding-top: 45upx;
-	    .CBimage{
-	      width:60upx;
-	      margin-right: 23upx;
-	      image{width:60upx;
-	        height:60upx;;vertical-align: top;}
-	    }
+	   .CBimage{
+	     width:78upx;
+	     margin-right: 23upx;
+	     image{width:78upx;
+	       height:78upx;border-radius:8rpx;vertical-align: top;}
+	   }
 	    .commnentList{
 	      flex: 1;
 	      image{width:28upx;height:28upx}
 	      .CLcon{
 	        .flex(space-between);
-	        .CLtitle{color:#666;font-size:@fsNum;}
+	        .CLtitle{color:#0064B6;font-size:28rpx;font-weight: 500;}
 	        .CLBfloor{font-size: 24upx;color: #999999;}
 	      }
 	
@@ -103,13 +110,13 @@
 			  font-size: 23rpx;white-space: nowrap;
 	        }
 	        .CLBmessage{
-	          display: flex;
-	          .flex(flex-between);width:60%;
-	          justify-content: flex-start;
+	          width: 45%;
+			  display: flex;
+			  flex-direction: row;
 	          > view {
 	            display: flex;
 	            align-items: center;
-	            justify-content: flex-start;
+	            justify-content: flex-end;
 	            width:33.33%;
 	            image {
 	              margin-right: 8upx;

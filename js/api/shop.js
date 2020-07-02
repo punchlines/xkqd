@@ -20,7 +20,7 @@ api.listCardShop = (uid,pageNo = 1) => noFixParamsPost('shop/listCardShop',{uid,
 api.searchShop=(text,pageNo=1)=>post('shop/searchShop',{text,pageNo});//个人中心：申请成为员工  搜索店铺
 api.searchShopGroup=(shopId,text,pageNo)=>post('shop/searchShopGroup',{shopId,text,pageNo});//个人中心：申请成为员工  搜索店铺
 api.listRecommendShop=(pageNo=1)=>noFixParamsPost('shop/listRecommendShop',{pageNo});//获取推荐企业列表
-
+api.getUserGoodsOrderList=(pageNo=1)=>post('ugo/getUserGoodsOrderList',{pageNo});//获取用户已购买过的商品列表
 api.insertShopGroup=(shopId,logo,name)=>post('shop/insertShopGroup',{shopId,logo,name});//获取推荐企业列表
 api.getShopManagerNum=(shopId)=>post('shop/getShopManagerNum',{shopId});//获取销售总监数量（vip3）
 

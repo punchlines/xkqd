@@ -38,7 +38,7 @@
           </view>
           <view class="fx-row fx-row-center ma" v-if="userDetails.email">
             <image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/email.png'" class="email"></image>
-            <text class="wenzi">{{ userDetails.email }}</text>
+            <text class="wenzi">{{ userDetails.email }}</text>	
           </view>
           <view class="detail fx-row fx-row-center ma" v-if="userDetails.autograph">
             <image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/qianming.png'" class="edit"></image>

@@ -176,7 +176,7 @@
 
     onLoad (option) {
       var listeners = {
-        "onMsgNotify": this.onMsgNotify,
+        "onMsgNotify": '',
       };
 
       const goods = uni.getStorageSync('_goods');
@@ -221,9 +221,10 @@
           config.userSig = result;
           uni.hideLoading();
           console.log(config)
-          webim.login(config, listeners,{}, () => {
+          webim.login(config, listeners,{}, (res) => {
             this.getMessage().then(result => {
             });
+			console.log(res)
           });
         }).catch(error => {
           console.error(error)
@@ -267,8 +268,8 @@
         config.userSig = result;
         uni.hideLoading();
         console.log(config)
-        webim.login(config, listeners,{}, () => {
-
+        webim.login(config, listeners,{}, (res) => {
+			console.log(res)
           if (!this.currentUser.id) {
             const options = {
               "ProfileItem": [{

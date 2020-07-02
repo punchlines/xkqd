@@ -1,7 +1,7 @@
 <template>
 	<view class="page">
-		<!-- <title-bar :title="referFromHome?'销刻渠道':'购买商品'" :showHome="!referFromHome" class="titleBar"></title-bar> -->
-		<view class="header" :style="{'min-height':headerMinHeight+'px'}">		
+		<!-- <TitleBar :title="referFromHome?'销刻渠道':'购买商品'" :showHome="!referFromHome" class="titleBar"></TitleBar> -->
+		<!-- <view class="header" :style="{'min-height':headerMinHeight+'px'}">		
 			<view class="title-bar-container">
 			  <view class="title-bar-container-safe-area"></view>
 			  <view class="title-bar-container-fixed">
@@ -43,45 +43,69 @@
 				</swiper>			
 			</view>
 			
+		</view> -->
+		<view class="background" :style="{backgroundImage:'url(' + background + ')'}">
+			<view class="role" @click="navigateTo('/item_businessCard/businessCard_tool/businessCard_mai')">
+				规则说明
+				<view style="padding-top: 4rpx;margin-left: 20rpx;" >
+					<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.h5O8fHJiNEvh1f61a486eb5ab17bb08ce4b90184f1ab.png"
+					 style="width: 26rpx;height: 26rpx;"></image>
+				</view>
+			</view>
+
+			<view class="content-swpier">
+				<swiper class="swiper" :interval="interval" :duration="duration" :circular="circular" display-multiple-items="1"
+				 previous-margin="30" @change="swiperChange" next-margin="15" :current="swiperCurrent">
+					<swiper-item v-for="item in swiperList" :key="item.id" :id="item.id">
+						<view class="swiper-item-huangjing">
+							<image :src="item.img" mode="" style="width: 98%;height: 300rpx;"></image>
+						</view>
+					</swiper-item>
+				</swiper>
+			</view>
 		</view>
-		<view class="dotBox">
+
+
+
+
+		<!-- <view class="dotBox">
 			<view class="dot" :style="{'width':(100/lists.length)+'%','left':currentSwiper*(100/lists.length)+'%'}">
 				
 			</view>
 			
-		</view>
+		</view> -->
 
-			<vip-detail :recommendLevel="recommendLevel" v-if="initial" :vipLevel="currentVipLevel"
-								:ref="'vipPane'"
-			@change="goodsChange" @openVipShareModal="openVipShareModal"></vip-detail>
-		
-	
+		<vip-detail :recommendLevel="recommendLevel" v-if="initial" :vipLevel="currentVipLevel" :ref="'vipPane'" @change="goodsChange"
+		 @openVipShareModal="openVipShareModal" :vipIndex="current_1"></vip-detail>
 		<view class="footer-action">
-			<button v-if="isNormalUser && currentUser.id" class="btn-primary" @click="buyVip" :disabled="!currentSelectGoods">立即购买</button>
-			<button v-else-if="isNormalUser || !currentUser.id" class="btn-primary"  open-type="getPhoneNumber" @getphonenumber="buyVip" :disabled="!currentSelectGoods">购买任意商品一键开店</button>
-			<button v-else-if="isVipStatus==2" class="btn-primary" @click="openVipSet">续费</button>
+			<button v-if="isNormalUser && currentUser.id &&isVipStatus !=2" class="btn-primary" @click="buyVip" :disabled="!currentSelectGoods">立即购买</button>
+			<button v-else-if="isVipStatus !=2 && isNormalUser || !currentUser.id " class="btn-primary" open-type="getPhoneNumber"
+			 @getphonenumber="buyVip" :disabled="!currentSelectGoods">购买任意商品一键开店</button>
+			<button v-else-if="isVipStatus==2" class="btn-primary" @click="openVipSet">立即续费或升级店铺</button>
 			<button v-else class="btn-primary" @click="openVipShareModal">我要推广</button>
-			
+
 		</view>
 
 		<vip-share-modal ref="vipShareModal" @channelClick="channelClick"></vip-share-modal>
 
-		<goods-sku-select-modal  @select="onSelect" v-if="skuModalVisible" :goods-sku='goodSku' @close="skuModalVisible = false" @confirm="confirm" isGift></goods-sku-select-modal>
+		<goods-sku-select-modal @select="onSelect" v-if="skuModalVisible" :goods-sku='goodSku' @close="skuModalVisible = false"
+		 @confirm="confirm" isGift></goods-sku-select-modal>
 
-		<canvas canvas-id="posterCanvas" style="position: absolute; transform: translateX(-2000px); width: 420px; height: 667px" :style="posterCanvasStyle"></canvas>
+		<canvas canvas-id="posterCanvas" style="position: absolute; transform: translateX(-2000px); width: 420px; height: 667px"
+		 :style="posterCanvasStyle"></canvas>
 
 		<canvas canvas-id="shareCanvas" style="position: absolute; transform: translateX(-2000px); width: 420upx; height: 335upx"></canvas>
 
 		<vip-share-poster-modal ref="vipSharePosterModal" :path="posterFilePath"></vip-share-poster-modal>
-		
+
 		<get-user-info-modal v-if="authShow && !currentUser.id" @hideModal="authShow=false" @getUserInfo="setUserInfo"></get-user-info-modal>
-		
-		
+
+
 		<!-- 保存成功弹框 -->
 		<view class="saveModel fx-row fx-row-center fx-col-center" style="z-index: 100;" v-if="showLoadings">
 			<view class="saveCon fx-column fx-row-center">
 				<!-- https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs2r1bMrWHaOln0s72530D84.PNG2pUobGhA6a86fa0885c0be339572cc464ec247561.png -->
-				
+
 				<image class="rotate" :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs2r1bMrWHaOln0s72530D84.PNG2pUobGhA6a86fa0885c0be339572cc464ec247561.png'"
 				 mode="widthFix"></image>
 				<view class="succ">请稍等，正在保存</view>
@@ -97,28 +121,66 @@
 	import price from '@/components/price';
 	import VipShareModal from "./VipShareModal";
 	import goodsSkuSelectModal from '@/components/shop/modal/goodsSkuSelectModal';
-	import { processSkuData } from '@/js/util';
+	import {
+		processSkuData
+	} from '@/js/util';
 	import VipDetail from "./VipDetail";
-	import VipSharePosterModal from "./VipSharePosterModal";
-	import {mapState} from 'vuex';
+	import VipSharePosterModal from "./VipSharePosterModal.vue";
+	import {
+		mapState
+	} from 'vuex';
 	import GetUserInfoModal from '@/components/getUserInfoModal.vue'
+	// import TitleBar from '@/components/TitleBar.vue'
 	const VIP_INTRO = 'http://card-1254165941.cosgz.myqcloud.com/vip/vipSharePoster.jpg';
 
 	export default {
 
-		components: {VipSharePosterModal, VipDetail, VipShareModal, price, goodsSkuSelectModal,GetUserInfoModal},
+		components: {
+			VipSharePosterModal,
+			VipDetail,
+			VipShareModal,
+			price,
+			goodsSkuSelectModal,
+			GetUserInfoModal
+		},
 
 		data() {
 			return {
-				lists:[
-					{img:'https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/icon/banner01.png'},
-					{img:'https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/icon/banner02.png'},
-					{img:'https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/icon/banner03.png'},
+				lists: [{
+						img: 'https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/icon/banner01.png'
+					},
+					{
+						img: 'https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/icon/banner02.png'
+					},
+					{
+						img: 'https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/icon/banner03.png'
+					},
 				],
-				currentSwiper:0,
+				swiperList: [{
+						id: 1,
+						text: "黄金会员",
+						img: "https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.SbJ6GwEL9WOucf0c27af70c9d23dba62f1611c99d450.png"
+					},
+					{
+						id: 2,
+						text: "铂金金会员",
+						img: "https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.0PYK5MX8EpvQ64a80929a146baca98b2aafade245ad1.png"
+					},
+					{
+						id: 3,
+						text: "钻石会员",
+						img: "https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.EKOs9wKvokyUfea4f567c5ba6826a0438047f2e6f8b9.png"
+					}
+				],
+				currentSwiper: 0,
+				background:'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.ppWF9asFPfmCc58bdd8d022d376a06626440356de369.png',
 				canBack: false,
-				initial:false,
+				initial: false,
 				vipLevel: 1,
+				interval: 2000,
+				duration: 500,
+				circular: true,
+				swiperCurrent: 0,
 				currentSelectGoods: null,
 				recommendId: '',
 				skuId: 0,
@@ -129,149 +191,155 @@
 				posterCanvasStyle: '',
 				shareFilePath: '',
 				currentShowVipLevel: 1,
+				current_1: 0,
 				inviteQty: 0,
-				vip2inviteQty:0,
-				vip3inviteQty:0,
+				vip2inviteQty: 0,
+				vip3inviteQty: 0,
 				vip2InviteTargetQty: 0,
 				vip3InviteTargetQty: 0,
-				authPhone:'',
-				recommendLevel:'',
-				isCreateCircle:false,//购买完成后是否重定向到名片圈开圈
-				referFromHome:0,
-				defaultAvatar:'',
-				defaultName:'',
-				authShow:false,
-				orderNum:'',
-				black:false,
-				showLoadings:false,
-				isVipStatus:''
+				authPhone: '',
+				recommendLevel: '',
+				isCreateCircle: false, //购买完成后是否重定向到名片圈开圈
+				referFromHome: 0,
+				defaultAvatar: '',
+				defaultName: '',
+				authShow: false,
+				orderNum: '',
+				black: false,
+				showLoadings: false,
+				isVipStatus: ''
 			};
 		},
 
 		computed: {
-			systemInfo () {
+			systemInfo() {
 				return this.$store.state.systemInfo;
 			},
-			statusBarHeight () {
+			statusBarHeight() {
 				return this.systemInfo.statusBarHeight;
 			},
-			rate () {
+			rate() {
 				return this.systemInfo.screenWidth / 750;
 			},
-			statusBarStyle () {
+			statusBarStyle() {
 				return `height: ${this.statusBarHeight}px`;
 			},
-			safeAreaStyle () {
-			    return `height: ${this.statusBarHeight + 88 * this.rate}px`;
-			},
-			
-				
-			headerMinHeight(){
-				return this.statusBarHeight + uni.upx2px(88+17+310);
-			},
-			
-			
-			
-			bannerTop(){
-					return this.statusBarHeight + uni.upx2px(88+17);
-			},
-		
-			bgHeight(){
-				return this.statusBarHeight + uni.upx2px(333)+'px';
+			safeAreaStyle() {
+				return `height: ${this.statusBarHeight + 88 * this.rate}px`;
 			},
 
-		
-			isShowFooter () {
+
+			headerMinHeight() {
+				return this.statusBarHeight + uni.upx2px(88 + 17 + 310);
+			},
+
+
+
+			bannerTop() {
+				return this.statusBarHeight + uni.upx2px(88 + 17);
+			},
+
+			bgHeight() {
+				return this.statusBarHeight + uni.upx2px(333) + 'px';
+			},
+
+
+			isShowFooter() {
 				if (this.isNormalUser || !this.currentUser.id) {
 					return true;
 				}
 				return this.isOpen;
 			},
-			currentVipLevel(){
+			currentVipLevel() {
 				const userType = Number(this.currentUser.userType);
-				return [2, 3, 4].includes(userType)
-								? userType - 1
-								: 0;
+				return [2, 3, 4].includes(userType) ?
+					userType - 1 :
+					0;
 			},
-			
-			isOpen () {
+
+			isOpen() {
 				const userType = Number(this.currentUser.userType);
-				const vipLevel = [2, 3, 4].includes(userType)
-								? userType - 1
-								: 0;
+				const vipLevel = [2, 3, 4].includes(userType) ?
+					userType - 1 :
+					0;
 				return vipLevel >= this.currentShowVipLevel;
 			},
-			isLock () {
+			isLock() {
 				return !this.isOpen && this.isVipUser;
 			},
 		},
 
-		onLoad (option) {
+		onLoad(option) {
 			var pages = getCurrentPages();
 			var page = pages[pages.length - 1];
 			this.canBack = pages.length > 1;
 			uni.showLoading({
 				title: '加载中'
 			});
-            console.log(option)
-			this.isVipStatus=option.isMemberCenter
-			this.isCreateCircle = option.isCreateCircle==1?1:0;
+			console.log(option)
+			this.isVipStatus = option.isMemberCenter
+			this.isCreateCircle = option.isCreateCircle == 1 ? 1 : 0;
 			this.referFromHome = option.referFromHome || 0;
-			this.doLoginHandle((hasReg)=>{
-				if(!hasReg) this.authShow = true; //没注册显示授权弹窗
-				
-				
+			this.doLoginHandle((hasReg) => {
+				if (!hasReg) this.authShow = true; //没注册显示授权弹窗
+
+
 				this.init(option);
 				this.hideLoading();
 			});
 		},
 
-		mounted () {
+		mounted() {
 			this.showLoading();
 			this.vipLevel = 1;
-			
-		},
-		
-		onPageScroll(e) {
-			if(e.scrollTop>this.headerMinHeight-this.statusBarHeight-uni.upx2px(88+17)){
-				console.log("black")
-				if(!this.black) this.black = true;
-				uni.setNavigationBarColor({
-					frontColor:"#000000",
-					backgroundColor: 'transparent'
-				});
-				
-			}else if(this.black){
-				this.black = false;
-				uni.setNavigationBarColor({
-					frontColor:"#ffffff",
-					backgroundColor: 'transparent'
-				});
-			}
+
 		},
 
+		// onPageScroll(e) {
+		// 	if(e.scrollTop>this.headerMinHeight-this.statusBarHeight-uni.upx2px(88+17)){
+		// 		console.log("black")
+		// 		if(!this.black) this.black = true;
+		// 		uni.setNavigationBarColor({
+		// 			frontColor:"#000000",
+		// 			backgroundColor: 'transparent'
+		// 		});
+
+		// 	}else if(this.black){
+		// 		this.black = false;
+		// 		uni.setNavigationBarColor({
+		// 			frontColor:"#ffffff",
+		// 			backgroundColor: 'transparent'
+		// 		});
+		// 	}
+		// },
+
 		methods: {
-			swiperChange(e){
-				this.currentSwiper = e.detail.current;
+			// swiperChange(e){
+			// 	this.currentSwiper = e.detail.current;
+			// },
+
+			navigateBack() {
+				uni.navigateBack();
 			},
-			
-			navigateBack () {
-			  uni.navigateBack();
+			navigateHome() {
+				uni.switchTab({
+					url: '/pages/businessCard/businessCard'
+				});
 			},
-			navigateHome () {
-			  uni.switchTab({url: '/pages/businessCard/businessCard'});
-			},
-			
-			onSelect(data){
+
+			onSelect(data) {
 				//选中
-				const {sIndex,pIndex} = data;
+				const {
+					sIndex,
+					pIndex
+				} = data;
 				let parent = this.goodSku.list[pIndex];
 				let sku = parent.sku[sIndex];
 				parent.sku.forEach(item => item.select = false);
 				sku.select = true;
-				
+
 			},
-			openVipSet(){
+			openVipSet() {
 				// 如果没有填写店铺资料
 				let shopId = uni.getStorageSync('shopId');
 				// if (!shopId && this.isVipUser) {
@@ -284,21 +352,20 @@
 					cardUserId: this.cardUserId,
 					recommendId: this.cardUserId
 				})
-				
+
 			},
-			setUserInfo(e){
+			setUserInfo(e) {
 				console.log(e)
-					if(e.detail.errMsg == 'getUserInfo:fail auth deny'){
-					}else{
-							this.defaultAvatar = e.detail.userInfo.avatarUrl;
-							this.defaultName = e.detail.userInfo.nickName;
-					}
-				
-				this.authShow =false;
+				if (e.detail.errMsg == 'getUserInfo:fail auth deny') {} else {
+					this.defaultAvatar = e.detail.userInfo.avatarUrl;
+					this.defaultName = e.detail.userInfo.nickName;
+				}
+
+				this.authShow = false;
 			},
-			init(option){
+			init(option) {
 				this.referFromHome = option.referFromHome || 0;
-				
+
 				if (option.scene) {
 					const scene = decodeURIComponent(option.scene);
 					this.recommendId = scene.match(/recommendId=(\d+)/) ? scene.match(/recommendId=(\d+)/)[1] || '' : '';
@@ -306,53 +373,82 @@
 					this.recommendId = option.recommendId || '';
 					this.shareVipLevel = option.vipLevel || '';
 				}
-				
-					this.recommendLevel = 3;
-					this.initial = true;
+
+				this.recommendLevel = 3;
+				this.initial = true;
 
 				if (this.isNormalUser || !this.currentUser.id) {
 					// #ifdef MP-WEIXIN
 					wx.hideShareMenu({
-						
+
 					})
 					// #endif
-					
+
 				}
 
 				this.drawShareImage();
 			},
-			
-			goodsChange ({ goods, vipLevel }) {
-				this.currentShowVipLevel  = vipLevel;
+
+			goodsChange({
+				goods,
+				vipLevel
+			}) {
+				this.currentShowVipLevel = vipLevel;
 				this.currentSelectGoods = goods;
-				
+
 			},
 
-			openVipShareModal () {
+			openVipShareModal() {
+				//cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU
 				this.$refs.vipShareModal.show();
 				uni.requestSubscribeMessage({
-					tmplIds: ['cvBqennzFLLaoDP_5cklMF5Q-XStSnv8Uh4rkN5VfGU','9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
+					tmplIds: ['9Ix6hSNi9bDiX09zssVrjel89TO1FDFdXiyjSD1q3Yo'],
 					success(res) {
 						console.log('test', res)
-						this.shares=share
+						this.shares = share
 					}
 				})
 			},
-
-			channelClick (channel) {
+			swiperChange(event) {
+				this.current_1 = event.detail.current
+				if (this.current_1 == 0) {
+					uni.setNavigationBarColor({
+						frontColor: "#ffffff",
+						backgroundColor: '#D79408'
+					});
+					this.background='https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.ppWF9asFPfmCc58bdd8d022d376a06626440356de369.png'
+				} else if (this.current_1 == 1) {
+					uni.setNavigationBarColor({
+						frontColor: "#ffffff",
+						backgroundColor: '#3A9CA2'
+					});
+					this.background='https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.ESUo1IdCZm5W055f94c8c08f5e47f47e9fb3f9f6b4ae.png'
+				} else {
+					uni.setNavigationBarColor({
+						frontColor: "#ffffff",
+						backgroundColor: '#3E697E'
+					});
+					this.background='https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.DJJPHsugDRvjdec323a55bb502f99b0165bd03fdb595.png'
+				}
+				// 
+			},
+			channelClick(channel) {
 				if (channel === 'poster') {
 					if (this.posterFilePath) {
 						this.$refs.vipSharePosterModal.show();
 						return;
 					}
-					
-					
+
+
 					uni.showLoading();
 					this.$api.getVipInviteWXCodeUrlLimitless(this.vipLevel).then(result => {
 						return Promise.all([
-							this.getImageInfo(VIP_INTRO.replace('http://card-1254165941.cosgz.myqcloud.com/', 'https://xk.gzskxx.com/myqcloud/')),
-							this.getImageInfo(result.WXCodeUrl.replace('http://card-1254165941.cosgz.myqcloud.com/', 'https://xk.gzskxx.com/myqcloud/')),
-							this.getImageInfo(this.currentUser.headImage.replace('http://card-1254165941.cosgz.myqcloud.com/', 'https://xk.gzskxx.com/myqcloud/').replace('https://wx.qlogo.cn/', 'https://xk.gzskxx.com/wechat_image/')),
+							this.getImageInfo(VIP_INTRO.replace('http://card-1254165941.cosgz.myqcloud.com/',
+								'https://xk.gzskxx.com/myqcloud/')),
+							this.getImageInfo(result.WXCodeUrl.replace('http://card-1254165941.cosgz.myqcloud.com/',
+								'https://xk.gzskxx.com/myqcloud/')),
+							this.getImageInfo(this.currentUser.headImage.replace('http://card-1254165941.cosgz.myqcloud.com/',
+								'https://xk.gzskxx.com/myqcloud/').replace('https://wx.qlogo.cn/', 'https://xk.gzskxx.com/wechat_image/')),
 						]);
 					}).then(infoList => {
 						const [vipImageInfo, wxCodeImageInfo, avatarInfo] = infoList;
@@ -364,8 +460,8 @@
 					})
 				}
 			},
-
-			getImageInfo (src) {
+		
+			getImageInfo(src) {
 				//console.log(src)
 				return new Promise((resolve, reject) => {
 					uni.getImageInfo({
@@ -380,7 +476,7 @@
 				});
 			},
 
-			drawPoster (vipImageInfo, wxCodeImageInfo, avatarInfo) {
+			drawPoster(vipImageInfo, wxCodeImageInfo, avatarInfo) {
 				const context = uni.createCanvasContext('posterCanvas')
 				context.scale(1, 1)
 
@@ -427,138 +523,142 @@
 				});
 			},
 
-			previewPoster () {
+			previewPoster() {
 				uni.previewImage({
 					current: this.posterFilePath,
 					urls: [this.posterFilePath]
 				})
 			},
 
-			buyVip (e) {
+			buyVip(e) {
 				uni.showLoading();
-					if (!this.currentUser.id) {
-						//静默注册  &  支付
-						
-						let token = uni.getStorageSync('token');
-						
-						if(token){
-							let { iv, encryptedData, errMsg } = e.detail;
-							//解密数据
-							if (errMsg.indexOf('fail') !== -1){
-									this.showError("请授权获取手机号");
-									uni.hideLoading();
-									return;
-							}
-							
-							if(e.target){
-								let errMsg2 = e.target.errMsg;
-								if(errMsg2 && errMsg2.indexOf('deny')!==-1){
-										this.showError("请授权获取手机号");
-										uni.hideLoading();
-										return;
-								}
-							}
-							
-							encryptedData  = encodeURIComponent(encryptedData).replace(/%20/gi, '+').replace(/(!)|(')|(\()|(\))|(\~)/gi, item => {
-								return '%' + item.charCodeAt(0).toString(16).toLocaleUpperCase();
-							});
-							
-							iv  = encodeURIComponent(iv).replace(/%20/gi, '+').replace(/(!)|(')|(\()|(\))|(\~)/gi, item => {
-								return '%' + item.charCodeAt(0).toString(16).toLocaleUpperCase();
-							});
-							
-							this.$api.WXDecrypt(encryptedData, iv, token).then(res=>{
-								this.authPhone = JSON.parse(res).phoneNumber;
-								//注册
-								let form={
-									// phone: this.authPhone,
-									name: "游客"+this.authPhone.slice(-4),
-									headImage: 'http://card-1254165941.cosgz.myqcloud.com/timg.jpeg',
-									company: '未填写',
-									job:'游客',
-									token:token,
-									refereeUserId:this.recommendId
-								};
-								form.headImage = this.defaultAvatar?this.defaultAvatar:form.headImage;
-								form.name = this.defaultName?this.defaultName:form.name;
-								
-								
-								this.$api.register(form).then(value=>{
-									uni.hideLoading();
-									//console.log(value);
-									if(value.ERROR==10001){
-										this.showTips('该手机号已经注册！').then(res=>{})
-									}else if(value.ERROR==10002){
-										this.showTips('该微信号已经绑定！').then(res=>{})
-									}else if(value.ERROR==2000){
-										this.showTips('上级用户不存在！').then(res=>{})
-									}else{
-										//设置userId 更新用户信息
-										uni.setStorageSync('userId',value.userInfoId);
-										this.$store.dispatch('updateCurrentUserInfo').then(res=>{
-											//拉起选择框
-											//TODO 如果是分享的 直接拉起商品选择框 如果是首页进来的 直接跳转到首页
-											// if(this.referFromHome){
-											// 	this.showTips('注册成功').then(()=>{
-											// 		uni.switchTab({
-											// 			url:"/pages/businessCard/businessCard"
-											// 		})
-											// 	})
-											// }
-											
-											this.getSkuAndShow();	
-										});
-									
-										
-									}
-								}).catch(error => {
-									uni.hideLoading();
-									this.showError(error)
-								})
-								
-								uni.hideLoading();
-							}).catch(error=>{
-									uni.hideLoading();
-									this.showError(error)
-							});
-							
-							
-							
+				if (!this.currentUser.id) {
+					//静默注册  &  支付
+
+					let token = uni.getStorageSync('token');
+
+					if (token) {
+						let {
+							iv,
+							encryptedData,
+							errMsg
+						} = e.detail;
+						//解密数据
+						if (errMsg.indexOf('fail') !== -1) {
+							this.showError("请授权获取手机号");
+							uni.hideLoading();
+							return;
 						}
-						
 
-					}else{
-						this.getSkuAndShow();
-						
+						if (e.target) {
+							let errMsg2 = e.target.errMsg;
+							if (errMsg2 && errMsg2.indexOf('deny') !== -1) {
+								this.showError("请授权获取手机号");
+								uni.hideLoading();
+								return;
+							}
+						}
+
+						encryptedData = encodeURIComponent(encryptedData).replace(/%20/gi, '+').replace(/(!)|(')|(\()|(\))|(\~)/gi, item => {
+							return '%' + item.charCodeAt(0).toString(16).toLocaleUpperCase();
+						});
+
+						iv = encodeURIComponent(iv).replace(/%20/gi, '+').replace(/(!)|(')|(\()|(\))|(\~)/gi, item => {
+							return '%' + item.charCodeAt(0).toString(16).toLocaleUpperCase();
+						});
+
+						this.$api.WXDecrypt(encryptedData, iv, token).then(res => {
+							this.authPhone = JSON.parse(res).phoneNumber;
+							//注册
+							let form = {
+								// phone: this.authPhone,
+								name: "游客" + this.authPhone.slice(-4),
+								headImage: 'http://card-1254165941.cosgz.myqcloud.com/timg.jpeg',
+								company: '未填写',
+								job: '游客',
+								token: token,
+								refereeUserId: this.recommendId
+							};
+							form.headImage = this.defaultAvatar ? this.defaultAvatar : form.headImage;
+							form.name = this.defaultName ? this.defaultName : form.name;
+
+
+							this.$api.register(form).then(value => {
+								uni.hideLoading();
+								//console.log(value);
+								if (value.ERROR == 10001) {
+									this.showTips('该手机号已经注册！').then(res => {})
+								} else if (value.ERROR == 10002) {
+									this.showTips('该微信号已经绑定！').then(res => {})
+								} else if (value.ERROR == 2000) {
+									this.showTips('上级用户不存在！').then(res => {})
+								} else {
+									//设置userId 更新用户信息
+									uni.setStorageSync('userId', value.userInfoId);
+									this.$store.dispatch('updateCurrentUserInfo').then(res => {
+										//拉起选择框
+										//TODO 如果是分享的 直接拉起商品选择框 如果是首页进来的 直接跳转到首页
+										// if(this.referFromHome){
+										// 	this.showTips('注册成功').then(()=>{
+										// 		uni.switchTab({
+										// 			url:"/pages/businessCard/businessCard"
+										// 		})
+										// 	})
+										// }
+
+										this.getSkuAndShow();
+									});
+
+
+								}
+							}).catch(error => {
+								uni.hideLoading();
+								this.showError(error)
+							})
+
+							uni.hideLoading();
+						}).catch(error => {
+							uni.hideLoading();
+							this.showError(error)
+						});
+
+
+
 					}
+
+
+				} else {
+					this.getSkuAndShow();
+
+				}
 			},
-			
-			getSkuAndShow(){
-					this.$api.getGoodsSku(this.currentSelectGoods.id).then(result => {
-							this.goodSku = {};
 
-							this.$nextTick(() => {
-								this.goodSku = processSkuData(result);
+			getSkuAndShow() {
+				this.$api.getGoodsSku(this.currentSelectGoods.id).then(result => {
+					this.goodSku = {};
 
-								this.$nextTick(() => {
-									this.skuModalVisible = true;
-									uni.hideLoading();
-								});
+					this.$nextTick(() => {
+						this.goodSku = processSkuData(result);
 
-							});
-						
-							// this.goodSku = processSkuData(result);
-							// this.skuModalVisible = true;
-						
-						}).catch(err => {
-							this.showError(err);
+						this.$nextTick(() => {
+							this.skuModalVisible = true;
 							uni.hideLoading();
 						});
-			},
-			
 
-			confirm (callbackData) {
-				
+					});
+
+					// this.goodSku = processSkuData(result);
+					// this.skuModalVisible = true;
+
+				}).catch(err => {
+					this.showError(err);
+					uni.hideLoading();
+				});
+			},
+
+
+			confirm(callbackData) {
+
 				// if (!this.currentUser.id) {
 				// 	this.reLaunch('/pages/register/register', {
 				// 		redirect: encodeURIComponent(`/item_businessCard/businessCard_VIP/businessCard_VIP_New?recommendId=${this.recommendId}&vipLevel=${this.vipLevel}`),
@@ -569,113 +669,114 @@
 
 				this.skuId = callbackData.data.id;
 				this.buyVipRequest();
-				
+
 			},
 
-			buyVipRequest () {
+			buyVipRequest() {
 				this.showLoading();
 				let data = {
-					currentShowVipLevel:this.currentShowVipLevel,
-					skuId:this.skuId,
-					recommendId:this.recommendId || 1,
-					isCreateCircle:this.isCreateCircle
+					currentShowVipLevel: this.currentShowVipLevel,
+					skuId: this.skuId,
+					recommendId: this.recommendId || 1,
+					isCreateCircle: this.isCreateCircle
 				}
-				
-				if(this.recommendId  && this.recommendId != this.currentUser.id){
+
+				if (this.recommendId && this.recommendId != this.currentUser.id) {
 					//TODO 新支付流程
-					
-					if(!this.orderNum){
+
+					if (!this.orderNum) {
 						this.$api.insertVipOrderNew(data.currentShowVipLevel, data.skuId, data.recommendId || 1).then(result => {
-							if(result){
+							if (result) {
 								this.orderNum = result;
 								this.requestPay(result);
 							} else {
 								this.hideLoading();
 								this.showTips('下单失败');
 							}
-							
+
 						})
-					}else this.requestPay(this.orderNum);
-					
-					
-					
-				}else{
+					} else this.requestPay(this.orderNum);
+
+
+
+				} else {
 					this.hideLoading();
-					this.navigateTo('./businessCard_VIP_Addr',data);
-				} 
+					this.navigateTo('./businessCard_VIP_Addr', data);
+				}
 
 			},
-			
-			
-			requestPay(orderNum){
+
+
+			requestPay(orderNum) {
 				this.$api.unifiedorder(orderNum).then(result => {
 					this.showLoading();
 					return this.requestPayment(result.prePayInfo)
 				}).then(result => {
 					this.hideLoading();
 					this.showLoadings = true;
-					setTimeout(()=>{
+					setTimeout(() => {
 						this.showLoadings = false;
-						this.$api.paymentStatusCallback(orderNum,4);
+						this.$api.paymentStatusCallback(orderNum, 4);
 						this.showTips('支付成功').then(res => {
-						//跳转到填写收货地址页面
-						this.$store.dispatch('updateCurrentUserInfo').then(()=>{
-								this.reLaunch('./VIPOrderAddressAdd',{orderNum})
+							//跳转到填写收货地址页面
+							this.$store.dispatch('updateCurrentUserInfo').then(() => {
+								this.reLaunch('./VIPOrderAddressAdd', {
+									orderNum
 								})
+							})
 						});
-						
-					},15000)
-					
-					
+
+					}, 15000)
+
+
 				}).catch(error => {
 					console.log(error)
 					//this.showError(error);
 					this.hideLoading();
 				});
-				
+
 			},
 
-			drawShareImage () {
+			drawShareImage() {
 				const user = Object.assign({}, this.currentUser);
 				if (!user.id) return;
 				user.headImage = user.headImage
-								.replace('https://wx.qlogo.cn/', 'https://xk.gzskxx.com/wechat_image/')
-								.replace('http://card-1254165941.cosgz.myqcloud.com/', 'https://xk.gzskxx.com/myqcloud/')
+					.replace('https://wx.qlogo.cn/', 'https://xk.gzskxx.com/wechat_image/')
+					.replace('http://card-1254165941.cosgz.myqcloud.com/', 'https://xk.gzskxx.com/myqcloud/')
 
 				this.getImageInfo(user.headImage).then(imageInfo => {
 					const context = uni.createCanvasContext('shareCanvas');
 					context.scale(0.5, 0.5);
 					let avaPath = imageInfo.path;
-					
+
 					this.getImageInfo('https://xk.gzskxx.com/myqcloud/images/vipShareBg.jpg').then(
-						BGINFO=>{
-								context.drawImage(BGINFO.path, 0, 0, 420, 335);
-								const AVATAR_SIZE = 120;
-								const x = 420 / 2 - AVATAR_SIZE / 2;
-								const y = 35;
+						BGINFO => {
+							context.drawImage(BGINFO.path, 0, 0, 420, 335);
+							const AVATAR_SIZE = 120;
+							const x = 420 / 2 - AVATAR_SIZE / 2;
+							const y = 35;
 
-								context.save();
-								context.beginPath();
-								context.arc(AVATAR_SIZE / 2 + x, AVATAR_SIZE / 2 + y, AVATAR_SIZE / 2, 0, Math.PI * 2, false);
-								context.clip();
-								context.drawImage(avaPath, x, y, AVATAR_SIZE, AVATAR_SIZE);
-								context.restore();
+							context.save();
+							context.beginPath();
+							context.arc(AVATAR_SIZE / 2 + x, AVATAR_SIZE / 2 + y, AVATAR_SIZE / 2, 0, Math.PI * 2, false);
+							context.clip();
+							context.drawImage(avaPath, x, y, AVATAR_SIZE, AVATAR_SIZE);
+							context.restore();
 
-								context.draw(true, () => {
-									uni.canvasToTempFilePath({
-										x: 0,
-										y: 0,
-										width: 420,
-										height: 335,
-										canvasId: 'shareCanvas',
-										success: res => {
-											this.shareFilePath = res.tempFilePath;
-										},
-										fail: (err) => {
-										}
-									})
-								});
-						
+							context.draw(true, () => {
+								uni.canvasToTempFilePath({
+									x: 0,
+									y: 0,
+									width: 420,
+									height: 335,
+									canvasId: 'shareCanvas',
+									success: res => {
+										this.shareFilePath = res.tempFilePath;
+									},
+									fail: (err) => {}
+								})
+							});
+
 						}
 					);
 
@@ -684,7 +785,7 @@
 
 		},
 
-		onShareAppMessage (res) {
+		onShareAppMessage(res) {
 			return {
 				title: `${this.currentUser.name}邀请您零成本开店啦！限时免费，快来申请吧`,
 				imageUrl: this.shareFilePath,
@@ -700,24 +801,25 @@
 		0% {
 			transform: rotate(0deg)
 		}
-	
+
 		100% {
 			transform: rotate(360deg)
 		}
 	}
-	
+
 	.rotate {
 		animation: rotateicon 3s infinite linear;
 	}
+
 	.page {
 		/*padding-bottom: 98upx;*/
-		overflow: hidden;
-		box-sizing: border-box;
-		padding-bottom: 0upx;
-		background-color: white;
+		// overflow: hidden;
+		// box-sizing: border-box;
+		// padding-bottom: 0upx;
+		// background-color: white;
 
 	}
-	
+
 	// 弹出层
 	.saveModel {
 		position: fixed;
@@ -727,7 +829,7 @@
 		left: 0;
 		background: rgba(0, 0, 0, 0.5);
 		z-index: 1;
-	
+
 		.saveCon {
 			width: 84%;
 			margin: 0 auto;
@@ -735,26 +837,26 @@
 			box-sizing: border-box;
 			padding: 40upx;
 			border-radius: 20upx;
-	
+
 			image {
 				width: 120upx;
 				height: 120upx;
 				margin-top: 10upx
 			}
-	
+
 			.succ {
 				font-size: 36upx;
 				color: #333333;
 				margin: 32upx 0 20upx 0;
 			}
-	
+
 			.txt {
 				font-size: 28upx;
 				color: #666666;
 				margin: 20upx 0 50upx 0;
 				text-align: center;
 			}
-	
+
 			.but {
 				width: 100%;
 				height: 80upx;
@@ -763,61 +865,66 @@
 				font-size: 28upx;
 				border-radius: 40upx;
 			}
-	
+
 			.bindC {
 				border: 1px solid #6B7AF8;
 				color: #6B7AF8;
 				margin-bottom: 24upx;
 			}
-	
+
 			.shop {
 				border: 1px solid #CCCCCC;
 				color: #CCCCCC
 			}
 		}
 	}
-	.header{
+
+	.header {
 		position: relative;
-		.topbg{
+
+		.topbg {
 			width: 100%;
 		}
-		
-		.swiper-container{
+
+		.swiper-container {
 			width: 100%;
 			height: 291upx;
 			position: absolute;
 			background: transparent;
-				.swiper{
-					width: 100%;
+
+			.swiper {
+				width: 100%;
+				height: 291upx;
+
+				// padding-top: 50upx;
+				.swiper-item {
+					width: 699upx;
 					height: 291upx;
-					// padding-top: 50upx;
-					.swiper-item{
-						width: 699upx;
-						height: 291upx;
-						border-radius: 21upx;
-					}
-				}	
-				
+					border-radius: 21upx;
+				}
+			}
+
 		}
 	}
-	
-	.dotBox{
-		width:122rpx;
-		height:6rpx;
-		background:rgba(201,201,201,0.3);
+
+	.dotBox {
+		width: 122rpx;
+		height: 6rpx;
+		background: rgba(201, 201, 201, 0.3);
 		// opacity:0.3;
-		border-radius:2rpx;
+		border-radius: 2rpx;
 		margin: 0 auto;
 		position: relative;
-		.dot{
+
+		.dot {
 			background: black;
 			height: 100%;
 			position: absolute;
-			left:0;
+			left: 0;
 			transition: .3s;
 		}
 	}
-	
+
 	.vip-cover {
 		width: 100%;
 		height: 374upx;
@@ -837,80 +944,122 @@
 		background: #FFFFFF;
 
 		.btn-primary {
-			width:620upx;
-			height:80upx;
-			line-height:80upx;
-			background:#6B78FA;
+			width: 620upx;
+			height: 80upx;
+			line-height: 80upx;
+			background: #6B78FA;
 			color: #fff;
 		}
 	}
 
-	
+
 	.title-bar-container-fixed {
-	  position: fixed;
-	  top: 0;
-	  left: 0;
-	  width: 100%;
-	  background: transparent;
-	  z-index: 99999;
-	  // border-bottom: 1upx solid #E1E1E1;
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background: transparent;
+		z-index: 99999;
+		// border-bottom: 1upx solid #E1E1E1;
 	}
-	
+
 	.title-bar {
-	  height: 88upx;
-	  display: flex;
-	  position: relative;
-	
-	  .action-list {
-	    display: flex;
-	    align-items: center;
-	    .icon {
-	      width: 78upx;
-	      height: 88upx;
-	      background: transparent;
-	      position: relative;
-	      &:active {
-	        background: transparent;
-	      }
-	      image {
-	        width: 36upx;
-	        height: 36upx;
-	        position: absolute;
-	        left: 50%;
-	        top: 50%;
-	        transform: translate(-50%, -50%);
-	      }
-	      &+.icon {
-	        &:after{
-	          content: "";
-	          position: absolute;
-	          width:1upx;
-	          height:30upx;
-	          background:rgba(204,204,204,1);
-	          left: 0;
-	          top: 50%;
-	          transform: translateY(-50%);
-	        }
-	      }
-	    }
-	    .back {}
-	    .home {}
-	  }
-	  .title {
-	    font-size:36upx;
-	    font-weight: bold;
-	    color:#fff;
-	    line-height:50upx;
-	    width: 250upx;
-	    height: 50upx;
-	    position: absolute;
-	    left: 50%;
-	    top: 50%;
-	    text-align: center;
-	    transform: translate(-50%, -50%);
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	  }
+		height: 88upx;
+		display: flex;
+		position: relative;
+
+		.action-list {
+			display: flex;
+			align-items: center;
+
+			.icon {
+				width: 78upx;
+				height: 88upx;
+				background: transparent;
+				position: relative;
+
+				&:active {
+					background: transparent;
+				}
+
+				image {
+					width: 36upx;
+					height: 36upx;
+					position: absolute;
+					left: 50%;
+					top: 50%;
+					transform: translate(-50%, -50%);
+				}
+
+				&+.icon {
+					&:after {
+						content: "";
+						position: absolute;
+						width: 1upx;
+						height: 30upx;
+						background: rgba(204, 204, 204, 1);
+						left: 0;
+						top: 50%;
+						transform: translateY(-50%);
+					}
+				}
+			}
+
+			.back {}
+
+			.home {}
+		}
+
+		.title {
+			font-size: 36upx;
+			font-weight: bold;
+			color: #fff;
+			line-height: 50upx;
+			width: 250upx;
+			height: 50upx;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			text-align: center;
+			transform: translate(-50%, -50%);
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+
+	.background {
+		position: relative;
+		width: 100%;
+		box-sizing: border-box;
+		height: 360rpx;
+		background-color: white;
+		background-image: url("https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.ppWF9asFPfmCc58bdd8d022d376a06626440356de369.png");
+		background-size: 100% 270rpx;
+		background-repeat: no-repeat;
+		width: 100%;
+
+		.role {
+			float: right;
+			font-size: 24rpx;
+			color: #Fff;
+			padding-top: 10rpx;
+			padding-bottom: 10rpx;
+			display: flex;
+			margin-right: 30rpx;
+		}
+
+		.content-swpier {
+			.swiper {
+				width: 100%;
+				height: 300rpx;
+
+				.swiper-item-huangjing {
+					width: 98%;
+					height: 300rpx;
+					border-radius: 20upx;
+				}
+			}
+		}
 	}
 </style>

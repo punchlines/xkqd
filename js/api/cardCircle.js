@@ -21,22 +21,40 @@ api.searchUserCardCircle = (text, pageNo) => post('circle/searchUserCardCircle',
 api.getCardCircleDetail = (circleId) => post('circle/getCardCircleDetail', { circleId });
 api.setJoinCircleApply = (circleId, applyContent, importUserId) => post('circle/setJoinCircleApply', { circleId, applyContent, importUserId });
 api.joinNewCardCircle = (circleId, importUserId) => post('circle/joinNewCardCircle', { circleId, importUserId });
-api.secedeCardCircle = (circleId) => post('circle/secedeCardCircle', { circleId });
 
+api.cancelExtensionCourse = (circleId,courseId) => post('course/cancelExtensionCourse', { circleId,courseId });//取消课程推荐
+
+api.getUserCardCircleList = (pageNo,title) => post('circle/getUserCardCircleList', { pageNo, title }); //群聊列表
+
+api.searchCardCircleList = (pageNo,title) => post('circle/searchCardCircleList', { pageNo, title }); //搜索群聊列表
+
+api.joinCardCircleInfo = (cardCircleId) => post('circle/joinCardCircleInfo', {cardCircleId}); //加入群聊详情
+
+api.getCardCircleInfo = (cardCircleId) => post('circle/getCardCircleInfo', {cardCircleId}); //群聊详情
+
+api.getMessageShopInfo = (circleId,shopId) => post('circleMessage/getMessageShopInfo', {circleId,shopId}); //获取店铺详情
+
+
+
+api.secedeCardCircle = (circleId) => post('circle/secedeCardCircle', { circleId }); 
 api.listJoinType = () => post('circle/listJoinType');
 api.setNewCardCircle = (circleName, joinType, joinMoney,percent) => post('circle/setNewCardCircle', { circleName, joinType, joinMoney,percent});
 api.listCircleType = () => post('circle/listCircleType');
 api.updateCardCircleDetail = (cardCircleDetail) => post('circle/updateCardCircleDetail', cardCircleDetail);
 api.transferCardCircleManger = (circleId, managerUserId) => post('circle/updateCardCircleDetail', { circleId, managerUserId });
 
-api.listCircleMember = (circleId, pageNo) => post('circle/listCircleMember', { circleId, pageNo });
+api.listCircleMember = (circleId,type,pageNo) => post('circle/listCircleMember', { circleId,type,pageNo });
 api.myPermission = (circleId) => post('circle/me', { circleId });
 
 api.searchCircleMember = (circleId, text, pageNo) => post('circle/searchCircleMember', { circleId, text, pageNo });
 
-api.moveCircleMember = (circleId, uid, moveStatus = 1) => post('circle/moveCircleMember', { circleId, uid, moveStatus });
-api.setAdministrators = (circleId, uid) => post('circle/setAdministrators', { circleId, uid });
-api.relieveAdministrators = (circleId, uid) => post('circle/relieveAdministrators', { circleId, uid });
+api.moveCircleMember = (circleId, uids, moveStatus = 1) => post('circle/moveCircleMember', { circleId, uids, moveStatus });
+api.setAdministrators = (circleId, uids) => post('circle/setAdministrators', { circleId, uids });
+api.relieveAdministrators = (circleId, uids) => post('circle/relieveAdministrators', { circleId, uids });
+
+api.getCircleManagerList = (cardCircleId) => post('circle/getCircleManagerList', {cardCircleId});
+
+
 
 api.listCircleApply = (circleId, status, pageNo) => post('circle/listCircleApply', { circleId, status, pageNo });
 api.agreeCircleApply = (circleId, applyId) => post('circle/agreeCircleApply', { circleId, applyId });

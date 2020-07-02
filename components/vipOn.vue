@@ -3,12 +3,12 @@
 		<view class="imgBox" @click.stop="noPop"> 
 			<view class="img">
 				<image src="https://card-1254165941.cos.ap-guangzhou.myqcloud.com/tuan/join.png"></image>
-				<view class="content">
-					<text>您还不是vip会员哦!此功能只限平台vip使用,普通用户可选择自己喜欢的商品,支付后便可代理此商品!</text>
+				<view class="content" >
+					<text >{{ isVipStatus==2?'您的vip已过期，此功能仅限vip使用，请先续费或升级vip':'您还不是vip会员哦!此功能只限平台vip使用,普通用户可选择自己喜欢的商品,支付后便可代理此商品!'}}</text>
 				</view>
 				<view class="btn">
 					<view class="del" @click.stop="proxy">找商品代理</view>
-					<view class="shoping" @click.stop="go">开通vip自己开团</view>
+					<view class="shoping" @click.stop="go">{{isVipStatus==2?'续费或升级':'开通vip自己开团'}}</view>
 				</view>
 			</view>
 		</view>
@@ -18,8 +18,22 @@
 <script>
 	
 	export default{
+		 props:{
+		            isVipStatus:{
+		                type:String,
+		                default:"0"
+		            }
+		        },
 		data(){
-			return {}
+			return {
+				
+			}
+		},
+		onLoad(){
+			
+		},
+		onShow() {
+		
 		},
 		methods:{
 			go(){

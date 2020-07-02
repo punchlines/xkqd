@@ -1,7 +1,7 @@
 <template>
   <view class="goods_price" :style="{ fontSize: size + 'rpx', color: color }">
 		<!-- <text class="update_price">¥220000</text> -->
-		<text class="update_price">¥{{ showInteger }}</text>
+		<text class="update_price"><text style="font-size: 12px;">¥</text>{{ showInteger }}</text>
 		<text class="small">.{{ showDecimal }}</text>
 	</view>
 </template>
@@ -13,7 +13,7 @@
 	data () {
       return {
         showInteger: 0,
-        showDecimal: 0,
+        showDecimal: '00',
 	  }
 	},
 
@@ -60,15 +60,16 @@
 
   .goods_price {
 	  display:inline-block;
-	  color: #FF5858;
+	  color: #FF3B30;
     font-weight: bold;
     flex: 1;
 		letter-spacing: 1upx;
   }
 
   .small {
-    font-size: 22upx;
-    font-weight: normal;
+    font-size: 30upx;
+    
+
   }
 
 </style>

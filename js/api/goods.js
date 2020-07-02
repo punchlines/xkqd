@@ -3,8 +3,10 @@ import config from '../config'
 import { wrapPost, wrapNoFixParamsPost, wrapProductPost, wrapProductNoFixParamsPost } from './base/request';
 
 const HOST = config.API_HOST + '/apemoon-goods';
+const HOSTS = config.API_HOST + '/live-service';
 const PORT = 8094;
 let post = (url, params) => wrapProductPost(HOST, url, params);
+let posts = (url, params) => wrapProductPost(HOSTS, url, params);
 let noFixParamsPost = (url, params) => wrapProductNoFixParamsPost(HOST, url, params);
 
 if (config.DEV) {
@@ -23,6 +25,35 @@ api.getGoodsDetail = (goodsId) => post('goods/getGoodsDetail', { goodsId });
 api.getGoodsAppraise = (goodsId, pageNo = 1) => noFixParamsPost('goods/listGoodsAppraise', { goodsId, pageNo });
 api.replyGoodsAppraise = (appraiseId, replyContent) => post('goods/setGoodsAppraiseReply', { appraiseId, replyContent });
 
+api.openLive = (liveId,cover, recommendGoods,relatedGoods,latitude,title,longitude) => posts('live/openLive', { liveId,cover, recommendGoods,relatedGoods,latitude,title,longitude });
+
+api.getLiveList = (type,toPage,longitude,latitude) => posts('live/getLiveList', {type,toPage,longitude,latitude});//获取直播列表
+
+api.readyLive = (liveId) => posts('live/readyLive',{liveId});//获取直播间详情
+
+api.endLive = (liveId) => posts('live/endLive',{liveId});//退出直播间
+
+api.updateLiveLikeAndWatch = (liveId,watchNum,likeNum) => posts('live/updateLiveLikeAndWatch',{liveId,watchNum,likeNum});//更新直播点赞及观看人数
+
+api.updateLiveInfo = (liveId,relatedGoods,recommendGoods) => posts('live/updateLiveInfo',{liveId,relatedGoods,recommendGoods});//更新直播详细信息
+
+api.updateLiveInfos = (liveId,recommendGoods) => posts('live/updateLiveInfo',{liveId,recommendGoods});//更新直播详细信息
+
+api.getLiveDataInfo = (liveId) => posts('live/getLiveDataInfo',{liveId});//准备直播
+
+
+
+api.attentionAnchor = (liveId,anchorUserId) => posts('live/attentionAnchor',{liveId,anchorUserId});//关注主播
+
+api.getReportTypeList = (liveId,anchorUserId) => posts('live/getReportTypeList',{liveId,anchorUserId});//获取举报列表
+
+api.reportAnchor = (liveId,anchorUserId,typeId,content,imgs) => posts('live/reportAnchor',{liveId,anchorUserId,typeId,content,imgs});//举报主播
+
+api.cancelAttentionAnchor = (liveId,anchorUserId) => posts('live/cancelAttentionAnchor',{liveId,anchorUserId});//取关主播
+
+api.liveHistoryList = (toPage) => posts('live/liveHistoryList',{toPage});//直播历史记录
+
+api.searchGoods = (key, pageNo = 1) => post('goods/searchGoods', { key, pageNo });//搜索平台商品
 
 api.setShopRecommend = (goodsId,type) => post('goods/setShopRecommend',{goodsId,type});
 api.setGoodsStatus = (goodsId,status,type) => post('goods/setGoodsStatus',{goodsId,status,type});

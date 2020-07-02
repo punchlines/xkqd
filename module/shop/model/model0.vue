@@ -38,21 +38,15 @@
 		</view>
 
 		<!-- 图标 -->
-		<view class="icon_img" v-if="isSelfShop">
-	
+		<view class="icon_img" v-if="isSelfShop&& userType <5">
 				<view class="icon_mel" @click="changeTemplate">
 					<wx-view>
 						<view class="fir">
 							<img src="http://card-1254165941.cosgz.myqcloud.com/shopTemplate/icon1.png" alt="" mode="aspectFit">
 						</view>
 					</wx-view>
-					
-					
 					<view>店铺模板</view>
 				</view>
-		
-			
-			
 			<view class="icon_sec"  @click="pusblishGoods">
 				<wx-view>
 					<view class="fir">
@@ -142,9 +136,9 @@
 				<!-- <view class="date">上次编辑时间：{{oneGoods.updateTime | formatDate}}</view> -->
 			</view>
 			<view class="bottomCon fx-column fx-row-center">
-				<view class="cancel" @click="cancelRecommend(oneGoods.goodsId)" v-if="oneGoods.shopRecommend==1">取消店主推荐</view>
-				<view class="cancel" @click="toRecommend(oneGoods.goodsId)" v-else>设为店主推荐</view>
-				<view class="down" @click="downGoods(oneGoods.goodsId)">下架商品</view>
+				<view class="cancel" @click="cancelRecommend(oneGoods.goodsId)" v-if="oneGoods.shopRecommend==1" :style="{background:(userType <5 ?'#6B7AF8':'#999999'),pointerEvents:(userType <5 ?'':'none')}">取消店主推荐</view>
+				<view class="cancel" @click="toRecommend(oneGoods.goodsId)" v-else :style="{background:(userType <5 ?'#6B7AF8':'#999999'),pointerEvents:(userType <5 ?'':'none')}">设为店主推荐</view>
+				<view class="down" @click="downGoods(oneGoods.goodsId)" :style="{background:(userType <5 ?'#F8F8FF':'#999999'),color:(userType <5 ?'#6B7AF8':'#ffffff'),pointerEvents:(userType <5 ?'':'none')}">下架商品</view>
 			</view>
 			<!-- 退出 -->
 			<view class="out" @click="outClick">
@@ -199,7 +193,9 @@
 				userId: '', //当前用户id、
 				shopId:1,
 				recommendId: 0,
+				userType:'',
 				pointsScore: 0,
+				option:'',
 				cardUserId: '',
 			};
 		},
@@ -215,13 +211,26 @@
 
 		mixins: [shopMixins, loadMoreMixins],
 		// 监听页面显示
-		onShow: function() {},
+			onShow() {
+			// let options = uni.getStorageSync('option');
+			// this.getShopDetail()
+			// this.currentPage=1
+			// this.init(options)
+			
+			
+		},
+		onLoad(options) {
+			// console.log(options)
+			// this.option=options
+			// uni.setStorageSync('option', this.option);
+		},
 		methods: {
 			
 			init(options){
 				this.userId = uni.getStorageSync('userId')
 				//console.log(this.userId,this.$store.state.currentUser)
 				console.log(options)
+				this.userType=options.userType
 				this.shopIdOtherPeople = options.shopIdOtherPeople || options.shopId;
 				if (!this.checkHasLogin(`/module/shop/home/home?shopId=${this.shopIdOtherPeople}`,true)) {
 					//console.log('123')

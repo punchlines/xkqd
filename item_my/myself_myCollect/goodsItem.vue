@@ -33,6 +33,7 @@
 					image: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/defaultPage/shoucang.png',
 					title: '当前无收藏的商品'
 				},
+				
 			}
 		},
 		props:{
@@ -55,6 +56,7 @@
 					shopId: shopId
 				})
 			},
+			
 
 		},
 		onLoad() {
@@ -161,6 +163,22 @@
 			left: 50%;
 			margin-top: -86upx;
 			margin-left: -115upx;
+		}
+	}
+	// 标题
+	.HeaderTitle {
+		width: 100%;
+		background: #fff;
+	
+		.Title {
+			.Titem {
+				padding: 30upx;
+			}
+	
+			.ItemActive {
+				border-bottom: 3upx solid @tabActive;
+				color: @tabActive;
+			}
 		}
 	}
 </style>

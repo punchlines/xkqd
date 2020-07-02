@@ -1,144 +1,157 @@
 <template>
 	<view class="container">
 		<app-share-top-banner></app-share-top-banner>
-
-	
-		
-		
-		<!-- 视频 -->
-		<view class="videoContainer" v-if="circle.freeCourseList.length>0">
-			<view class="videoBox">
-				<video id="myVideo"  class="video" :src="circle.freeCourseList[currentIndex].video" :poster="circle.freeCourseList[currentIndex].cover"></video>
-			</view>
-			
-			<view class="courseTitle">{{circle.freeCourseList[currentIndex].title}}</view>
-			<view class="desc">课程描述:{{circle.courseDescribe}}</view>
-			
-			<view class="h3">课程章节:</view>
-			<!-- 章节列表 -->
-			<view class="courseList  fx-row fx-wrap fx-row-space-between" >
-				
-				
-				<view class="courseItem" v-for="(item,index) in circle.freeCourseList" :key="index" @click="goChapterDetail(index)">
-				
-					<image :src="item.cover" class="courseImage" mode=""></image>
-					
-					<view class="chapterTip">{{formateSeconds(parseInt(item.time))}}</view>
-					<view class="info">
-						<view class="title">{{item.title}}</view>
-					</view>
-					
-				</view>
-				
-				<view class="courseItem" v-for="(item,index) in circle.courseList" :key="index" @click="goJoin">
-				
-					<image :src="item.cover" class="courseImage" mode=""></image>
-					
-					<view class="chapterTip">{{formateSeconds(parseInt(item.time))}}</view>
-					<view class="info">
-						<view class="title">{{item.title}}</view>
-					</view>
-					
-				</view>
-			</view>
-			
-		</view>
-		
 		<!-- 头部 -->
-		<view class="topBg" v-else></view>
-		
-		
+		<view class="topBg"></view>
 		<!-- 圈子信息 -->
-		<view class="circleInfo" :style="{'margin-top':circle.freeCourseList.length>0?'0':'-220rpx'}">
+		<!-- :style="{'margin-top':circle.freeCourseList.length>0?'0':'-220rpx'}" :avatar="circle.mpCardCircle.headImage" -->
+		<view class="circleInfo">
 			<view class="infoTop">
 				<view class="info fx-row">
 					<view class="avatar">
-						<circle-avatar :avatar="circle.mpCardCircle.headImage" :images="circle.headImage"></circle-avatar>
+						<circle-avatar :images="circle.headImages" :width='width'></circle-avatar>
 					</view>
-					<view>
-						<view class="title">{{ circle.mpCardCircle.name }}</view>
-						<view class="txt">ID:{{ circle.mpCardCircle.number }}</view>
-						<view class="label txt" v-if="circle.circleTypeName">{{ circle.circleTypeName }}</view>
+					<view style="width: 100%;">
+						<view class="title">{{ circle.title }}</view>
+						<view class="txt">ID:<text style="margin-left: 10rpx;">{{ circle.number }}</text></view>
+						<!-- <view class="label txt" v-if="circle.circleTypeName">{{ circle.circleTypeName }}</view> -->
+						<view class="infoBottom fx-row">
+							<view class="item fx-row fx-row-center">
+								<image :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.XjiVHcTlUAtzd9146c328a9291344bb3a3565969b244.png'"
+								 class="people"></image>
+								<text>{{ circle.memberNum }} 人</text>
+							</view>
+							<view class="item fx-row fx-row-center">
+								<image :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.hbKST2kGEXw950e401b5b34340cad84e84ce2fd1d74a.png'"
+								 class="huati"></image>
+								<text>{{ circle.topicNum }}</text>
+							</view>
+
+							<!-- <view v-if="isPinGroup" class="item groupavatar fx-row fx-row-right">
+								<image class="avatar" v-for="(it,inx) in circle.headImage" :key="inx" :src="it"></image>
+							</view> -->
+						</view>
 					</view>
 				</view>
+
 			</view>
-			<view class="infoBottom fx-row" >
-				<view class="item fx-row fx-row-center">
-					<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/ren.png'" class="people"></image>
-					<text>{{ circle.mpCardCircle.memberNum }}</text>
-				</view>
-				<view class="item fx-row fx-row-center">
-					<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/huati_un.png'" class="huati"></image>
-					<text>{{ circle.mpCardCircle.topicNum }}</text>
-				</view>
-				
-				<!-- <view v-if="isPinGroup" class="item groupavatar fx-row fx-row-right">
-					<image class="avatar" v-for="(it,inx) in circle.headImage" :key="inx" :src="it"></image>
-				</view> -->
-			</view>
+
 		</view>
-		
-		
+
+
 		<template>
-			<view class="manCon"  @click="openUserDetail">
+			<view class="manCon" @click="openUserDetail">
 				<view class="fx-row fx-row-space-between fx-row-center">
-					<image :src="manager.headImage" class="manager"></image>
+					<image :src="circle.lordHeadImg" class="manager"></image>
 					<view class="fx-column" style="flex: 1">
-						<view class="name">{{ manager.name }}</view>
+						<view class="name">{{ circle.lordUserName }}</view>
 						<view class="posi fx-row fx-row-center">
-							<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/guanliyuan.png'"></image>
+							<image :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.DEihmYSje8XFdbbf4daeddcd2fc229d2ae8d010a5329.png'"></image>
 							<text>管理员</text>
 						</view>
 					</view>
 					<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/right.png'" mode="widthFix" class="rightImg"></image>
 				</view>
 			</view>
-			
+
 
 			<!-- 圈子介绍 -->
-			<view class="introduce" v-if="circle.mpCardCircle.circleIntroduce">
-				<view class="title">圈子介绍</view>
+			<view class="introduce" v-if="circle.circleIntroduce">
+				<view class="title">社群介绍</view>
 				<view class="content">
-					{{ circle.mpCardCircle.circleIntroduce }}
+					{{ circle.circleIntroduce }}
 				</view>
 			</view>
-
-			<view class="tishi">
-				<text>关注以后可以了解更多圈内动态</text>
-			</view>
 		</template>
-		
-	<!-- 	<template v-else-if="pinGroup">
+		<!-- 视频 -->
+		<view class="h3" v-if="circle.freeCourseList.length>0">视频介绍</view>
+		<view class="videoContainer" v-if="circle.freeCourseList.length>0">
+			<view class="videoBox">
+				<video id="myVideo" class="video" :src="circle.freeCourseList[currentIndex].video" :poster="circle.freeCourseList[currentIndex].cover"></video>
+			</view>
+			<!-- <view class="courseTitle">{{circle.freeCourseList[currentIndex].title}}</view> -->
+			<!-- <view class="desc">课程描述:{{circle.courseDescribe}}</view> -->
+
+			<!-- 章节列表 -->
+			<view class="courseList  fx-row fx-wrap fx-row-space-between">
+				<view class="courseItem" v-for="(item,index) in circle.freeCourseList" :key="index" @click="goChapterDetail(index)">
+					<!-- <view style="z-index: 999; position: absolute;"> -->
+					<image :src="item.cover"  class="courseImage"  id="myVideos" ></image>
+					<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.Diy5vaCCRaLX38e1aca00bc48288d1d3d8000a71f585.png" style="width: 100rpx; height: 100rpx; position: absolute; top: -20px; right: 0px; bottom: 0px; right: 0px; margin: auto; left: 0px;"></image>
+					<!-- <view class="chapterTip">{{formateSeconds(parseInt(item.time))}}</view> -->
+					<view class="info">
+						<view class="title">{{item.title}}</view>
+					</view>
+					<!-- </view> -->
+				</view>
+
+				<view class="courseItem" v-for="(item,index) in circle.courseList" :key="index" @click="goJoin">
+
+					<image :src="item.cover" class="courseImage" id="myVideos" ></image>
+					<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.Diy5vaCCRaLX38e1aca00bc48288d1d3d8000a71f585.png" style="width: 100rpx; height: 100rpx; position: absolute; top: -20px; right: 0px; bottom: 0px; right: 0px; margin: auto; left: 0px;"></image>
+					<!-- <view class="chapterTip">{{formateSeconds(parseInt(item.time))}}</view> -->
+					<view class="info">
+						<view class="title">{{item.title}}</view>
+					</view>
+
+				</view>
+			</view>
+			<view class="zankai" v-if="circle.freeCourseList.length>5">
+				展开
+				<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.9u2PJClgEkfpa341a5a6466642cd443999aad032687e.png"
+				 mode="" style="width: 32rpx;height: 20rpx; margin-left: 10rpx;padding-top: 13rpx;"></image>
+			</view>
+		</view>
+		<!-- 	<template v-else-if="pinGroup">
 			<view class="fx-row fx-row-middle" style="margin-bottom: 30upx;">
 				<circle-group :name="circle.mpCardCircle.name" :canClick="false" :item="pinGroup"></circle-group>
 			</view>
 			
 		</template> -->
-	
-	<!-- 	<view class="raceLamp"  v-if="isPinGroup">
+
+		<!-- 	<view class="raceLamp"  v-if="isPinGroup">
 				<race-lamp></race-lamp>
 		</view> -->
-		
-		
-		<!-- 管理员 -->
-		
-		<!-- 按钮 -->
-		<view v-if="isJoin">
-			<view class="btn" @click="openCircleDetail">你已加该入圈子，点击跳转圈子详情</view>
+		<view class="h3">活跃成员</view>
+		<view class="trim-list">
+			<view class="trim" v-for="(item,index) in circle.memberList" :key="index" @click="goTips">
+				<view class="img">
+					<image :src="item.headImg" mode="" style="width: 120rpx; height: 120rpx; border-radius: 10rpx;"></image>
+				</view>
+				<view style="margin-left: 20rpx;">
+					<view class="name">
+						{{item.userName}}
+					</view>
+					<view class="zhicheng">
+						{{item.job}}
+					</view>
+				</view>
+			</view>
 		</view>
-		<template v-else>
-			<view class="btn" @click="verify" v-if="isNeedPay && currentUser.id">我想关注，需支付￥{{ showJoinMoney }}</view>
-			<button class="btn" v-if="isNeedPay && !currentUser.id" open-type="getPhoneNumber" @getphonenumber="regAndJoin">我想关注，需支付￥{{ showJoinMoney }}</button>
-			<view class="btn" @click="verify" v-if="!isNeedPay && currentUser.id">我想关注</view>
-			<button class="btn" open-type="getPhoneNumber" @getphonenumber="regAndJoin" v-if="!isNeedPay && !currentUser.id">我想关注</button>
-			<view class="not" @click="dontJoin">不想关注</view>
-		</template>
+
+		<!-- 按钮 -->
+		<view class="btn_bottom">
+
+			<view v-if="isJoin">
+				<view class="btn" @click="openCircleDetail">你已加该入社群，点击跳转社群详情</view>
+			</view>
+			<template v-else>
+				<view class="btn" @click="verify" v-if="isNeedPay && currentUser.id">加入社群，获取资源需要支付￥{{ showJoinMoney }}</view>
+				<button class="btn" v-if="isNeedPay && !currentUser.id" open-type="getPhoneNumber" @getphonenumber="regAndJoin">加入社群，获取资源需要支付￥{{ showJoinMoney }}</button>
+				<view class="btn" @click="verify" v-if="!isNeedPay && currentUser.id">申请加入</view>
+				<button class="btn" open-type="getPhoneNumber" @getphonenumber="regAndJoin" v-if="!isNeedPay && !currentUser.id">申请加入</button>
+				<!-- <view class="not" @click="dontJoin">不想关注</view> -->
+				<view class="tishi">
+					<text>加入以后可以了解更多社群动态</text>
+				</view>
+			</template>
+		</view>
 		<get-user-info-modal v-if="authShow && !currentUser.id" @hideModal="authShow=false" @getUserInfo="setUserInfo"></get-user-info-modal>
 		<!-- 保存成功弹框 -->
 		<view class="saveModel fx-row fx-row-center fx-col-center" style="z-index: 100;" v-if="showLoadings">
 			<view class="saveCon fx-column fx-row-center">
 				<!-- https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs2r1bMrWHaOln0s72530D84.PNG2pUobGhA6a86fa0885c0be339572cc464ec247561.png -->
-				
+
 				<image class="rotate" :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs2r1bMrWHaOln0s72530D84.PNG2pUobGhA6a86fa0885c0be339572cc464ec247561.png'"
 				 mode="widthFix"></image>
 				<view class="succ">请稍等，正在保存</view>
@@ -153,7 +166,9 @@
 <script>
 	// import circleGroup from '@/components/circleGroup/circleGroup';
 	import GetUserInfoModal from '@/components/getUserInfoModal.vue'
-	import {formateSeconds} from '@/js/mzl.js'
+	import {
+		formateSeconds
+	} from '@/js/mzl.js'
 	import CircleAvatar from "../../components/CircleAvatar";
 	// import raceLamp from '../_components/raceLamp/raceLamp';
 	export default {
@@ -170,14 +185,14 @@
 				defaultAvatar: '',
 				defaultName: '',
 				recommendId: '',
-				circle: {
-					mpCardCircle: {},
-				},
-				videoContext:null,
-				pinGroup:null,
+				circle: {},
+				width: true,
+				videoContext: null,
+				videoContexts:null,
+				pinGroup: null,
 				manager: {},
-				showLoadings:false,
-				currentIndex:0
+				showLoadings: false,
+				currentIndex: 0
 			};
 		},
 
@@ -185,18 +200,18 @@
 			// isPinGroup(){
 			// 	return this.circle.mpCardCircle.joinType == 5;
 			// },
-			
+
 			isNeedPay() {
-				return this.circle.mpCardCircle.joinType == 4;
+				return this.circle.joinType == 4;
 			},
 			showJoinMoney() {
-				if (this.circle.mpCardCircle.joinMoney) {
-					return this.circle.mpCardCircle.joinMoney.toFixed(2);
+				if (this.circle.joinMoney) {
+					return this.circle.joinMoney.toFixed(2);
 				}
 				return '';
 			},
 			isJoin() {
-				return this.circle.ifJoin == 1;
+				return this.circle.isJoin == 1;
 			},
 		},
 
@@ -218,12 +233,13 @@
 				this.recommendId = scene.match(/recommendId=(\d+)/) ? scene.match(/recommendId=(\d+)/)[1] || '' : '';
 			} else {
 				console.log("直接邀请进入")
-				this.recommendId = option.recommendId || 67;
+				this.recommendId = option.recommendId || '';
 				this.circleId = option.id;
 			}
 			uni.showLoading();
 			//判断登录
-			this.videoContext =  uni.createVideoContext('myVideo')
+			this.videoContext = uni.createVideoContext('myVideo')
+			this.videoContexts = uni.createVideoContext('myVideos')
 			this.doLoginHandle((hasReg) => {
 				if (!hasReg) {
 					this.authShow = true;
@@ -234,20 +250,28 @@
 
 				//uni.hideLoading();
 			});
-
+			
 		},
 
 		methods: {
-			goChapterDetail(index){
-				if(index!=this.currentIndex){
+			goChapterDetail(index) {
+				console.log(index)
+				// this.videoContexts.stop();
+				//if (index != this.currentIndex) {
 					this.videoContext.stop();
-					this.currentIndex=index;
-					setTimeout(()=>{
+					this.currentIndex = index;
+					setTimeout(() => {
 						this.videoContext.play();
-					},500)
-				}
+					}, 500)
+					
+				//}
 			},
-			formateSeconds(v){
+			goChapterDetails(){
+				console.log(123)
+				 this.videoContexts.stop();
+				  this.videoContexts.pause();
+			},
+			formateSeconds(v) {
 				return formateSeconds(v)
 			},
 			regAndJoin(e) {
@@ -313,7 +337,7 @@
 								//设置userId 更新用户信息
 								uni.setStorageSync('userId', value.userInfoId);
 								this.$store.dispatch('updateCurrentUserInfo').then(res => {
-									
+
 									this.verify();
 								});
 
@@ -338,20 +362,42 @@
 
 
 			},
-			goJoin(){
+			goJoin() {
 				uni.showModal({
-					content:"只能试看4节，关注后可观看全部",
-					showCancel:false,
-					success:()=>{
-						uni.pageScrollTo({
-						    scrollTop:99999,
-						    duration: 300
-						});
+					content: "只能试看4节，关注后可观看全部",
+					confirmText: '加入',
+					success: (res) => {
+						// uni.pageScrollTo({
+						// 	scrollTop: 99999,
+						// 	duration: 300
+						// });
+						if (res.confirm) {
+							//this.videoContext.stop();
+							this.verify()
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
+					}
+
+				})
+			},
+			goTips() {
+				uni.showModal({
+					title: '你还不是社群成员， 请先加入社群，即能获取更多资源',
+					confirmText: '加入',
+					success: (res) => {
+						// uni.pageScrollTo({
+						// 	scrollTop: 99999,
+						// 	duration: 300
+						// });
+						if (res.confirm) {
+							this.verify()
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+						}
 					}
 				})
 			},
-
-
 			setUserInfo(e) {
 				console.log(e)
 				if (e.detail.errMsg == 'getUserInfo:fail auth deny') {} else {
@@ -363,14 +409,16 @@
 			},
 
 			getCircleDetail() {
-				this.$api.getCardCircleDetail(this.circleId).then(result => {
+				this.$api.joinCardCircleInfo(this.circleId).then(result => {
 					this.circle = result;
-					return this.$api.getUserCardDetails2(result.mpCardCircle.managerId);
+					// if(this.circle.isJoin==1){
+					// 	this.openCircleDetail()
+					// }
 				}).then(result => {
 					
-						this.manager = result.userMap
-						uni.hideLoading();
-					
+					//this.manager = result.userMap
+					uni.hideLoading();
+
 				}).catch(error => {
 					uni.hideLoading();
 					this.showError(error)
@@ -382,7 +430,7 @@
 				// 	return;
 				// }
 
-				const type = this.circle.mpCardCircle.joinType;
+				const type = this.circle.joinType;
 				if (type == 1 || type == 3 || type == 5) { // 邀请或任何人，直接加入 或者拼团圈
 					uni.showLoading();
 					this.$api.joinNewCardCircle(this.circleId, this.recommendId).then(result => {
@@ -427,11 +475,11 @@
 					}).then(result => {
 						this.showLoadings = true;
 						let t = 0;
-						let timer = setInterval(()=>{
-							t+=3000;
-							
-							this.$api.paymentStatusCallback(_order,3,null,this.circleId).then(res=>{
-								if(res || t>=15000){
+						let timer = setInterval(() => {
+							t += 3000;
+
+							this.$api.paymentStatusCallback(_order, 3, null, this.circleId).then(res => {
+								if (res || t >= 15000) {
 									this.showLoadings = false;
 									clearInterval(timer)
 									this.showTips('支付成功').then(res => {
@@ -441,11 +489,11 @@
 									})
 								}
 							});
-							
-							
-						},3000)
-						
-						
+
+
+						}, 3000)
+
+
 					}).catch(error => {
 						uni.hideLoading();
 						this.showError(error)
@@ -455,7 +503,7 @@
 
 			openUserDetail() {
 				this.navigateTo('/pages/businessCard2/businessCard2', {
-					cardUserId: this.circle.mpCardCircle.managerId
+					cardUserId: this.circle.lordUserId
 				});
 			},
 
@@ -490,95 +538,105 @@
 		0% {
 			transform: rotate(0deg)
 		}
-	
+
 		100% {
 			transform: rotate(360deg)
 		}
 	}
-	
+
 	.rotate {
 		animation: rotateicon 3s infinite linear;
 	}
-	
-	.videoContainer{
-		width: 92%;
-		margin: 20rpx auto;
-		.courseTitle{
-			margin-bottom: 8rpx;
-			font-weight: bold;
-			margin-top: 400rpx;
-		}
-		.desc{
+
+	.videoContainer {
+		width: 690rpx;
+		margin: 0rpx auto;
+
+		// .courseTitle{
+		// 	margin-bottom: 8rpx;
+		// 	font-weight: bold;
+		// 	margin-top: 400rpx;
+		// }
+		.desc {
 			min-height: 300rpx;
 			background: white;
 			padding: 10rpx;
-			border-radius: 10rpx;
+			border-radius: 10px;
 			box-sizing: border-box;
 			margin: 10rpx 0;
 		}
-		
-		.videoBox{
-			width: 100%;
-			min-width: 750rpx;
-			position: fixed;
-			left: 0rpx;
-			top: 0;
-			z-index: 9999;
-			background: white;
-			height: 400rpx;
-			
-			.video{
-				width:690rpx;
+
+		.videoBox {
+			//width: 100%;
+			//min-width: 750rpx;
+			//position: fixed;
+			//left: 0rpx;
+			//top: 0;
+			//z-index: 9999;
+			//background: white;
+			//height: 400rpx;
+
+			.video {
+				width: 690rpx;
 				// position: fixed;
 				// left: 30rpx;
 				// top: 0;
 				// z-index: 9999;
-				margin-left: 30rpx;
-				height: 400rpx;
+				//margin-left: 30rpx;
+				height: 388rpx;
+				border-radius: 10px;
 			}
 		}
-		
-		.courseList{
+
+		.courseList {
 			box-sizing: border-box;
-		
-			.courseItem{
+
+			.courseItem {
 				width: 330rpx;
 				box-sizing: border-box;
-				border: 1rpx solid #ddd;
+				border-radius: 10px;
 				box-shadow: 1rpx 1rpx 10rpx 1rpx #ccc;
 				position: relative;
-				.chapterTip{
+				margin-top: 15rpx;
+
+				.chapterTip {
 					position: absolute;
 					right: 5rpx;
 					top: 193rpx;
 					color: white;
 					font-size: 28rpx;
-					background: rgba(0,0,0,0.3);
+					background: rgba(0, 0, 0, 0.3);
 				}
-				&:nth-of-type(n+3){
+
+				&:nth-of-type(n+3) {
 					margin-top: 30rpx;
 				}
-				.courseImage{
+
+				.courseImage {
+					border-top-right-radius: 10px;
+					border-top-left-radius: 10px;
 					width: 330rpx;
-					height:  230rpx;
+					height: 230rpx;
 				}
-				
+
 			}
-			.info{
+
+			.info {
 				width: 100%;
 				padding: 15rpx;
-				
-				.title{
+
+				.title {
 					font-size: 28rpx;
 					font-weight: bold;
 					overflow: hidden;
-					text-overflow:ellipsis;
+					text-overflow: ellipsis;
 					white-space: nowrap;
-					
+
 				}
-				}
+			}
 		}
 	}
+
 	// 弹出层
 	.saveModel {
 		position: fixed;
@@ -588,7 +646,7 @@
 		left: 0;
 		background: rgba(0, 0, 0, 0.5);
 		z-index: 1;
-	
+
 		.saveCon {
 			width: 84%;
 			margin: 0 auto;
@@ -596,26 +654,26 @@
 			box-sizing: border-box;
 			padding: 40upx;
 			border-radius: 20upx;
-	
+
 			image {
 				width: 120upx;
 				height: 120upx;
 				margin-top: 10upx
 			}
-	
+
 			.succ {
 				font-size: 36upx;
 				color: #333333;
 				margin: 32upx 0 20upx 0;
 			}
-	
+
 			.txt {
 				font-size: 28upx;
 				color: #666666;
 				margin: 20upx 0 50upx 0;
 				text-align: center;
 			}
-	
+
 			.but {
 				width: 100%;
 				height: 80upx;
@@ -624,27 +682,29 @@
 				font-size: 28upx;
 				border-radius: 40upx;
 			}
-	
+
 			.bindC {
 				border: 1px solid #6B7AF8;
 				color: #6B7AF8;
 				margin-bottom: 24upx;
 			}
-	
+
 			.shop {
 				border: 1px solid #CCCCCC;
 				color: #CCCCCC
 			}
 		}
 	}
-	.raceLamp{
+
+	.raceLamp {
 		position: fixed;
 		left: 20upx;
-		
+
 	}
+
 	.container {
 		font-family: PingFangSC;
-		background: #F5F5F5;
+		background: #FFFFFF;
 		box-sizing: border-box;
 		padding-bottom: 60upx;
 		min-height: 100vh
@@ -652,22 +712,22 @@
 
 	.topBg {
 		width: 100%;
-		height: 280upx;
-		background: #8390FF;
-		border-radius: 0 0 20% 20%;
+		height: 10upx;
+		// background: #8390FF;
+		// border-radius: 0 0 20% 20%;
 	}
 
 	// 圈子信息
 	.circleInfo {
 		width: 92%;
-		height: 320upx;
+		border-radius: 10px;
 		background: #fff;
-		border-radius: 8upx;
+		box-shadow: 0px 0px 14px 4px rgba(230, 230, 230, 0.5);
 		box-sizing: border-box;
-		padding: 40upx 30upx 40upx 30upx;
-		margin: 0 auto;
-		box-shadow: 0upx 2upx 16upx 4upx rgba(141, 150, 224, 0.24);
-		margin-top: -220upx;
+		padding: 20upx 30upx 17upx 30upx;
+		margin: 20rpx auto;
+
+		// margin-top: -220upx;
 
 		.infoTop {
 			.info {
@@ -675,19 +735,22 @@
 					width: 140upx;
 					height: 140upx;
 					margin-right: 30upx;
-					margin-bottom: 40upx;
+					margin-bottom: 10upx;
 				}
 
 				.title {
 					font-size: 32upx;
 					color: #333333;
 					font-weight: 500;
-					margin-bottom: 7upx;
+					margin-bottom: 20upx;
+					font-family: PingFangSC-Medium, PingFang SC;
 				}
 
 				.txt {
+					margin-bottom: 20rpx;
 					font-size: 24upx;
-					color: #666666;
+					color: #4C4D4C;
+					font-family: PingFangSC-Regular, PingFang SC;
 				}
 
 				.label {
@@ -703,29 +766,30 @@
 		}
 
 		.infoBottom {
-			border-top: 1px solid #eee;
+			margin-top: 3rpx;
 
 
 
 			.item {
 				font-size: 24upx;
 				color: #666666;
-				margin-top: 28upx;
+				//margin-top: 28upx;
 				width: 25%;
 				overflow: hidden;
 				text-overflow: ellipsis;
 				white-space: nowrap;
-				
-				.groupavatar{
+
+				.groupavatar {
 					width: auto;
-				
+
 				}
-					.avatar{
-						width: 50upx;
-						height: 50upx;
-						border-radius:50%; 
-					}
-				
+
+				.avatar {
+					width: 50upx;
+					height: 50upx;
+					border-radius: 50%;
+				}
+
 			}
 
 			.people {
@@ -746,28 +810,31 @@
 	// 管理员
 	.manCon {
 		width: 92%;
-		height: 180upx;
+		height: 170upx;
 		margin: 24upx auto;
-		box-shadow: 0upx 2upx 16upx 4upx rgba(141, 150, 224, 0.24);
+		box-shadow: 0px 0px 14px 4px rgba(230, 230, 230, 0.5);
 		box-sizing: border-box;
-		padding: 40upx 30upx;
+		padding: 28upx 30upx;
 		background: #fff;
+		border-radius: 10px;
 
 		.manager {
-			width: 100upx;
-			height: 100upx;
+			width: 120upx;
+			height: 120upx;
+			border-radius: 10rpx;
 			margin-right: 30upx;
 		}
 
 		.name {
-			margin-bottom: 12upx;
-			font-size: 30upx;
+			font-family: PingFangSC-Medium, PingFang SC;
+			margin-bottom: 40rpx;
+			font-size: 32rpx;
 			color: #333333;
 		}
 
 		.posi {
-			font-size: 24upx;
-			color: #6B7AF8;
+			font-size: 14px;
+			color: #2EA1FF;
 
 			&>image {
 				width: 25upx;
@@ -786,19 +853,21 @@
 	.introduce {
 		width: 92%;
 		min-height: 384upx;
-		max-height: 684upx;
+		max-height: 384upx;
 		margin: 0 auto;
 		background: #fff;
-		box-shadow: 0upx 2upx 16upx 4upx rgba(141, 150, 224, 0.24);
+		border-radius: 10px;
+		border: 1px solid rgba(204, 204, 204, 1);
+		// box-shadow:0px 0px 14px 4px rgba(230,230,230,0.5);
 		box-sizing: border-box;
 		padding: 30upx;
-		margin-bottom: 56upx;
+
 		display: flex;
 		flex-direction: column;
 
 		.title {
-			font-size: 32upx;
-			color: #000000;
+			font-size: 34upx;
+			color: #333;
 			padding-bottom: 22upx;
 		}
 
@@ -817,19 +886,52 @@
 		text-align: center;
 		font-size: 24upx;
 		color: #999999;
-		margin-bottom: 24upx;
+		margin-top: 15rpx;
+	}
+
+	.btn_bottom {
+		position: fixed;
+		bottom: 0;
+		background: #fff;
+		width: 100%;
+		height: 140rpx;
+		padding-top: 20rpx;
 	}
 
 	.btn {
 		width: 92%;
 		height: 88upx;
 		line-height: 88upx;
-		margin: 0 auto;
 		border-radius: 44upx;
-		background: #6B7AF8;
+		background: #2EA1FF;
 		color: #fff;
 		text-align: center;
 		font-size: 32upx;
+		margin: 0 auto;
+
+	}
+
+	.h3 {
+		margin-left: 60rpx;
+		font-size: 34rpx;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: 500;
+		color: rgba(51, 51, 51, 1);
+		line-height: 48px;
+		letter-spacing: 1px;
+
+	}
+
+	.zankai {
+		color: #2EA1FF;
+		font-size: 30rpx;
+		font-family: PingFangSC-Medium, PingFang SC;
+		font-weight: 500;
+		margin: 0 auto;
+		width: 102rpx;
+		display: flex;
+		flex-direction: row;
+		margin-top: 20px;
 	}
 
 	.not {
@@ -837,5 +939,59 @@
 		font-size: 28upx;
 		color: #666666;
 		text-align: center;
+	}
+
+	.trim-list {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		margin: 0 auto;
+		width: 92%;
+		padding-bottom: 100rpx;
+	}
+
+	.trim {
+		width: 310rpx;
+		height: 120rpx;
+		background: rgba(255, 255, 255, 1);
+		box-shadow: 0px 0px 14px 4px rgba(230, 230, 230, 0.5);
+		border-radius: 10px;
+		padding: 20rpx 15rpx;
+		display: flex;
+		flex-direction: row;
+		margin-bottom: 10rpx;
+
+		.img {
+			width: 120rpx;
+			height: 120rpx;
+			border-radius: 10px;
+		}
+
+		.name {
+			font-family: PingFangSC-Medium, PingFang SC;
+			font-weight: 500;
+			color: rgba(51, 51, 51, 1);
+			line-height: 42px;
+			letter-spacing: 1px;
+			font-size: 30rpx;
+			margin-left: 10rpx;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			width: 150rpx;
+			overflow: hidden;
+			
+
+		}
+
+		.zhicheng {
+			width: 150rpx;
+			height: 39rpx;
+			background: rgba(224, 241, 255, 1);
+			border-radius: 22px;
+			text-align: center;
+			padding-top: 5rpx;
+			font-size: 12px;
+			color: rgba(51, 51, 51, 1);
+		}
 	}
 </style>

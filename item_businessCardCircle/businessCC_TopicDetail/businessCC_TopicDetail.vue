@@ -1,7 +1,7 @@
 <template>
 	<view class="topicDetailContainer">
 		<!-- 轮播图片 -->
-		<view class="TBmiddle" v-if="topic.images.length > 0">
+		<!-- <view class="TBmiddle" v-if="topic.images.length > 0">
 			<swiper @change="changeSwiperNum($event)" :autoplay="autoplay" :interval="interval"
 					:duration="duration" indicator-color="#E1E1E1" circular="true" indicator-active-color="#6B7AF8" display-multiple-items="1">
 				<swiper-item v-for="(item, index) in topic.images" :key="index" :display-multiple-items="index">
@@ -9,50 +9,67 @@
 				</swiper-item>
 			</swiper>
 			<view class="TBMswiperNum fsf24">{{currentNum+1}}/{{topic.images.length}}</view>
-		</view>
+		</view> -->
 		<!-- 话题内容 -->
 		<view class="topicContainer">
-			<view class="title">
+			<!-- <view class="title">
 				<text>{{ topic.title }}</text>
-			</view>
+			</view> -->
 			<view class="topicAuthor">
-				<image :src="topic.headImage" class="authorImg"></image>
-				<text class="auName">{{ topic.userName }}</text>
-			</view>
-			<view class="topicContent">
-				<view v-for="line in contentLine">{{ line }}</view>
-			</view>
-			<view class="dateContainer">
-				<text class="date">{{ formatTime }}</text>
+				<view @click="goCard">
+					<image :src="topic.headImage" class="authorImg"></image>
+				</view>
+				<view class="nameTime">
+					<text class="auName">{{ topic.userName }}</text>
+					<text class="TLtime">{{ topic.time }}</text>
+				</view>
 				<wx-view  v-if="isSelfPublish">
 					<view class="delContainer" @click="removeTopic">
-						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/dela.png'" class="delImg"></image>
+						<image :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.dMLjjsYTuqMP1d0e534fa29821a89d32c7e99ac0f976.png'" class="delImg"></image>
 						<text class="text">删除</text>
 					</view>
 				</wx-view>
-				
-				
 			</view>
+			<view class="topicContent">
+				<view v-for="(line,index) in contentLine" :key="index" class="topContent">{{ line }}</view>
+				<view class="TLimage" v-if="topic.images.length==1">
+					<image :src="topic.images" mode="aspectFill" @click="previewImage(topic.images)" ></image>
+				</view>
+				<view class="TLimages" v-if="topic.images.length>1">
+					<image :src="topic" mode="aspectFill" v-for="(topic,index) in topic.images" :key="index" @click="previewImage(topic)"></image>
+				</view>
+			</view>
+			<!-- <view class="dateContainer"> -->
+				<!-- <text class="date">{{ formatTime }}</text> -->
+			<!-- </view> -->
+			
 		</view>
 		<!-- 评价 -->
+		<view style="height: 20rpx; width: 100%; background-color: #F5F5F5;"></view>
 		<view class="commentContainer">
 			<view class="topicTitle">
 				<view class="titleTxt">
-					<text class="title_txt">评价</text>
+					<text class="title_txt">评论</text>
 					<text class="title_txt">({{ topic.commentCount }})</text>
 				</view>
-				<wx-view>
+				<!-- <wx-view>
 					<view class="more" @click="seeAll">
 						<text class="title_txt more_txt">查看全部</text>
 						<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/right.png'"></image>
 					</view>
-				</wx-view>
-			
+				</wx-view> -->
+				<view class="like" @click="changeLike">
+					<image v-if="topic.praiseType == 0" :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.ILlKusvnJgUN60380a2b88e427e64d848b91e3d506f4.png'"></image>
+					<image v-else :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.nol02scBedA56d1d0a155f28065bdc2ed8037dfb2d74.png'"></image>
+					<text class="num">{{ topic.praiseCount }}</text>
+				</view>
 			</view>
 
 			<topic-comment v-for="(item, index) in list"
 						   :comment="item"
 						   :index="index"
+						   :key="index"
+						   @changeLike="changeLikes"
 						   @reply="onReply"
 						   @removeSuccess="onRemoveSuccess">
 			</topic-comment>
@@ -62,25 +79,21 @@
 
 		<!-- 浮在整个页面上面的输入框 -->
 	
-		<view class="sayContainer"  v-if="showCommentInput">
+		<view class="sayContainer" >
 			<input v-model="commentContent" confirm-type="send" @confirm="send" type="text" :placeholder="commentPlaceholder" class="input" placeholder-class="tishi" :focus="isFocus" @blur="onBlur" />
 			<text class="sendMess" @click="send">发送</text>
 		</view>
 
 	
 		<!-- 底部tab(评价总数和点赞总数) -->
-		<view class="total" v-else>
-			<view class="like" @click="changeLike">
-				<image v-if="topic.praiseType == 0" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/like_2un.png'"></image>
-				<image v-else :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/like_2.png'"></image>
-				<text class="num">{{ topic.praiseCount }}</text>
-			</view>
+		<!-- <view class="total" v-else>
+			
 			<view class="line"></view>
 			<view class="pinglun" @click="onCommentTap">
-				<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/pinglun2.png'"></image>
+				<image :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.tYLrToOAWPSe74d06d23a07ef0b6dda7102684ef1e06.png'"></image>
 				<text class="num">{{ topic.commentCount }}</text>
 			</view>
-		</view>
+		</view> -->
 		<!-- 浮动的按钮 -->
 	<!-- 	<view class="fabu" @click="fabu">
 			<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/fabu.png'" class="fabuImg"></image>
@@ -92,6 +105,7 @@
 
 	import loadMoreMixins from '@/js/mixins/loadMoreMixins2';
 	import TopicComment from "../../components/TopicComment";
+	
 	const TYPE_COMMENT = 1;
 	const TYPE_REPLY   = 2;
 	export default {
@@ -162,6 +176,8 @@
 					} catch (e) {
 						result.circleTopic.images = [];
 					}
+					result.circleTopic.time = this.formatDate(result.circleTopic.time, 'MM月DD日HH:MM')
+					
 					this.topic = result.circleTopic;
 					uni.hideLoading()
 				}).catch(error => {
@@ -169,7 +185,13 @@
 					this.showError(error);
 				})
 			},
-
+			goCard(){
+				
+				uni.navigateTo({
+					url: "../../pages/businessCard2/businessCard2?cardUserId="+this.topic.userId
+				
+				})
+			},
 			fetch () {
 				this.loading = true;
 				this.$api.listTopicComment(this.topicId, this.currentPage).then(result => {
@@ -223,12 +245,16 @@
 					this.showError(error);
 				})
 			},
-
+			changeLikes(index){
+				// this.list.splice(index, 1);
+				this.list[index].topicCommentMap.praiseCount++
+				this.list[index].topicCommentMap.praiseType=1
+			},
 			onRemoveSuccess (index) {
 				this.list.splice(index, 1);
 				this.topic.commentCount--;
 			},
-
+			
 			onBlur () {
 				setTimeout(() => {
 					this.showCommentInput = false;
@@ -360,6 +386,7 @@
   }
   .topicContainer{
     padding: 0 30upx;
+	margin-top: 30rpx;
 	  box-sizing: border-box;
 	  width: 100%;
     .title{
@@ -370,24 +397,91 @@
       font-size: @fsPageTitle;
     }
     .topicAuthor{
-      height: 120upx;
-      background: #f8f8f8;
+     display: flex; 
+     flex-direction: row;
       .flex(@justCon:flex-start;@alignIt:center;);
       .authorImg{
-        width: 60upx;
-        height: 60upx;
-        margin: auto 14upx auto 30upx;
+        width: 78upx;
+        height: 78upx;
+		border-radius: 8rpx;
+		margin-right: 18rpx;
+        // margin: auto 14upx auto 30upx;
       }
-      .auName{
-        font-size: @fsSubTitle;
-        color: #666666;
+	  .nameTime{
+		  display: flex;
+		  flex-direction: column;
+		  width: 72%;
+		  .auName{
+		    font-size: 32rpx;
+		    color: #0064B6;
+		  }
+		  .TLtime{
+			  color: #808080;
+			  font-size: 22rpx;
+			  margin-top: 5px;
+		  }
+	  }
+      .delContainer{
+        height: 50upx;
+        line-height: 50upx;
+        
+        border-radius: 25upx;
+      		  display: flex;
+      		  align-items: center;
+      		  justify-content: center;
+        .delImg{
+          width: 22upx;
+          height: 28upx;
+      					margin-left: 10upx;
+        }
+        .text{
+          color: #333333;
+          font-size: 26rpx;
+          margin-left: 13upx;
+		  margin-top: 4rpx;
+        }
       }
     }
     .topicContent{
-      margin: 35upx 0 19upx;
-      font-size: @fsSubTitle;
-      color: @title;
-      font-family:PingFangSC-Regular;
+	  display: flex;
+	  flex-direction: column;
+	  .topContent{
+		  font-size: @fsSubTitle;
+		  color: @title;
+		  font-family:PingFangSC-Regular;
+		  margin-bottom: 20rpx;
+		  margin-top: 20rpx;
+	  }
+	  .TLimage {
+	  	text-align: left;
+	  	image {
+	  		width: 345upx;
+	  		height: 345upx;
+	  		vertical-align: middle;
+			padding-bottom: 30rpx;
+
+	  	}
+	  	
+	  }
+	  .TLimages{
+	  	display: flex;
+	  	flex-wrap: wrap;
+	  	align-content: flex-start;
+	  	image{
+	  		width: 200rpx;
+	  		height: 200rpx;
+	  		vertical-align: middle;
+	  		margin-right: 25rpx;
+	  		margin-bottom: 25rpx;
+	  	}
+	  	image:nth-child(3n+0){
+	  		margin-right: 0rpx;
+	  	}
+	  	
+	  }
+	  
+	  
+	  
     }
     .dateContainer{
       height: 50upx;
@@ -402,26 +496,7 @@
         border-radius: 25upx;
 		  padding: 0 27upx;
       }
-      .delContainer{
-        width: 149upx;
-		  height: 50upx;
-        line-height: 50upx;
-        background: #F1F4F7;
-        border-radius: 25upx;
-		  display: flex;
-		  align-items: center;
-		  justify-content: center;
-        .delImg{
-          width: 22upx;
-          height: 28upx;
-					margin-left: 10upx;
-        }
-        .text{
-          color: #507DAF;
-          font-size: @fsNum;
-          margin-left: 13upx;
-        }
-      }
+      
     }
   }
 
@@ -433,7 +508,6 @@
     color: #333333;
   }
 .commentContainer{
-  margin-top: 24upx;
 	margin-bottom: 80upx;
 	width: 100%;
   .topicTitle{
@@ -452,6 +526,21 @@
       .more_txt{
         color: #666666;
 					}
+			}
+			.like{
+				  width: 12%;
+				  display: flex;
+				  align-items: center;
+				  justify-content: center;
+			  &>image{
+			    width: 34upx;
+			    height: 30upx;
+			  }
+			  .num{
+				font-size: 14px;
+				margin-left: 13rpx;
+				 
+			  }
 			}
 		}
 		//评价列表
@@ -532,16 +621,7 @@
   background: #333333;
   .flex(@justCon:center;@alignIt:center;);
   text-align: center;
-  .like{
-    width: 50%;
-	  display: flex;
-	  align-items: center;
-	  justify-content: center;
-    &>image{
-      width: 34upx;
-      height: 30upx;
-    }
-  }
+  
   .pinglun{
     width: 50%;
 	  display: flex;
@@ -600,7 +680,7 @@
 	}
 	.sendMess{
 		font-size: 30upx;
-		color: #6B7AF8;
+		color: #333333;
 		font-family: PingFangSC;
 	}
 }

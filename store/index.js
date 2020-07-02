@@ -78,6 +78,7 @@ const store = new Vuex.Store({
     journalPublish: {
       content: '',
       images: [],
+	  video:[],
       location: {
         address: '',
         addressName: '',
@@ -344,6 +345,7 @@ const store = new Vuex.Store({
       commit('updateJournalPublish', {
         content: '',
         images: [],
+		video:'',
         location: {
           address: '',
           addressName: '',
@@ -352,6 +354,9 @@ const store = new Vuex.Store({
         },
         cate: [],
         goodsList: [],
+		goodsLists:[],
+		goodList:[],
+		list:[]
       })
     },
     resetCardCirclePublish ({ commit }) {

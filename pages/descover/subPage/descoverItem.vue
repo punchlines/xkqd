@@ -4,28 +4,36 @@
 			<!--  -->
 			<view class="left">
 				<view class="leftBox" v-for="(item,index) in recommendList" :key="index" v-if="index%2==0">
-					<view class="RLimage" @click="gotoDetail(item.journalId)">
-						<image class="rImage" v-if="item.images[0]" :src="item.images[0]" mode="aspectFill"></image>
+					<view class="RLimage" @click="gotoDetail(item.liveId,item.playUrl)">
+						<image class="rImage" :src="item.userCover" mode="aspectFill"></image>
 					</view>
-					
-					<view class="RLtitle" v-if="item.content" @click="gotoDetail(item.journalId)">{{item.content}}</view>
-				
-					
-					
+					<view class="RLtitle" v-if="item.title" @click="gotoDetail(item.liveId)">{{item.title}}</view>
 					<view class="RLbottme fx-row fx-row-center fx-row space-between">
 						<view class="RLBimage">
 							<image :src="item.headImage" class="Pimage"></image>
 							<text class="RLBnickName fs6a24">{{item.userName}}</text>
 						</view>
-						<view v-if="showPraise" class="RLBzan" @click="changeLike(index,item.journalId)">
-							<image class="RLBzanimage" v-if="item.praiseType == 1" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/like.png'"></image>
-							<image class="RLBzanimage"  v-else :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/likeun.png'"></image>
-							<text  class="RLBzantext fs6a24" >{{item.praiseNum}}</text>
+						<view class="RLBzan">
+							<view>
+								<image class="RLBzanimage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/like.png'"></image>
+							</view>
+							<!-- <image class="RLBzanimage"  v-else :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/likeun.png'"></image> -->
+							<text class="RLBzantext fs6a24">{{item.likeNum}}</text>
 						</view>
 						<view v-if="showAdress" class="RLBzan RLBzan1">
-							<image  class="RLBzanimage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/dibiao.png'"></image>
-							<text class="fs6a24 RLBzantext">{{item.distance}}km</text>
+							<image class="RLBzanimage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/dibiao.png'"></image>
+							<text class="fs6a24 RLBzantext">{{item.likeNum}}km</text>
 						</view>
+						<!-- <view class="RLBgoods">
+							<view class="RLBimg">
+								<image src="https://wx.qlogo.cn/mmopen/vi_32/PMhIppvFGDiaicllJ1TI0mibqtfE0nksknocHzB9ibeq6KGA58szOZZH1WKd1uLbCmibZhOWwnMVW82kI0ArKmDaOtA/132"
+								 mode="" style="width: 80rpx;height: 80rpx;"></image>
+							</view>
+							<view class="RLBinfo">
+								<view class="goodsName">123</view>
+								<view class="goodsPrice">￥<text>123</text></view>
+							</view>
+						</view> -->
 					</view>
 				</view>
 
@@ -34,24 +42,36 @@
 			<!--  @tap="gotoDetail" v-for="(item,index) in recommendList" :key="index" v-if="index%2==1" -->
 			<view class="right">
 				<view class="leftBox" v-for="(item,index) in recommendList" :key="index" v-if="index%2==1">
-					<view class="RLimage" @click="gotoDetail(item.journalId)">
-						<image class="rImage" v-if="item.images[0]" :src="item.images[0]" mode="aspectFill"></image>
+					<view class="RLimage" @click="gotoDetail(item.liveId,item.playUrl)">
+						<image class="rImage" :src="item.userCover" mode="aspectFill"></image>
 					</view>
-					<view class="RLtitle" v-if="item.content" @click="gotoDetail(item.journalId)">{{item.content}}</view>
+					<view class="RLtitle" v-if="item.title" @click="gotoDetail(item.liveId)">{{item.title}}</view>
 					<view class="RLbottme fx-row fx-row-center fx-row space-between">
 						<view class="RLBimage">
-							<image :src="item.headImage" class="Pimage"></image>
+							<image :src="item.userCover" class="Pimage"></image>
 							<text class="RLBnickName fs6a24">{{item.userName}}</text>
 						</view>
-						<view v-if="showPraise" class="RLBzan" @click="changeLike(index,item.journalId)">
-							<image class="RLBzanimage" v-if="item.praiseType == 1" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/like.png'"></image>
-							<image class="RLBzanimage" v-else :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/likeun.png'"></image>
-							<text class="fs6a24 RLBzantext">{{item.praiseNum}}</text>
+						<view  class="RLBzan" >
+							<view>
+								<image class="RLBzanimage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/like.png'"></image>
+							</view>
+							<!-- <image class="RLBzanimage" v-else :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/likeun.png'"></image> -->
+							<text class="fs6a24 RLBzantext">{{item.likeNum}}</text>
 						</view>
 						<view v-if="showAdress" class="RLBzan RLBzan1">
 							<image class="RLBzanimage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/descover/dibiao.png'"></image>
-							<text class="fs6a24 RLBzantext">{{item.distance}}km</text>
+							<text class="fs6a24 RLBzantext">{{item.likeNum}}km</text>
 						</view>
+						<!-- <view class="RLBgoods">
+							<view class="RLBimg">
+								<image src="https://wx.qlogo.cn/mmopen/vi_32/PMhIppvFGDiaicllJ1TI0mibqtfE0nksknocHzB9ibeq6KGA58szOZZH1WKd1uLbCmibZhOWwnMVW82kI0ArKmDaOtA/132"
+								 mode="" style="width: 80rpx;height: 80rpx;"></image>
+							</view>
+							<view class="RLBinfo">
+								<view class="goodsName">123</view>
+								<view class="goodsPrice">￥<text>123</text></view>
+							</view>
+						</view> -->
 					</view>
 				</view>
 
@@ -69,55 +89,7 @@
 				// showPraise: true,
 				// showAdress: false,
 				praiseType: true,
-				list: [{
-						id: 0,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/lunpanbg.png'
-					},
-					{
-						id: 1,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/tongzhi.png'
-					},
-					{
-						id: 2,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/lunpanbg.png'
-					},
-					{
-						id: 3,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/tongzhi.png'
-					},
-					{
-						id: 4,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/lunpanbg.png'
-					},
-					{
-						id: 5,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/tongzhi.png'
-					},
-					{
-						id: 6,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/lunpanbg.png'
-					},
-					{
-						id: 7,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/tongzhi.png'
-					},
-					{
-						id: 8,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/lunpanbg.png'
-					},
-					{
-						id: 9,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/tongzhi.png'
-					},
-					{
-						id: 10,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/tongzhi.png'
-					},
-					{
-						id: 11,
-						src: 'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/lunpanbg.png'
-					},
-				],
+
 			};
 		},
 		props: {
@@ -125,25 +97,28 @@
 				type: Array,
 				default: null,
 			},
-			showAdress:Boolean,
-			showPraise:Boolean,
+			showAdress: Boolean,
+			showPraise: Boolean,
 		},
 		mounted() {
-				
+
 		},
 		methods: {
 			// 跳转至详情页
-			gotoDetail(id) {
-				this.navigateTo('/item_descover/journalDetail/journalDetail', {
-					id: id
+			gotoDetail(id,playUrl) {
+				console.log(id)
+				uni.setStorageSync('playUrl', playUrl)
+				this.navigateTo('/item_descover/descover_LookLive/descover_LookLive', {
+					id: id,
+					playUrl:playUrl
 				});
 			},
 			// 点赞
-			changeLike(index,journalId) {
-				this.$emit("praise",{
-						index
+			changeLike(index, journalId) {
+				this.$emit("praise", {
+					index
 				});
-				
+
 			},
 		}
 	}
@@ -177,6 +152,7 @@
 					background: #fff;
 					margin-bottom: 20upx;
 					border-radius: 10upx;
+					position: relative;
 				}
 
 				.RLimage {
@@ -203,61 +179,103 @@
 				}
 
 				.RLbottme {
-					padding: 0 0 30upx 15upx;
+					padding: 0 0 10upx 15upx;
 
 					.RLBimage {
+						color: #FFFFFF;
 						width: 50%;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						white-space: nowrap;
+						position: absolute;
+						top: 360rpx;
 
 						.Pimage {
 							width: 60upx;
 							height: 60upx;
+							border-radius: 30rpx;
 							vertical-align: middle;
 							margin-right: 20upx
 						}
 					}
 
 					.RLBzan {
-						width: 50%;
+						width: 50rpx;
 						text-align: right;
-						padding-right: 20upx;
+						display: flex;
+						flex-direction: column;
+						text-align: center;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						white-space: nowrap;
+						position: absolute;
+						top: 30rpx;
+						right: 0;
 
 						.RLBzanimage {
 							width: 28upx;
 							height: 24upx;
 							vertical-align: middle;
-							margin-right: 10upx;
+
 						}
 
 						.RLBzantext {
-							position: relative;
-							top: -2upx;
+							color: #FFFFFF;
+							// position: relative;
+							// top: -2upx;
+						}
+					}
+
+					.RLBgoods {
+						display: flex;
+						flex-direction: row;
+
+						.RLBimg {
+							margin-right: 20rpx;
+						}
+
+						.RLBinfo {
+							.goodsName {
+								overflow: hidden;
+								text-overflow: ellipsis;
+								white-space: nowrap;
+								width: 100%;
+								color: #CCCCCC;
+								font-size: 16px;
+								font-weight: bold;
+							}
+							.goodsPrice{
+								padding-top: 10rpx;
+								font-size: 14px;
+								color: #FF5858;
+							}
 						}
 					}
 
 					.RLBzan1 {
+						display: flex;
+						flex-direction: row;
 						width: 50%;
-						text-align: right;
+						text-align: center;
 						margin-right: 20upx;
 						overflow: hidden;
 						text-overflow: ellipsis;
 						white-space: nowrap;
-
+						position: absolute;
+						right: -90rpx;
+						top: 375rpx;
+						
 						.RLBzanimage {
 							width: 20upx;
 							height: 24upx;
 							vertical-align: middle;
-							margin-right: 10upx
+							margin-right: 5rpx;
 						}
 
 						.RLBzantext {
-							position: relative;
-							top: -2upx;
+							color: #FFFFFF;
+							// position: relative;
+							// top: -2upx;
 						}
 					}
 				}

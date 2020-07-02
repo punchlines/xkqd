@@ -1,8 +1,8 @@
 <template>
 	<view class="container">
-		<view >
-			<textarea  @click="focusArea" :focus="focus" @blur="blurArea" class="contentCon" v-model="journal.content" placeholder="这一刻,你想说点什么" placeholder-style="color: #CCCCCC"
-					maxlength="700" auto-focus="true">
+		<view>
+			<textarea @click="focusArea" :focus="focus" @blur="blurArea" class="contentCon" v-model="journal.content"
+			 placeholder="这一刻,你想说点什么" placeholder-style="color: #CCCCCC" maxlength="700" auto-focus="true">
 			</textarea>
 		</view>
 		<!-- 上传图片 -->
@@ -13,12 +13,18 @@
 					<image class="DelImage" @click="removeImage(index)" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/del_zi.png'"></image>
 				</view>
 			</block>
-			<wx-view v-if="journal.images.length < 9">
-				<view class="UIuserinfo" @click="upload" >
-					<image class="addImage"  :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/adda.png'"></image>
+			<block class="UImage" v-if="journal.video.length>0">
+				<view class="UIimageBox">
+					<video class="UIImage" :src="journal.video"></video>
+					<image class="DelImage" @click="removeVideo()" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/del_zi.png'"></image>
+				</view>
+			</block>
+			<wx-view v-if="journal.images.length < 9 && journal.video.length==0">
+				<view class="UIuserinfo" @click="upload">
+					<image class="addImage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/adda.png'"></image>
 				</view>
 			</wx-view>
-			
+
 		</view>
 		<!-- 选择 -->
 		<view class="local fx-row fx-row-space-between fx-row-center" @click="toLocal">
@@ -37,7 +43,7 @@
 			</view>
 			<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/qian.png'" class="go"></image>
 		</view>
-		<view class="conn fx-row fx-row-space-between fx-row-center" @click="toConnectGoods" :class="{ noBorder: journal.goodsList.length > 0 }" v-if="isVipUser">
+		<view class="conn fx-row fx-row-space-between fx-row-center" @click="toConnectGoods" :class="{ noBorder: journal.goodsList.length > 0 }">
 			<view class="left fx-row fx-row-center">
 				<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/shangp.png'" class="connImg"></image>
 				<text class="label">关联商品</text>
@@ -45,14 +51,45 @@
 			<image :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/card/qian.png'" class="go"></image>
 		</view>
 
-		<view class="select-goods-list" v-if="isVipUser">
-			<view class="goods" v-for="(goods, index) in journal.goodsList">
+		<view class="select-goods-list">
+			<view class="goods" v-for="(goods, index) in journal.goodsList" :key="index">
 				<image class="goods-cover" :src="goods.coverImage"></image>
 				<view class="goods-meta">
 					<view class="goods-name">{{ goods.title }}</view>
 					<view class="price">￥{{ goods.preferentialPrice }}</view>
 				</view>
 				<view class="close-area" @click="removeGoods(index)">
+					<image src="http://card-1254165941.cosgz.myqcloud.com/images/goods_del.png"></image>
+				</view>
+			</view>
+			<view class="goods" v-for="(goods, index) in journal.goodsLists" :key="index">
+				<image class="goods-cover" :src="goods.coverImage"></image>
+				<view class="goods-meta">
+					<view class="goods-name">{{ goods.title }}</view>
+					<view class="price">￥{{ goods.preferentialPrice }}</view>
+				</view>
+				<view class="close-area" @click="removeGoodsLists(index)">
+					<image src="http://card-1254165941.cosgz.myqcloud.com/images/goods_del.png"></image>
+				</view>
+			</view>
+			<view class="goods" v-for="(goods, index) in journal.list" :key="index">
+				<image class="goods-cover" :src="goods.cover"></image>
+				<view class="goods-meta">
+					<view class="goods-name">{{ goods.goodsName }}</view>
+					<view class="price">￥{{ goods.preferentialPrice }}</view>
+				</view>
+				<view class="close-area" @click="removeGoods(index)">
+					<image src="http://card-1254165941.cosgz.myqcloud.com/images/goods_del.png"></image>
+				</view>
+			</view>
+
+			<view class="goods" v-for="(goods, index) in journal.goodList" :key="index">
+				<image class="goods-cover" :src="goods.cover"></image>
+				<view class="goods-meta">
+					<view class="goods-name">{{ goods.title }}</view>
+					<view class="price">￥{{ goods.preferentialPrice }}</view>
+				</view>
+				<view class="close-area" @click="removeGoodList(index)">
 					<image src="http://card-1254165941.cosgz.myqcloud.com/images/goods_del.png"></image>
 				</view>
 			</view>
@@ -63,63 +100,89 @@
 			<wx-view>
 				<view class="fabuBtn" @click="publish">发布日志</view>
 			</wx-view>
-			
+
 		</view>
 	</view>
 </template>
 <script>
-  // import {mapState,mapMutations} from 'vuex';
+	// import {mapState,mapMutations} from 'vuex';
 
-  import { upImg } from '@/js/mzl';
+	import {
+		upImg,
+		upVideo,
+		uploadFile
+	} from '@/js/mzl';
 
-  export default {
-    data() {
-      return {
-        images: [],
-		countNum:9,
-		focus:true
-      }
-    },
+	export default {
+		data() {
+			return {
+				images: [],
+				countNum: 9,
+				focus: true
+			}
+		},
 
-	computed: {
-      journal () {
-        return this.$store.state.journalPublish;
-	  },
-      showLocation () {
-        return this.journal.location.addressName;
-	  },
-      showCateList () {
-        return this.journal.cate.map(item => item.name).join(' ');
-      },
-	},
+		computed: {
+			journal() {
+				return this.$store.state.journalPublish;
+			},
+			showLocation() {
+				return this.journal.location.addressName;
+			},
+			showCateList() {
+				return this.journal.cate.map(item => item.name).join(' ');
+			},
+		},
 
-	onLoad () {
-      this.$store.dispatch('resetJournalPublish');
-	},
+		onLoad() {
+			this.$store.dispatch('resetJournalPublish');
+
+		},
 
 		methods: {
-			
-			blurArea(){
+
+			blurArea() {
 				console.log(this.focus)
 				this.focus = false;
 				this.$forceUpdate();
 			},
-			
-			focusArea(){
+
+			focusArea() {
 				console.log(this.focus)
 				this.focus = true;
 				this.$forceUpdate();
 			},
-			
-			upload () {
+
+			upload() {
+				if (this.journal.images.length > 0) {
+					this.chooseImages()
+				} else {
+					uni.showActionSheet({
+						title: "选择上传类型",
+						itemList: ['图片', '视频'],
+						success: (res) => {
+							console.log(res)
+							if (res.tapIndex == 0) {
+								this.chooseImages()
+							} else {
+								this.chooseVideo()
+
+							}
+						}
+					})
+				}
+			},
+			chooseImages() {
 				uni.chooseImage({
 					count: 9 - this.journal.images.length,
 					success: (res) => {
-						uni.showLoading({ title: '上传中...' });
+						uni.showLoading({
+							title: '上传中...'
+						});
 						let count = res.tempFilePaths.length;
 						res.tempFilePaths.forEach(path => {
 							this.uniUploadFile(path, url => {
-								if(this.journal.images.length<9){
+								if (this.journal.images.length < 9) {
 									this.journal.images.push(url)
 								}
 							}, null, () => {
@@ -132,61 +195,83 @@
 				})
 			},
 
-      previewImage (item) {
-        uni.previewImage({
-          current: item,
-          urls: this.journal.images,
-        });
-	  },
+			chooseVideo() {
+				upVideo((url, duration, fileId) => {
+					//this.journal.video = url
+					// this.$nextTick(function(){
+					//let a =await this.saveVideo(url)
+					// })
+					this.journal.video = url
 
-      removeImage (index) {
-        this.journal.images.splice(index, 1);
-	  },
+					console.log('视频', this.journal.video)
 
-      // 所在位置
-      toLocal () {
-		  // #ifdef MP-WEIXIN
-			const that = this;
-			uni.authorize({
-				scope: 'scope.userLocation',
-				success () {
-					uni.chooseLocation({
-						success: (res) => {
-							that.journal.location = {
-								address: res.address,
-								addressName: res.name,
-								lat: res.latitude,
-								lng: res.longitude,
+				})
+
+				//let a =await this.saveVideo(url)
+
+			},
+			previewImage(item) {
+				uni.previewImage({
+					current: item,
+					urls: this.journal.images,
+				});
+			},
+			//上传文件
+
+			removeImage(index) {
+				this.journal.images.splice(index, 1);
+			},
+			removeVideo() {
+				this.journal.video = ''
+			},
+			// 所在位置
+			toLocal() {
+				// #ifdef MP-WEIXIN
+				const that = this;
+				uni.authorize({
+					scope: 'scope.userLocation',
+					success() {
+						uni.chooseLocation({
+							success: (res) => {
+								that.journal.location = {
+									address: res.address,
+									addressName: res.name,
+									lat: res.latitude,
+									lng: res.longitude,
+								}
 							}
-						}
-					});
-				},
-				fail () {
-					that.openConfirm()
-				}
-			})
-		  // #endif
-		  //app端选择定位
-		  // #ifdef APP-PLUS
-			uni.getLocation({
-				type: 'gcj02', //返回可以用于uni.openLocation的经纬度
-				success:  (res)=> {
-					const { latitude , longitude } = res;
-					//打开地图
-					this.navigateTo('/item_descover/desvover_map/desvover_map',{
-						latitude , longitude 
-					});
-					
-				},
-				fail: (err) => {
-					this.showTips('获取位置失败,请打开位置获取权限');
-				}
-			});
-		// #endif
-		
-      },
+						});
+					},
+					fail() {
+						that.openConfirm()
+					}
+				})
+				// #endif
+				//app端选择定位
+				// #ifdef APP-PLUS
+				uni.getLocation({
+					type: 'gcj02', //返回可以用于uni.openLocation的经纬度
+					success: (res) => {
+						const {
+							latitude,
+							longitude
+						} = res;
+						//打开地图
+						this.navigateTo('/item_descover/desvover_map/desvover_map', {
+							latitude,
+							longitude
+						});
 
-			openConfirm () {
+					},
+					fail: (err) => {
+						this.showTips('获取位置失败,请打开位置获取权限');
+					}
+				});
+				// #endif
+
+			},
+
+			openConfirm() {
 				wx.showModal({
 					content: '检测到您没打开销刻渠道的定位权限，是否去设置打开？',
 					confirmText: "确认",
@@ -194,7 +279,7 @@
 					success: (res) => {
 						if (res.confirm) {
 							wx.openSetting({
-								success: (res) => { }
+								success: (res) => {}
 							})
 						}
 					}
@@ -202,186 +287,326 @@
 			},
 
 
-      // 动态类型
-      toDynamic () {
-        uni.navigateTo({
-          url: '../businessCard_Dynamic/businessCard_Dynamic'
-        });
-      },
+			// 动态类型
+			toDynamic() {
+				uni.navigateTo({
+					url: '../businessCard_Dynamic/businessCard_Dynamic'
+				});
+			},
 
-      // 关联商品
-      toConnectGoods () {
-        if (this.currentUser.shopId === 0) {
-          this.showError('请先上传商品')
-          return;
-		}
-        uni.navigateTo({
-          url: '../businessCard_ConnectGoods/businessCard_ConnectGoods'
-        });
-      },
+			// 关联商品
+			toConnectGoods() {
 
-      removeGoods (index) {
-        this.journal.goodsList.splice(index, 1);
-	  },
+				uni.navigateTo({
+					url: '../businessCard_ConnectGoods/businessCard_ConnectGoods'
+				});
+			},
 
-      publish () {
-        if (!this.journal.content && !this.journal.images.length) {
-          this.showTips('请输入文字或上传图片！');
-          return;
-		}
-        if (this.journal.cate.length === 0) {
-          this.showTips('请选择分类！');
-          return;
-        }
+			removeGoods(index) {
+				this.journal.goodsList.splice(index, 1);
+			},
+			removeGoodsLists(index){
+				this.journal.goodsLists.splice(index, 1);
+			},
+			removeList(index){
+				this.journal.list.splice(index, 1);
+			},
+			removeGoodList(index){
+				this.journal.goodList.splice(index, 1);
+			},
+			publish() {
+				if (!this.journal.content && !this.journal.images.length) {
+					this.showTips('请输入文字或上传图片！');
+					return;
+				}
+				if (this.journal.cate.length === 0) {
+					this.showTips('请选择分类！');
+					return;
+				}
 				if (this.checkHasSensitiveWord(this.journal.content)) {
 					return;
 				}
 
-        const journal = this.journal;
-        const postData = {
-          content: journal.content,
-          images: JSON.stringify(journal.images),
-          longitude: journal.location.lng,
-          latitude: journal.location.lat,
-          address: journal.location.address,
-          addressName: journal.location.addressName,
-          journalTypeId: JSON.stringify(journal.cate.map(item => item.id)),
-          goodsId: JSON.stringify(journal.goodsList.map(item => item.goodsId)),
-		};
+				const journal = this.journal;
+				let e = []
+				//console.log(journal.goodsList,journal.goodsLists,journal.list,journal.goodList)
+				if (journal.goodsList.length > 0 || journal.goodsLists != undefined || journal.list != undefined || journal.goodList !=
+					undefined) {
+					let a = journal.goodsList.map(item => item.goodsId)
+					let b = journal.goodsLists.map(item => item.goodsId)
+					let c = journal.list.map(item => item.goodsId)
+					let d = journal.goodList.map(item => item.goodsId)
 
-        uni.showLoading();
-        this.$api.setNewJournal(postData).then(result => {
-          uni.hideLoading()
-          this.showTips('发布成功');
+					console.log(a, b, c, d)
+					if (a.length > 0) {
+						for (let i = 0; i < a.length; i++) {
+							e.push(a[i])
+						}
+					}
+					if (b.length > 0) {
+						for (let i = 0; i < b.length; i++) {
+							e.push(b[i])
+						}
+					}
+					if (c.length > 0) {
+						for (let i = 0; i < c.length; i++) {
+							e.push(c[i])
+						}
+					}
+					if (d.length > 0) {
+						for (let i = 0; i < d.length; i++) {
+							e.push(d[i])
+						}
+					}
+					e = [...new Set(e)]
+				}
+				console.log(this.journal.video)
+				if (this.journal.video != '') {
+					this.journal.type = 1
+				} else {
+					this.journal.type = 0
+				}
+
+				const postData = {
+					content: journal.content,
+					images: JSON.stringify(journal.images),
+					videoUrl: journal.video,
+					longitude: journal.location.lng,
+					latitude: journal.location.lat,
+					type: journal.type,
+					address: journal.location.address,
+					addressName: journal.location.addressName,
+					journalTypeId: JSON.stringify(journal.cate.map(item => item.id)),
+					goodsId: JSON.stringify(e),
+					//goodsId: JSON.stringify(journal.goodsLists.map(item => item.goodsId)),
+					// goodsId: JSON.stringify(journal.list.map(item => item.goodsId)),
+					// goodsId: JSON.stringify(journal.shoreList.map(item => item.goodsId)),
+				}
+				console.log(JSON.stringify(journal.cate.map(item => item.id)))
+
+				uni.showLoading();
+				this.$api.setNewJournal(postData).then(result => {
+					uni.hideLoading()
+					this.showTips('发布成功');
 					this.$store.commit('setNeedUpdateDiscovery', true);
-		  uni.setStorageSync('_newJournalFlag', true);
-          uni.navigateBack();
-		}).catch(error => {
-		  uni.hideLoading();
-		  this.showError(error, '发布失败')
-		})
-	  },
+					uni.setStorageSync('_newJournalFlag', true);
+					uni.navigateBack();
+				}).catch(error => {
+					uni.hideLoading();
+					this.showError(error, '发布失败')
+				})
+			},
 
-    },
-  }
+		},
+	}
 </script>
 <style lang="less" scoped>
+	@import "../../css/jss_base.less";
 
-@import "../../css/jss_base.less";
-.container{
-	background: #F8F8F8;
-	min-height: 100vh;
-	box-sizing: border-box;
-	padding-bottom: 120upx;
+	.container {
+		background: #F8F8F8;
+		min-height: 100vh;
+		box-sizing: border-box;
+		padding-bottom: 120upx;
 
-	.contentCon{
-		width:100%;
-		height:250upx;
-		box-sizing:border-box;
-		padding:40upx 30upx;
-		background:#ffffff;
-	}
-	//上传图片
-	.uploadImage{
-			.flex(flex-start);width:100%;margin:0 auto;margin-bottom:20upx;box-sizing:border-box;padding:40upx 30upx;background:#FFFFFF;
+		.contentCon {
+			width: 100%;
+			height: 250upx;
+			box-sizing: border-box;
+			padding: 40upx 30upx;
+			background: #ffffff;
+		}
+
+		//上传图片
+		.uploadImage {
+			.flex(flex-start);
+			width: 100%;
+			margin: 0 auto;
+			margin-bottom: 20upx;
+			box-sizing: border-box;
+			padding: 40upx 30upx;
+			background: #FFFFFF;
 			flex-wrap: wrap;
-		.UImage {
-			margin-right:16upx;
-		}
 
-			.UIuserinfo{
-					width:220upx;height:220upx;
-					image{width:220rpx;height:220rpx;}
-			}
-			.UIimageBox{
-					position: relative;width:220upx;height:220upx; margin-right: 10upx; margin-bottom: 10upx;
-					.UIImage{
-							width:220upx;height:220upx;
-							// width:100%;
-							display: inline-block;
-					}
-					.DelImage{width:40upx;height: 40upx;position: absolute;top:0;right:0;}
+			.UImage {
+				margin-right: 16upx;
 			}
 
-	}
-	.label {
-		margin-right: 60upx;
-	}
-	// 选择
-	.go{width: 14upx;height: 24upx;}
-	.local{
-		width: 100%;box-sizing: border-box; padding: 0 30upx;background: #FFFFFF;height:106upx ;border-bottom: 1px solid #E1E1E1;font-size: 28upx;color: #666666;
-		.localImg{width: 32upx;height: 32upx;margin-right: 10upx;}
-	}
-	.type{
-		width: 100%;box-sizing: border-box;padding: 0 30upx;height:106upx ;border-bottom: 1px solid #E1E1E1;font-size: 28upx;color: #666666;background: #FFFFFF;
-		.typeImg{width: 32upx;height: 32upx;margin-right: 10upx;}
-	}
-	.conn{
-		width: 100%;box-sizing: border-box;padding: 0 30upx;height:106upx ;border-bottom: 1px solid #E1E1E1;font-size: 28upx;color: #666666;background: #FFFFFF;
-		.connImg{width: 32upx;height: 32upx;margin-right: 10upx;}
+			.UIuserinfo {
+				width: 220upx;
+				height: 220upx;
 
-	}
-// 发布按钮
-	.fabuBtnCon{
-		position: fixed;bottom: 0;z-index: 99;width: 100%;height:98upx;text-align: center;background: #FFFFFF;
-		.fabuBtn{
-			width:620upx ;height: 80upx;line-height: 80upx;margin: 10upx auto;font-size:28upx ;color: #FFFFFF;background: #6B7AF8;border-radius: 40upx;
+				image {
+					width: 220rpx;
+					height: 220rpx;
+				}
+			}
+
+			.UIimageBox {
+				position: relative;
+				width: 220upx;
+				height: 220upx;
+				margin-right: 10upx;
+				margin-bottom: 10upx;
+
+				.UIImage {
+					width: 220upx;
+					height: 220upx;
+					// width:100%;
+					display: inline-block;
+				}
+
+				.DelImage {
+					width: 40upx;
+					height: 40upx;
+					position: absolute;
+					top: 0;
+					right: 0;
+				}
+			}
+
+		}
+
+		.label {
+			margin-right: 60upx;
+		}
+
+		// 选择
+		.go {
+			width: 14upx;
+			height: 24upx;
+		}
+
+		.local {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0 30upx;
+			background: #FFFFFF;
+			height: 106upx;
+			border-bottom: 1px solid #E1E1E1;
+			font-size: 28upx;
+			color: #666666;
+
+			.localImg {
+				width: 32upx;
+				height: 32upx;
+				margin-right: 10upx;
+			}
+		}
+
+		.type {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0 30upx;
+			height: 106upx;
+			border-bottom: 1px solid #E1E1E1;
+			font-size: 28upx;
+			color: #666666;
+			background: #FFFFFF;
+
+			.typeImg {
+				width: 32upx;
+				height: 32upx;
+				margin-right: 10upx;
+			}
+		}
+
+		.conn {
+			width: 100%;
+			box-sizing: border-box;
+			padding: 0 30upx;
+			height: 106upx;
+			border-bottom: 1px solid #E1E1E1;
+			font-size: 28upx;
+			color: #666666;
+			background: #FFFFFF;
+
+			.connImg {
+				width: 32upx;
+				height: 32upx;
+				margin-right: 10upx;
+			}
+
+		}
+
+		// 发布按钮
+		.fabuBtnCon {
+			position: fixed;
+			bottom: 0;
+			z-index: 99;
+			width: 100%;
+			height: 98upx;
+			text-align: center;
+			background: #FFFFFF;
+
+			.fabuBtn {
+				width: 620upx;
+				height: 80upx;
+				line-height: 80upx;
+				margin: 10upx auto;
+				font-size: 28upx;
+				color: #FFFFFF;
+				background: #6B7AF8;
+				border-radius: 40upx;
+			}
 		}
 	}
-}
 
-.select-goods-list {
-	background-color: #ffffff;
-	padding: 30upx;
+	.select-goods-list {
+		background-color: #ffffff;
+		padding: 30upx;
 
-	.goods {
-		padding: 20upx;
-		background:rgba(245,245,245,1);
-		display: flex;
-		position: relative;
-		margin-bottom: 24upx;
-	}
-	.goods-cover {
-		width:140upx;
-		height:140upx;
-		margin-right: 44upx;
-	}
-	.goods-meta {
-		flex: 1;
-		position: relative;
-	}
-	.goods-name {
-		font-size:28upx;
-		color:rgba(51,51,51,1);
-		line-height:40upx;
-	}
-	.price {
-		position: absolute;
-		font-size:30upx;
-		color:rgba(255,88,88,1);
-		line-height:42upx;
-		bottom: 0;
-		left: 0;
-	}
-	.close-area {
-		width: 36upx;
-		height: 36upx;
-		position: relative;
-		image {
+		.goods {
+			padding: 20upx;
+			background: rgba(245, 245, 245, 1);
+			display: flex;
+			position: relative;
+			margin-bottom: 24upx;
+		}
+
+		.goods-cover {
+			width: 140upx;
+			height: 140upx;
+			margin-right: 44upx;
+		}
+
+		.goods-meta {
+			flex: 1;
+			position: relative;
+		}
+
+		.goods-name {
+			font-size: 28upx;
+			color: rgba(51, 51, 51, 1);
+			line-height: 40upx;
+		}
+
+		.price {
 			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			width: 18upx;
-			height: 18upx;
+			font-size: 30upx;
+			color: rgba(255, 88, 88, 1);
+			line-height: 42upx;
+			bottom: 0;
+			left: 0;
+		}
+
+		.close-area {
+			width: 36upx;
+			height: 36upx;
+			position: relative;
+
+			image {
+				position: absolute;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				width: 18upx;
+				height: 18upx;
+			}
 		}
 	}
-}
 
 	.noBorder {
 		border-bottom: none !important;
 	}
-
-
 </style>

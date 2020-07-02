@@ -1,5 +1,7 @@
 import api from '@/js/api'
-import {md5} from "./md5";
+import {
+	md5
+} from "./md5";
 
 const VodUploader = require('./lib/vod-web-sdk-v5.1');
 
@@ -31,6 +33,118 @@ const formatTime = date => {
 	const second = newdate.getSeconds()
 	return [year, month, day].map(formatNumber).join('-') + ' ' + [hour, minute, second].map(formatNumber).join(':')
 };
+const times =data=>{
+	var newdate= parseInt(Date.parse(new Date()));
+	console.log('123',newdate)
+	return newdate
+}
+// 时间转为时间戳
+function date2timestamp(datetime) {
+    var timestamp = new Date(Date.parse(datetime));
+    timestamp = timestamp.getTime();
+    timestamp = timestamp;
+    return timestamp;
+}
+// 时间戳转时间
+function timestamp2date(timestamp, mode) {
+    var tt = new Date(timestamp)
+	var hours=''
+	if(tt.getHours()>=0 && tt.getHours()<=6){
+		hours='凌晨'+tt.getHours()
+	}else if(tt.getHours()>=6 && tt.getHours()<=12){
+		hours='上午'+tt.getHours()
+	}
+	else if(tt.getHours()>=12 && tt.getHours()<=14){
+		hours='中午'+tt.getHours()
+	}
+	else if(tt.getHours()>=14 && tt.getHours()<=18){
+		hours='下午'+tt.getHours()
+	}
+	else if(tt.getHours()>=18){
+		hours='晚上' +tt.getHours()
+	}
+	var a =tt.getFullYear()+ "年" +(tt.getMonth() + 1)+'月'+tt.getDate()+'日'+hours + ':' + tt.getMinutes()
+	var b =(tt.getMonth() + 1)+'月'+tt.getDate()+'日'+hours + ':' + tt.getMinutes()
+	var c =hours + ':' + tt.getMinutes()
+    var date_a = a.split(" ");
+	var date_b = b.split(" ");
+	var date_c = c.split(" ");
+    if (mode == 3) {
+        var minute = 60;
+        var hour = minute * 60;
+        var day = hour * 24;
+        var halfamonth = day * 15;
+        var month = day * 30;
+        var current_timestamp = parseInt(Date.parse(new Date()));
+        var diffValue = current_timestamp - timestamp;
+        var monthC = diffValue / month;
+        var weekC = diffValue / (7 * day);
+        var dayC = diffValue / day;
+        var hourC = diffValue / hour;
+        var minC = diffValue / minute;
+        if (monthC >= 1) {
+            result = monthC + "月前";
+        }
+        else if (weekC >= 1) {
+            result = weekC + "周前";
+        }
+        else if (dayC >= 1) {
+            result = dayC + "天前";
+        }
+        else if (hourC >= 1) {
+            result = hourC + "小时前";
+        }
+        else if (minC >= 1) {
+            result = minC + "分钟前";
+        } else
+            result = "刚刚";
+        return result;
+    }
+
+
+    if (mode == 2) {
+        var current_timestamp = parseInt(Date.parse(new Date()));
+		var years =new Date();
+		if(tt.getFullYear()>years.getFullYear()){
+			return data_a[0]
+		}
+        else if ((current_timestamp - timestamp) > 1 * 24 * 60 * 60*1000) {
+            // 3之前，显示日期
+            return date_b[0]
+        } 
+		else {
+            var d = new Date();
+            var date = d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate();
+            var b_date = date2timestamp(date + " 00:00:00");
+            var e_date = date2timestamp(date + " 23:59:59");
+            if (timestamp > parseInt(b_date) && timestamp < parseInt(e_date)) {
+                // 今天,只显示时间
+                return date_c[0]
+            }
+            if (timestamp > parseInt(b_date - 24 * 60 * 60*1000) && timestamp < parseInt(e_date - 24 * 60 * 60*1000)) {
+                // 昨天，显示昨天时间
+                return "昨天"+date_c[0]
+            }
+       }
+    }
+
+
+    if (mode == 1) {
+        // 如果是当天，就不显示日期
+        var d = new Date();
+        var date = d.getFullYear() + "/" + (d.getMonth() + 1) + "/" + d.getDate();
+        var b_date = date2timestamp(date + " 00:00:00");
+        var e_date = date2timestamp(date + " 23:59:59");
+
+        if (timestamp > parseInt(b_date) && timestamp < parseInt(e_date)) {
+            return date_arr[1];
+        }
+        return tt;
+    }
+
+
+   return tt;
+}
 const formatNumber = n => {
 	n = n.toString()
 	return n[1] ? n : '0' + n
@@ -72,7 +186,7 @@ const formateSeconds = (endTime) => {
 }
 
 //图片上传
-const upImg = (callback,count=1) => {
+const upImg = (callback, count = 1) => {
 
 	//多张图片上传
 	uni.chooseImage({
@@ -81,32 +195,32 @@ const upImg = (callback,count=1) => {
 			let tempFilePath = res.tempFilePaths;
 			uni.showLoading({
 				title: '上传中...',
-				mask:true
+				mask: true
 			});
-			
+
 			let PromiseMap = [];
 			//遍历图片数组  
-			for(let i in tempFilePath){
-				PromiseMap.push(new Promise((resolve,reject)=>{
-						api.uploadFile(tempFilePath[i], (url) => {
-								//uni.hideLoading();
-								//callback(url)
-								resolve(url);
-						});
+			for (let i in tempFilePath) {
+				PromiseMap.push(new Promise((resolve, reject) => {
+					api.uploadFile(tempFilePath[i], (url) => {
+						//uni.hideLoading();
+						//callback(url)
+						resolve(url);
+					});
 				}));
 			}
 			//等待所有图片上传完成
-			Promise.all(PromiseMap).then(res=>{
-				if(res.length==1){
+			Promise.all(PromiseMap).then(res => {
+				if (res.length == 1) {
 					callback(res[0])
-				}else callback(res);
+				} else callback(res);
 			})
-			
+
 		}
 	})
 }
 //视频上传
-const upVideo = (callback,maxSize = 50 ) => {
+const upVideo = (callback, maxSize = 50) => {
 	uni.chooseVideo({
 		count: 1,
 		sourceType: ['camera', 'album'],
@@ -114,7 +228,7 @@ const upVideo = (callback,maxSize = 50 ) => {
 			if (res.size > maxSize * 1024 * 1024) {
 				uni.showModal({
 					title: '提示',
-					content: '视频大小不能大于 '+maxSize+'MB',
+					content: '视频大小不能大于 ' + maxSize + 'MB',
 					showCancel: false
 				});
 				return;
@@ -149,7 +263,7 @@ const upVideo = (callback,maxSize = 50 ) => {
 					console.log(JSON.stringify(result));
 				},
 				finish: function(result) {
-					callback(result.videoUrl, formateSeconds(res.duration || 0), result.fileId,res.duration)
+					callback(result.videoUrl, formateSeconds(res.duration || 0), result.fileId, res.duration)
 				}
 			});
 
@@ -160,8 +274,7 @@ const upVideo = (callback,maxSize = 50 ) => {
 const uploadFile = (data, callback) => {
 	api.uploadFile(tempFilePath, (url) => {
 		callback(url)
-	}, (error) => {
-	}, () => {
+	}, (error) => {}, () => {
 		uni.hideLoading();
 	})
 }
@@ -296,7 +409,9 @@ export {
 	isLog,
 	getOpenId,
 	disposeSku,
-	formatTime1
+	formatTime1,
+	timestamp2date,
+	times
 }
 export default {
 	formatDate,
@@ -309,5 +424,7 @@ export default {
 	isLog,
 	getOpenId,
 	disposeSku,
-	formatTime1
+	formatTime1,
+	times,
+	timestamp2date
 }

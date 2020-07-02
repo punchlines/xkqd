@@ -55,6 +55,8 @@ api.getUserCoreInfo=()=> post('user/getUserCoreInfo')//个人中心详情信息
 api.setUserReceivablesAccount=(type)=> post('user/setUserReceivablesAccount',{type})//设置用户收款账户
 api.getUserInfor=(cardUserId) => post('card/getUserCardDetails',{cardUserId});//个人中心名片信息
 
+api.getUserJoinShop=(pageNo=1) => post('user/getUserJoinShop',{pageNo});//获取用户加入的店铺信息
+
 api.myCollect=(type,pageNo)=>post('user/listMyCollectRecord',{type,pageNo});//我的收藏
 api.myCustomer=(pageNo=1,key)=>post('card/listMyCustomer',{pageNo,key});//我的客户
 api.setPassward=(password)=>post('user/setPassword',{password});//设置密码
@@ -83,6 +85,8 @@ api.getRemainCashFlow = (pageNumber) => post('remain/remainCashFlow', { pageNumb
 api.getMyInviteVipList = (pageNo) => post('user/listMyInviteVip', { pageNo });
 api.getMyFansList = (pageNo,pageSize=20) => post('user/listMyFan', { pageNo,pageSize});
 api.saveGuestRecord = (visitId, openId, nickName, image) => post('card/guestRecord', { visitId, openId, nickName, image });
+
+api.unavailableMoney = () => post('remain/unavailableMoney');//直播余额
 
 api.WXDecrypt=(encryptedData,iv,token)=>post('common/WXDecrypt',{encryptedData,iv,token});//手机号码解密
 api.sendSms=(phone,type)=>noFixParamsPost('common/sendSms',{phone,type});//发送手机验证码

@@ -76,7 +76,7 @@
 			<view class="content-user-power" v-for="(items,index) in  vipinfo" :key="index" v-if="current_1==index">
 				<view class="content-user-power-soider">
 					<view class="content-user-power-soiders"></view>
-					<view class="content-user-power-text" @click="test">专属特权</view>
+					<view class="content-user-power-text" >专属特权</view>
 					<view class="content-user-power-soiders"></view>
 				</view>
 				<view class="content-user-power-info" :style="items.content.length>8?'height:400rpx;':'height:250rpx;'">
@@ -128,6 +128,7 @@
 	import goodsItem from '@/components/goodsItem';
 	import recommend from '@/components/recommend';
 	import QSTabs from '@/components/QS-tabs/QS-tabs.vue';
+	
 	//import goodsItemHot from '../../module/shop/_component/goodsItemHot';
 	export default {
 		components: {
@@ -448,12 +449,14 @@
 			},
 			test(){
 				console.log('123')
-				uni.requestSubscribeMessage({
-					tmplIds: ['ePSAKvEfXEOpkWN4OC2VmW1EIGUPHj6tQAymw3Uw9T4'],
-					success(res) {
-						console.log('test', res)
+				uni.scanCode({
+					success:(res)=>{
+						console.log('条码类型：' + res.scanType);
+						console.log('条码内容：' + res.result);
+						
+						this.flowNum=res.result;
 					}
-				})
+				});
 			},
 			init(options) {
 				this.userId = uni.getStorageSync('userId')
@@ -852,7 +855,16 @@
 													'￥' + this.amount + '<br/>' + this.actiDeadLine
 											}
 										})
-								} else {
+								}else if(this.status==2){
+									uni.showModal({
+									    title: '续费提醒',
+									    content: '请先续费或升级店铺',
+									    success: function (res) {
+									       
+									    }
+									});
+								}
+								 else {
 									uni.navigateTo({
 										url: "/item_businessCard/businessCard_BusinessAttestation/businessCard_BusinessAttestation"
 									})

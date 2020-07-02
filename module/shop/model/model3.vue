@@ -42,7 +42,7 @@
 			
 			
 			<!-- 图标 -->
-			<view class="icon_img"  v-if="isSelfShop">
+			<view class="icon_img"  v-if="isSelfShop&& userType <5">
 				<view class="icon_mel" @click="changeTemplate">
 					<view class="fir">
 						<img src="http://card-1254165941.cosgz.myqcloud.com/shopTemplate/ticon1.png" alt="" mode="aspectFit">
@@ -134,9 +134,9 @@
 				<!-- <view class="date">上次编辑时间：{{oneGoods.updateTime | formatDate}}</view> -->
 			</view>
 			<view class="bottomCon fx-column fx-row-center">
-				<view class="cancel" @click="cancelRecommend(oneGoods.goodsId)" v-if="oneGoods.shopRecommend==1">取消店主推荐</view>
-				<view class="cancel" @click="toRecommend(oneGoods.goodsId)" v-else>设为店主推荐</view>
-				<view class="down" @click="downGoods(oneGoods.goodsId)">下架商品</view>
+				<view class="cancel" @click="cancelRecommend(oneGoods.goodsId)" v-if="oneGoods.shopRecommend==1" :style="{background:(userType <5 ?'#6B7AF8':'#999999'),pointerEvents:(userType <5 ?'':'none')}">取消店主推荐</view>
+				<view class="cancel" @click="toRecommend(oneGoods.goodsId)" v-else :style="{background:(userType <5 ?'#6B7AF8':'#999999'),pointerEvents:(userType <5 ?'':'none')}">设为店主推荐</view>
+				<view class="down" @click="downGoods(oneGoods.goodsId)" :style="{background:(userType <5 ?'#F8F8FF':'#999999'),color:(userType <5 ?'#6B7AF8':'#ffffff'),pointerEvents:(userType <5 ?'':'none')}">下架商品</view>
 			</view>
 			<!-- 退出 -->
 			<view class="out" @click="outClick">
@@ -187,7 +187,7 @@
 				SignIn: '', //是否签到
 				goodsId: '', //当前商品id
 				userId: '', //当前用户id、
-	
+				userType:'',
 				recommendId: 0,
 				pointsScore: 0,
 
@@ -207,10 +207,21 @@
 		mixins: [shopMixins, loadMoreMixins],
 
 		// 监听页面显示
-		onShow: function() {},
+		// 监听页面显示
+			onShow() {
+			// let options = uni.getStorageSync('option');
+			// this.init(options)
+			// this.getShopDetail()
+		},
+		onLoad(options) {
+			// console.log(options)
+			// this.option=options
+			// uni.setStorageSync('option', this.option);
+		},
 		methods: {
 			init(options){
 				this.userId = uni.getStorageSync('userId')
+				this.userType=options.userType
 				//console.log(this.userId,this.$store.state.currentUser)
 				this.shopIdOtherPeople = options.shopIdOtherPeople || options.shopId;
 				if (!this.checkHasLogin(`/module/shop/home/home?shopId=${this.shopIdOtherPeople}`,true)) {

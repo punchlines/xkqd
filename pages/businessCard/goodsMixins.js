@@ -50,6 +50,7 @@ export default {
       this.goodsMixins.loading = true;
       this.$api.listCardShop(this.cardUserId, this.goodsMixins.currentPage).then(result => {
         this.goodsMixins.hasLoad = true;
+		console.log('商品数量',result.cardShopData)
         //店铺信息
         if (result.cardShopData) {
           this.cardShopData = result.cardShopData;

@@ -143,6 +143,7 @@
 					this.$api.setShopRecommend(goodsId, 1).then(result => {
 						this.reset();
 						this.fetch()
+						
 						this.isShow = false
 						this.showTips('推荐成功')
 					}).catch(error => {
@@ -155,7 +156,9 @@
 				this.$api.setGoodsStatus(goodsId, 1, 0).then(result => {
 					this.showTips('修改成功');
 					this.isShow = false;
+					this.reset();
 					this.fetch()
+					
 				}).catch(error => {
 					console.error(error)
 				})
@@ -236,6 +239,7 @@
 			if (uni.getStorageSync('_needUpdateGoods')) {
 				this.reset();
 				this.fetch();
+				this.init()
 				uni.setStorageSync('_needUpdateGoods', false)
 			}
 		}

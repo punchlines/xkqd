@@ -277,7 +277,17 @@
 						uni.navigateBack({
 							delta: 2
 						});
-
+                        let shopId = uni.getStorageSync('shopId');
+                        // if (!shopId && this.isVipUser) {
+                        // 	this.navigateTo('/item_businessCard/businessCard_ShopInfo/step2_1/step2_1')
+                        // 	return;
+                        // }
+                        this.navigateTo('../../item_businessCard/businessCard_VIP/VipCenter', {
+                        	shopId: shopId,
+                        	userId: this.userId,
+                        	cardUserId: this.cardUserId,
+                        	recommendId: this.cardUserId
+                        })
 						if (res.confirm) {
 							that.openVip()
 						}

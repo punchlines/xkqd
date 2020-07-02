@@ -45,6 +45,12 @@
 						<view class="info-type">未结算金额</view>
 					</view>
 				</view>
+				<view class="fx-row fx-row-center" v-if="liveStatus==1">
+					<view class="info-item">
+						<view class="info-value">{{ liveAmount }}</view>
+						<view class="info-type">冻结余额</view>
+					</view>
+				</view>
 			</view>
 		</view>
 
@@ -111,6 +117,8 @@
 				showtexts: '',
 				userAccount: '',
 				show: false,
+				liveStatus:'',
+				liveAmount:'',
 				merchant: {},
 				navActive: 0
 			};
@@ -132,7 +140,12 @@
 			this.getBankList();
 			this.fetch()
 			this.getInfo();
-
+			this.liveStatus=uni.getStorageSync('liveStatus');
+			if(this.liveStatus==1){
+				this.$unavailableMoney().then(res=>{
+					this.liveAmount=res.liveAmount
+				})
+			}
 		},
 
 		methods: {
