@@ -1,82 +1,83 @@
 <template>
-	<view >
-	<view class="content-user-text">
-		<QSTabs :current="current_1" :tabs="tabs_1" minWidth="335" @change="changes($event, '1')" activeBold="true"
-		 animationLineWidth="30" defaultColor="#333333" activeColor="#2EA1FF" height="100" lineColor="#2EA1FF" />
-	</view>
-	<view class="bodys" v-if="isshowDetail">
-		<view class="Coursetitle">介绍</view>
-		<view class="desc">{{detail.course.describe}}</view>
-	</view>
-	<view class="body" v-if="showVideo">
-		<view class="videoBox">
-			<video id="myVideo" v-if="detail.nodeList.length>0" class="video" :src="detail.nodeList[currentIndex].video" :poster="detail.nodeList[currentIndex].cover"></video>
-
+	<view>
+		<view class="content-user-text">
+			<QSTabs :current="current_1" :tabs="tabs_1" minWidth="375" @change="changes($event, '1')" activeBold="true"
+			 animationLineWidth="30" defaultColor="#333333" activeColor="#2EA1FF" height="100" lineColor="#2EA1FF" />
 		</view>
-
-
-
-		<template v-if="canEdit==1">
-			<view class="btn" @click="setInvite" v-if="show"><text>推广</text></view>
-			<view class="btn cancel" @click="isSetInvite" v-if="isshow"><text>取消</text></view>
-			<view class="btn save" @click="editCourse"><text>编辑</text></view>
-		</template>
-
-		<view class="h3" style="margin-top: 410rpx; margin-left: 30rpx; margin-right: 30rpx;">视频</view>
-		<!-- 章节列表 -->
-		<view class="courseList  fx-row fx-wrap fx-row-space-between">
-
-			<view class="courseItem" v-for="(item,index) in detail.nodeList" :key="index" @click="goChapterDetail(index)">
-				<view style="position: relative;">
-					<image :src="item.cover" class="courseImage" mode=""></image>
-					<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.Diy5vaCCRaLX38e1aca00bc48288d1d3d8000a71f585.png"
-					 style="width: 80rpx; height: 80rpx; position: absolute; top: 0px; right: 0px; bottom: 0px; right: 0px; margin: auto; left: 0px;"></image>
-				</view>
-				<view class="chapterTip">{{formateSeconds(parseInt(item.time))}}</view>
-				<view class="info">
-					<view class="title">{{item.title}}</view>
-				</view>
-			</view>
+		<view class="bodys" v-if="isshowDetail">
+			<view class="Coursetitle">介绍</view>
+			<view class="desc">{{detail.course.describe}}</view>
 		</view>
-		<!-- 打赏 -->
+		<view class="body" v-if="showVideo">
+			<view class="videoBox">
+				<video id="myVideo" v-if="detail.nodeList.length>0" class="video" :src="detail.nodeList[currentIndex].video"
+				 :poster="detail.nodeList[currentIndex].cover"></video>
 
-		<view class="RewardBox fx-column fx-row-space-around fx-row-center">
-			<view class="Reward" @click="openReward">赏</view>
-			<view style="margin-top: 20rpx;">共有{{reward.count}}人打赏</view>
-			<view class="fx-row fx-wrap fx-row-start" style="margin-top: 10rpx;padding: 0 30rpx;width: auto;">
-				<image v-for="(item,index) in reward.list" :key="index" :src="item" class="avatar"></image>
 			</view>
-		</view>
-		<!-- 评论 -->
-		<view class="commentContainer">
-			<view class="topicTitle">
-				<view class="titleTxt">
-					<text class="title_txt">精彩评论</text>
-					<!-- <text class="title_txt">(0)</text> -->
-				</view>
-				<view style="height: 15rpx; width: 100%; background-color: #F5f5f5;"></view>
-			</view>
-			<template v-for="(item,index) in list">
-				<course-comment :item="item" :key="index" @deleteComment="deleteComment(index)" @reply="reply(index)"></course-comment>
+
+
+
+			<template v-if="canEdit==1">
+				<view class="btn" @click="setInvite" v-if="show"><text>推广</text></view>
+				<view class="btn cancel" @click="isSetInvite" v-if="isshow"><text>取消</text></view>
+				<view class="btn save" @click="editCourse"><text>编辑</text></view>
 			</template>
-		</view>
-		<view class="sayContainer">
-			<input v-model="commentContent" confirm-type="send" @confirm="send" type="text" :placeholder="commentPlaceholder"
-			 class="input" placeholder-class="tishi" />
-			<text class="sendMess" @click="send">评论</text>
-		</view>
-		<uni-popup ref="popup" type="center">
-			<view class="RewardContent">
-				<view class="title">请选择打赏金额</view>
-				<view class="priceBox fx-row fx-row-space-between fx-wrap">
-					<view class="price" v-for="(item,index) in detail.rewards" @click="change(index)" :key="index">
-						<view class="priceInner" :class="{'active':index==active}">{{item}} 元</view>
+
+			<view class="h3" style="margin-top: 510rpx; margin-left: 30rpx; margin-right: 30rpx;">视频</view>
+			<!-- 章节列表 -->
+			<view class="courseList">
+
+				<view class="courseItem" v-for="(item,index) in detail.nodeList" :key="index" @click="goChapterDetail(index)">
+					<view style="position: relative;">
+						<image :src="item.cover" class="courseImage" mode=""></image>
+						<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.Diy5vaCCRaLX38e1aca00bc48288d1d3d8000a71f585.png"
+						 style="width: 80rpx; height: 80rpx; position: absolute; top: 0px; right: 0px; bottom: 0px; right: 0px; margin: auto; left: 0px;"></image>
+					</view>
+					<view class="chapterTip">{{formateSeconds(parseInt(item.time))}}</view>
+					<view class="info">
+						<view class="title">{{item.title}}</view>
 					</view>
 				</view>
-				<view class="pay" @click="pay">微信支付</view>
 			</view>
-		</uni-popup>
-	</view>
+			<!-- 打赏 -->
+
+			<view class="RewardBox fx-column fx-row-space-around fx-row-center">
+				<view class="Reward" @click="openReward">赏</view>
+				<view style="margin-top: 20rpx;">共有{{reward.count}}人打赏</view>
+				<view class="fx-row fx-wrap fx-row-start" style="margin-top: 10rpx;padding: 0 30rpx;width: auto;">
+					<image v-for="(item,index) in reward.list" :key="index" :src="item" class="avatar"></image>
+				</view>
+			</view>
+			<!-- 评论 -->
+			<view class="commentContainer">
+				<view class="topicTitle">
+					<view class="titleTxt">
+						<text class="title_txt">精彩评论</text>
+						<!-- <text class="title_txt">(0)</text> -->
+					</view>
+					<view style="height: 15rpx; width: 100%; background-color: #F5f5f5;"></view>
+				</view>
+				<template v-for="(item,index) in list">
+					<course-comment :item="item" :key="index" @deleteComment="deleteComment(index)" @reply="reply(index)"></course-comment>
+				</template>
+			</view>
+			<view class="sayContainer">
+				<input v-model="commentContent" confirm-type="send" @confirm="send" type="text" :placeholder="commentPlaceholder"
+				 class="input" placeholder-class="tishi" />
+				<text class="sendMess" @click="send">评论</text>
+			</view>
+			<uni-popup ref="popup" type="center">
+				<view class="RewardContent">
+					<view class="title">请选择打赏金额</view>
+					<view class="priceBox fx-row fx-row-space-between fx-wrap">
+						<view class="price" v-for="(item,index) in detail.rewards" @click="change(index)" :key="index">
+							<view class="priceInner" :class="{'active':index==active}">{{item}} 元</view>
+						</view>
+					</view>
+					<view class="pay" @click="pay">微信支付</view>
+				</view>
+			</uni-popup>
+		</view>
 	</view>
 </template>
 
@@ -104,8 +105,8 @@
 				isshow: false,
 				canEdit: 0,
 				commentContent: '',
-				showVideo:true,
-				isshowDetail:false,
+				showVideo: true,
+				isshowDetail: false,
 				commentType: 0,
 				list: [],
 				replyUserId: null,
@@ -202,11 +203,11 @@
 			changes(index, i) {
 				this['current_' + i] = index;
 				if (index == 0) {
-					this.showVideo=true
-					this.isshowDetail=false
+					this.showVideo = true
+					this.isshowDetail = false
 				} else {
-					this.isshowDetail=true
-					this.showVideo=false
+					this.isshowDetail = true
+					this.showVideo = false
 				}
 			},
 			reply(index) {
@@ -306,11 +307,11 @@
 			},
 			goChapterDetail(index) {
 				//if (index != this.currentIndex) {
-					this.videoContext.stop();
-					this.currentIndex = index;
-					setTimeout(() => {
-						this.videoContext.play();
-					}, 500)
+				this.videoContext.stop();
+				this.currentIndex = index;
+				setTimeout(() => {
+					this.videoContext.play();
+				}, 500)
 				//}
 
 				// uni.navigateTo({
@@ -379,7 +380,7 @@
 			left: 0rpx;
 			top: 100rpx;
 			z-index: 9999;
-
+			background-color: #fff;
 			height: 390rpx;
 
 			.video {
@@ -402,7 +403,7 @@
 			margin-top: 10rpx;
 		}
 
-
+		
 
 		//评价输入框
 		.sayContainer {
@@ -522,7 +523,9 @@
 		.courseList {
 			box-sizing: border-box;
 			margin: 0rpx 30rpx;
-
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
 			.courseItem {
 				width: 330rpx;
 				box-sizing: border-box;
@@ -531,6 +534,15 @@
 				display: flex;
 				flex-direction: column;
 				box-shadow: 0px 2px 14px 0px rgba(219, 219, 219, 1);
+				margin-right: 30rpx;
+
+				&:nth-of-type(2n+0) {
+					margin-right: 0rpx;
+				}
+
+				&:nth-of-type(n+3) {
+					margin-top: 30rpx;
+				}
 
 				.chapterTip {
 					position: absolute;
@@ -574,7 +586,12 @@
 			}
 		}
 	}
-
+	.content-user-text{
+		position: fixed;
+		top: 0;
+		background-color: #fff;
+		z-index: 999;
+	}
 	.desc {
 		min-height: 300rpx;
 		font-size: 28rpx;
@@ -590,10 +607,13 @@
 		margin-bottom: 10rpx;
 		
 	}
-	.bodys{
+
+	.bodys {
 		margin-left: 30rpx;
 		margin-right: 30rpx;
+		margin-top: 100rpx;
 	}
+
 	.h3 {
 		margin: 20rpx 0;
 	}
@@ -602,7 +622,7 @@
 		position: fixed;
 		bottom: 200upx;
 		background-image: url('https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.vJWsqZQDHJD3ffe31b4c65191a4398dce19ffaa7cfc5.png');
-		
+
 		background-position: 50%;
 		background-size: 100%;
 		background-repeat: no-repeat;
@@ -611,7 +631,8 @@
 		text-align: center;
 		right: 39rpx;
 		z-index: 99;
-		text{
+
+		text {
 			font-size: 32rpx;
 			font-family: PingFangSC-Regular;
 			position: absolute;
@@ -622,9 +643,10 @@
 			margin: auto;
 			color: rgba(255, 255, 255, 1);
 		}
+
 		&.save {
 			// left: 397rpx;
-			bottom: 330upx;
+			bottom: 370upx;
 			background-image: url('https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.IJ0fulT9LIyQf078288db620a4e9df02848423437f59.png');
 			background-position: 50%;
 			background-size: 100%;

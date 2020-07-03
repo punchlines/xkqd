@@ -15,7 +15,8 @@
 			</view>
 			<!-- 多行文本输入框 -->
 			<view class="publishTextE">
-				<textarea v-model="Course.describe"  @click="focusArea" :focus="focus" @blur="blurArea" placeholder="请输入课程描述" placeholder-class="textarea-placeholder" maxlength="2000">
+				<textarea v-model="Course.describe" @click="focusArea" :focus="focus" @blur="blurArea" placeholder="请输入课程描述"
+				 placeholder-class="textarea-placeholder" maxlength="2000">
 						</textarea>
 				<view class="PTnum">
 					<text class="PTentry">{{ Course.describe.length }} / </text>
@@ -23,31 +24,32 @@
 				</view>
 			</view>
 			<!-- 发布按钮 -->
-			
+
 			<template>
-				<!-- <view class="btn" @click="delCourse">删除课程</view>
-				<view class="btn save" @click="submit">发布课程</view> -->
-				<view class="btns saves" @click="submit">发布视频</view>
+				<view class="btn" @click="delCourse" v-if="edit==1">删除视频</view>
+				<view class="btn save" @click="submit" v-if="edit==1">发布视频</view>
+
+				<view class="btns saves" @click="submit" v-if="edit==0">发布视频</view>
 			</template>
-		<!-- 	<view class="publishTopic top">
+			<!-- 	<view class="publishTopic top">
 				<view class="ptName" @click="submit">
 					发布课程
 				</view>
 			</view> -->
-			
+
 			<view class="uploadImage noflex">
 				<view style="margin-bottom: 15rpx;" class="PTtitles">视频封面</view>
-				
+
 				<wx-view v-if="!Course.coverUrl">
 					<view class="UIuserinfo" @click="upLoadCover">
 						<image class="addImage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/add.png'"></image>
 					</view>
-					
+
 				</wx-view>
-				
+
 				<block v-else class="UImage">
 					<view class="UIimageBox">
-						<image class="UIImage" :src="Course.coverUrl"  mode="aspectFit" />
+						<image class="UIImage" :src="Course.coverUrl" mode="aspectFit" />
 						<image @click="removeImage()" class="DelImage" :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.G8p5eQ3mWF7Z2a5177c82fb98de4af6133de4ee9309d.png'"></image>
 					</view>
 				</block>
@@ -55,33 +57,39 @@
 					（尺寸最好是336x212）
 				</view>
 			</view>
-			
-			
-				<view style="margin-bottom: 15rpx;margin-left: 3%;" class="PTtitles">视频数量</view>
-				<view class="uploadImage">
-					<block v-for="(item, index) in  Course.nodes" :key="index" class="UImage">
-						<view class="UIimageBox">
-							<image class="UIImage" :src="item.cover" @click="addChapter(index)" :data-index="index" mode="aspectFit" />
-							<image @click="removeChapter(index)" class="DelImage" :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.G8p5eQ3mWF7Z2a5177c82fb98de4af6133de4ee9309d.png'"></image>
-						</view>
-					</block>
-					<wx-view>
-						<view class="UIuserinfo" @click="addChapter(-1)">
-							<image class="addImage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/add.png'"></image>
-						</view>
-					</wx-view>
-					
-				</view>
-		
-			
+
+
+			<view style="margin-bottom: 15rpx;margin-left: 3%;" class="PTtitles">视频数量</view>
+			<view class="uploadImage">
+				<block v-for="(item, index) in  Course.nodes" :key="index" class="UImage">
+					<view class="UIimageBox">
+						<image class="UIImage" :src="item.cover" @click="addChapter(index)" :data-index="index" mode="aspectFit" />
+						<image @click="removeChapter(index)" class="DelImage" :src="'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.G8p5eQ3mWF7Z2a5177c82fb98de4af6133de4ee9309d.png'"></image>
+					</view>
+				</block>
+				<wx-view>
+					<view class="UIuserinfo" @click="addChapter(-1)">
+						<image class="addImage" :src="'http://card-1254165941.cosgz.myqcloud.com/cardImages/images/add.png'"></image>
+					</view>
+				</wx-view>
+
+			</view>
+
+
 		</view>
 	</view>
 </template>
 
 <script>
-	import {formatTime,upImg} from '@/js/mzl.js';
-	
-	import {mapState,mapMutations} from 'vuex';
+	import {
+		formatTime,
+		upImg
+	} from '@/js/mzl.js';
+
+	import {
+		mapState,
+		mapMutations
+	} from 'vuex';
 	export default {
 		data() {
 			return {
@@ -89,62 +97,107 @@
 				title: '',
 				content: '',
 				images: [],
-				edit:0,
-				focus:true
+				edit: 0,
+				focus: true
 			};
 		},
 
 		onLoad(option) {
 			this.courseId = option.id;
-			this.edit = option.edit==1?1:0;
+			this.edit = option.edit == 1 ? 1 : 0;
+			if (this.edit == 1) {
+				uni.setNavigationBarTitle({
+					title: '编辑视频'
+				})
+			}
+			// if(this.edit==0){
+			// 	this.Course={}
+			// }
+		},
+		onShow() {
+			
+			// if (this.edit == 0 &&object==undefined) {
+			// 	this.Course.courseId = ""
+			// 	this.Course.coverUrl = ""
+			// 	this.Course.describe = ""
+			// 	this.Course.name = ""
+			// 	this.Course.nodes = []
+			// }
+			// else if(object.edit==1) {
+			// 	console.log(object.id)
+			// }
+			uni.$on("handClick", res => {
+			    console.log(res);
+				let ress = res
+			    // 清除监听
+			    uni.$off('handClick');
+			})
+			console.log(ress)
+			if (this.edit == 0 && ress ==undefined) {
+				this.Course.courseId = ""
+				this.Course.coverUrl = ""
+				this.Course.describe = ""
+				this.Course.name = ""
+				this.Course.nodes = []
+			}
+			
+
+		},
+		otherFun(object){
+		if(!!object){
+			console.log(object)
+		}
 		},
 		computed: {
+			//if(edit==1){
 			...mapState(['Course'])
+			//}
+
 		},
-		
+
 		methods: {
-			
-			delCourse(){
+
+			delCourse() {
 				uni.showModal({
-					content:"确定要删除这个课程?",
+					content: "确定要删除这个课程?",
 					success: (res) => {
-						if(res.confirm){
-							this.$api.delCourse(this.courseId).then(res=>{
+						if (res.confirm) {
+							this.$api.delCourse(this.courseId).then(res => {
 								uni.setStorageSync('_needFetchCourse', true)
 								uni.navigateBack({
-									delta:2
+									delta: 2
 								});
 							})
 						}
 					}
 				})
 			},
-			removeChapter(index){
-				this.Course.nodes.splice(index,1);
+			removeChapter(index) {
+				this.Course.nodes.splice(index, 1);
 			},
-			removeImage(){
-				this.Course.coverUrl="";
+			removeImage() {
+				this.Course.coverUrl = "";
 			},
-			
-			upLoadCover(){
-				upImg(url=>{
-					this.Course.coverUrl=url
+
+			upLoadCover() {
+				upImg(url => {
+					this.Course.coverUrl = url
 				})
 			},
 
-			blurArea(){
-				
+			blurArea() {
+
 				this.focus = false;
 				this.$forceUpdate();
 			},
-			
-			focusArea(){
-				
+
+			focusArea() {
+
 				this.focus = true;
 				this.$forceUpdate();
 			},
-			
-			
+
+
 			submit() {
 				if (!this.Course.name) {
 					this.showTips('请输入标题！');
@@ -158,40 +211,41 @@
 					this.showTips('请上传课程封面！');
 					return;
 				}
-				
-				if (this.Course.nodes.length==0) {
+
+				if (this.Course.nodes.length == 0) {
 					this.showTips('请上传章节！');
 					return;
 				}
-				
+
 				if (this.checkHasSensitiveWord(this.title) || this.checkHasSensitiveWord(this.content)) {
 					return;
 				}
 				uni.showLoading();
-				const action = this.edit==1?this.$api.editCourse:this.$api.addCourse;
-				action(this.courseId,this.Course.name,this.Course.describe,this.Course.coverUrl,JSON.stringify(this.Course.nodes)).then(res=>{
-					this.$store.commit('setCourse',{
+				const action = this.edit == 1 ? this.$api.editCourse : this.$api.addCourse;
+				action(this.courseId, this.Course.name, this.Course.describe, this.Course.coverUrl, JSON.stringify(this.Course.nodes))
+					.then(res => {
+						this.$store.commit('setCourse', {
 							"name": "",
 							"describe": "",
 							"coverUrl": "",
 							"nodes": [
-								
+
 							]
+						})
+						uni.hideLoading();
+						uni.setStorageSync('_needFetchCourse', true)
+						uni.navigateBack();
 					})
-					uni.hideLoading();
-					uni.setStorageSync('_needFetchCourse', true)
-					uni.navigateBack();
-				})
-				
-				
-				
+
+
+
 
 			},
 
-			addChapter(index){
-				
+			addChapter(index) {
+
 				uni.navigateTo({
-					url:"../businessCC_EditChapter/businessCC_EditChapter?index="+index
+					url: "../businessCC_EditChapter/businessCC_EditChapter?index=" + index
 				})
 			}
 
@@ -224,7 +278,7 @@
 				width: 18%;
 				font-size: 34rpx;
 				font-weight: 500;
-				
+
 			}
 
 			.PTinput {
@@ -235,6 +289,7 @@
 				input {
 					color: @title;
 				}
+
 				.PTnum {
 					position: absolute;
 					top: 31rpx;
@@ -243,41 +298,44 @@
 				}
 			}
 		}
-		
-		.btn{
+
+		.btn {
 			z-index: 99;
 			position: fixed;
 			bottom: 39upx;
-			.buttonRadius(320rpx,80rpx,#FDBA44);
-			font-size:36rpx;
-			font-family:PingFangSC-Regular;
-			font-weight:400;
-			color:rgba(255,255,255,1);
-			line-height:80rpx;
+			.buttonRadius(320rpx, 80rpx, #E0F1FF);
+			font-size: 36rpx;
+			font-family: PingFangSC-Regular;
+			font-weight: 400;
+			color: #2EA1FF;
+			line-height: 80rpx;
 			text-align: center;
-			left:39rpx;
-			&.save{
+			left: 39rpx;
+
+			&.save {
 				left: 397rpx;
-				background-color: #6B78FA;
+				background-color: #2EA1FF;
+				color: #FFFFFF;
 			}
-			
-			&.quick{
+
+			&.quick {
 				width: 450rpx;
-				
+
 				left: 150rpx;
 			}
 		}
-		.btns{
-			width:686rpx;
-			height:88rpx;
-			background:rgba(71,172,255,1);
-			border-radius:44px;
-			left:39rpx;
-			font-family:PingFangSC-Regular;
-			 text-align: center;
-			 line-height: 88rpx;
-			 color: #fff;
-			 font-size: 36rpx;
+
+		.btns {
+			width: 686rpx;
+			height: 88rpx;
+			background: rgba(71, 172, 255, 1);
+			border-radius: 44px;
+			left: 39rpx;
+			font-family: PingFangSC-Regular;
+			text-align: center;
+			line-height: 88rpx;
+			color: #fff;
+			font-size: 36rpx;
 			position: fixed;
 			bottom: 39upx;
 		}
@@ -333,12 +391,12 @@
 			margin: 0 auto;
 			margin-bottom: 20upx;
 			flex-wrap: wrap;
-			
-				
-			&.noflex{
+
+
+			&.noflex {
 				display: block;
 			}
-			
+
 			.UIuserinfo {
 				width: 220upx;
 				height: 220upx;
@@ -350,13 +408,15 @@
 					height: 220rpx;
 				}
 			}
-			.tips{
-				font-size:28rpx;
+
+			.tips {
+				font-size: 28rpx;
 				color: #666666;
 				position: absolute;
 				bottom: 628rpx;
 				right: 160rpx;
 			}
+
 			.UIimageBox {
 				position: relative;
 				width: 220upx;
@@ -383,10 +443,11 @@
 
 
 		}
-		
+
 
 	}
-	.PTtitles{
+
+	.PTtitles {
 		width: 28%;
 		font-size: 34rpx;
 		font-weight: 500;

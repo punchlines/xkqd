@@ -312,7 +312,7 @@
 						id: 9,
 						text: '建课程社群',
 						vip: 1,
-						img: 'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.XOVXcOYBglFYb3c125e938185677ad7b447ec5a78d3d.png'
+						img: 'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.UubVw8dLrT9M8171633d36bb2bfa0adbd4c4a35f7f87.png'
 					},
 					{
 						id: 7,
@@ -384,7 +384,7 @@
 						id: 9,
 						text: '建课程社群',
 						vip: 2,
-						img: 'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.1kt1UK2Wg1h99e8eea5ab674ebeb39699f56357ef36c.png'
+						img: 'https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.5wVie7dK3zOy81fe58aff95bf5925b5302c2813ab2c8.png'
 					},
 					{
 						id: 7,

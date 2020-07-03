@@ -177,7 +177,7 @@
 
 
 			<!-- 课程列表 -->
-			<view class="courseList  fx-row fx-wrap fx-row-space-around" v-if="navActive==2">
+			<view class="courseList  fx-row fx-wrap " v-if="navActive==2">
 
 
 				<view class="courseItem" v-for="(item,index) in list" :key="index" @click="goCourseDetail(item.id)">
@@ -285,18 +285,18 @@
 				
 			</view> -->
 			<view class="invite" @click="publishClass" v-if="circle.isManager==1">
-				<text style="font-size: 10px;z-index: 10;position: absolute;bottom: 43rpx;left: 34rpx;color: #D73A49;">发布视频</text>
+				<text style="font-size: 10px;z-index: 10;position: absolute;bottom: 43rpx;left: 34rpx;color: #D73A49; font-weight: 600;">发布视频</text>
 				<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.J7Zc0NUU58yA14eaafee06827da2c855d429eac0a635.png"
 				 style="width: 105rpx; height: 125rpx;"></image>
 			</view>
 			<!-- <view class="fbtn orange" v-if="currentUser.userType <= 1" @click="kaiShop">升级会员</view> -->
 			<view class="fbtn orange" @click="publishClick">
-				<text style="font-size: 10px;z-index: 10;position: absolute;bottom: 43rpx;left: 34rpx;color: #FCB82F;">发布需求</text>
+				<text style="font-size: 10px;z-index: 10;position: absolute;bottom: 43rpx;left: 34rpx;color: #FCB82F; font-weight: 600;">发布需求</text>
 				<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.5DdQ5HXaKgdl363179acbf37c6e25c0ef92425ab4b5c.png"
 				 style="width: 105rpx; height: 125rpx;"></image>
 			</view>
 			<view class="fbtn blue" @click="navigateTo('/item_businessCardCircle/businessCC_CreateCircle/businessCC_CreateCircle')">
-				<text style="font-size: 10px;z-index: 10;position: absolute;bottom: 43rpx;left: 34rpx;color: #2294E1;">新建社群</text>
+				<text style="font-size: 10px;z-index: 10;position: absolute;bottom: 43rpx;left: 34rpx;color: #2294E1; font-weight: 600;">新建社群</text>
 				<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.PTD6H2rUj3UZ6ae67f4ef8314ecb765de9d62f239a6f.png"
 				 style="width: 105rpx; height: 125rpx;"></image>
 			</view>
@@ -455,7 +455,7 @@
 					this.currentPage = 1;
 					this.noMore = false;
 					this.navActive = 2;
-					this.fetch();
+					this.fetchTopic(2);
 					uni.setStorageSync('_needFetchCourse', false)
 				}
 				console.log(this.circle.topicStatus)
@@ -832,22 +832,30 @@
 
 			publishClass() { //发布课程
 				this.showToolArea = false;
-				if (this.circle.isCourse == 0) {
+			
+				if (this.circle.userType < 3) {
 					uni.showModal({
-						content: "请先升级会员",
-						showCancel: false,
-						success: () => {
-							uni.navigateTo({
-								url: "/item_businessCard/businessCard_VIP/businessCard_VIP_New"
-							})
+						content: "白金以上会员即可发布视频",
+						confirmText:'去开通',
+						success: (res) => {
+							if(res.confirm){
+								uni.navigateTo({
+									url: "/item_businessCard/businessCard_VIP/businessCard_VIP_New"
+								})
+							}else if(res.cancel){
+								console.log(123)
+							}
+							
 						}
 					})
 					return
+				}else{
+					this.navigateTo('../businessCC_PublishClass/businessCC_PublishClass', {
+						id: this.circleId
+					});
 				}
 
-				this.navigateTo('../businessCC_PublishClass/businessCC_PublishClass', {
-					id: this.circleId
-				});
+				
 			},
 			complain() {
 				this.showDropDown = false;
@@ -971,20 +979,23 @@
 	.page {
 		width: 100%;
 		min-height: 100vh;
-		background: #FFFFFF;
+		background: #F5F5F5;
 		// position: relative;
 		// padding-bottom: 100upx;
 
 
 		.courseList {
 			box-sizing: border-box;
-			padding: 20rpx 0rpx;
-			background-color: #f5f5f5;
+			padding: 20rpx 30rpx;
+			
 
 			.courseItem {
 				width: 330rpx;
 				box-sizing: border-box;
 				position: relative;
+				margin-right: 30rpx;
+				box-shadow:0px 2px 14px 0px rgba(219,219,219,1);
+				border-radius: 10rpx;
 				.chapterTip {
 					position: absolute;
 					right: 15rpx;
@@ -992,7 +1003,9 @@
 					color: white;
 					font-size: 28rpx;
 				}
-
+				&:nth-of-type(2n) {
+					margin-right: 0rpx;
+				}
 				&:nth-of-type(n+3) {
 					margin-top: 30rpx;
 				}
@@ -1012,6 +1025,7 @@
 				background-color: white;
 				border-bottom-left-radius: 10rpx;
 				border-bottom-right-radius: 10rpx;
+				height: 100rpx;
 				.title {
 					font-size: 28rpx;
 					font-weight: bold;
@@ -1199,7 +1213,7 @@
 	.HeaderCardBox {
 		width: 100%;
 		height: 250upx;
-
+		background-color: #FFFFFF;
 		.headerCard {
 			width: 100%;
 			height: 250upx;
@@ -1482,7 +1496,7 @@
 		// padding-top: 30rpx;
 		.chatWindow {
 			width: 100%;
-			background-color: #F0F0F0;
+			// background-color: #F0F0F0;
 		}
 
 		.tip {
@@ -1502,6 +1516,7 @@
 
 
 		.topicTitle {
+			background-color: #FFFFFF;
 			padding-left: 30rpx;
 			// margin-bottom: 15upx;
 			height: 44rpx;

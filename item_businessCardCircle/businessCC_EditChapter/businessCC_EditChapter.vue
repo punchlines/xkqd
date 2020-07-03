@@ -135,6 +135,14 @@
 				
 				
 				uni.hideLoading();
+				// let object={
+				// 	edit:1
+				// }
+				// var pages = getCurrentPages();
+				// var prevPage = pages[pages.length - 2];
+				// prevPage.$vm.otherFun(object);
+				//  prevPage.onShow(object);
+				uni.$emit("handClick",{edit: 1});
 				uni.navigateBack();
 			},
 			
@@ -202,7 +210,7 @@
 		}
 		.PTinput {
 			width: 100%;
-			height: 270rpx;
+			height: 100rpx;
 			font-size: 32upx;
 			padding: 30rpx;
 			border-bottom: 1px solid #E5E5E5;
@@ -211,8 +219,8 @@
 			}
 			.PTnum {
 				position: absolute;
-				top: 320rpx;
-				right: 40upx;
+				top: 145rpx;
+				right: 20upx;
 				color: @logoNote;
 			}
 		}
@@ -275,7 +283,7 @@
 				font-size:28rpx;
 				color: #666666;
 				position: absolute;
-				top: 625rpx;
+				top: 485rpx;
 				right: 160rpx;
 			}
 			.UIuserinfo {

@@ -66,7 +66,7 @@
 		<!-- 视频 -->
 		<view class="h3" v-if="circle.freeCourseList.length>0">视频介绍</view>
 		<view class="videoContainer" v-if="circle.freeCourseList.length>0">
-			<view class="videoBox">
+			<view class="videoBox" id="scrollId" :class="{'is-fixed': isFixed}">
 				<video id="myVideo" class="video" :src="circle.freeCourseList[currentIndex].video" :poster="circle.freeCourseList[currentIndex].cover"></video>
 			</view>
 			<!-- <view class="courseTitle">{{circle.freeCourseList[currentIndex].title}}</view> -->
@@ -76,8 +76,9 @@
 			<view class="courseList  fx-row fx-wrap fx-row-space-between">
 				<view class="courseItem" v-for="(item,index) in circle.freeCourseList" :key="index" @click="goChapterDetail(index)">
 					<!-- <view style="z-index: 999; position: absolute;"> -->
-					<image :src="item.cover"  class="courseImage"  id="myVideos" ></image>
-					<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.Diy5vaCCRaLX38e1aca00bc48288d1d3d8000a71f585.png" style="width: 100rpx; height: 100rpx; position: absolute; top: -20px; right: 0px; bottom: 0px; right: 0px; margin: auto; left: 0px;"></image>
+					<image :src="item.cover" class="courseImage" id="myVideos"></image>
+					<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.Diy5vaCCRaLX38e1aca00bc48288d1d3d8000a71f585.png"
+					 style="width: 100rpx; height: 100rpx; position: absolute; top: -20px; right: 0px; bottom: 0px; right: 0px; margin: auto; left: 0px;"></image>
 					<!-- <view class="chapterTip">{{formateSeconds(parseInt(item.time))}}</view> -->
 					<view class="info">
 						<view class="title">{{item.title}}</view>
@@ -85,10 +86,11 @@
 					<!-- </view> -->
 				</view>
 
-				<view class="courseItem" v-for="(item,index) in circle.courseList" :key="index" @click="goJoin">
+				<view class="courseItem" v-for="(item,index) in circle.courseList" :key="index" @click="goJoin" v-if="courseListShow">
 
-					<image :src="item.cover" class="courseImage" id="myVideos" ></image>
-					<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.Diy5vaCCRaLX38e1aca00bc48288d1d3d8000a71f585.png" style="width: 100rpx; height: 100rpx; position: absolute; top: -20px; right: 0px; bottom: 0px; right: 0px; margin: auto; left: 0px;"></image>
+					<image :src="item.cover" class="courseImage" id="myVideos"></image>
+					<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.Diy5vaCCRaLX38e1aca00bc48288d1d3d8000a71f585.png"
+					 style="width: 100rpx; height: 100rpx; position: absolute; top: -20px; right: 0px; bottom: 0px; right: 0px; margin: auto; left: 0px;"></image>
 					<!-- <view class="chapterTip">{{formateSeconds(parseInt(item.time))}}</view> -->
 					<view class="info">
 						<view class="title">{{item.title}}</view>
@@ -96,9 +98,14 @@
 
 				</view>
 			</view>
-			<view class="zankai" v-if="circle.freeCourseList.length>5">
+			<view class="zankai" v-if="circle.courseList.length>0&&showDown" @click="courseListShow=true,showDown=false">
 				展开
 				<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.9u2PJClgEkfpa341a5a6466642cd443999aad032687e.png"
+				 mode="" style="width: 32rpx;height: 20rpx; margin-left: 10rpx;padding-top: 13rpx;"></image>
+			</view>
+			<view class="zankai" v-if="!showDown" @click="courseListShow=false,showDown=true">
+				收起
+				<image src="https://card-1254165941.picgz.myqcloud.com/wx638efb2b7bd5fecc.o6zAJs39Q4DzIbe0mBW0b5UpEIL4.SRdAvMaHPgka5f6d15cfdb424b752d1e3fe50aa9589a.png"
 				 mode="" style="width: 32rpx;height: 20rpx; margin-left: 10rpx;padding-top: 13rpx;"></image>
 			</view>
 		</view>
@@ -187,12 +194,17 @@
 				recommendId: '',
 				circle: {},
 				width: true,
+				courseListShow: false,
 				videoContext: null,
-				videoContexts:null,
+				videoContexts: null,
 				pinGroup: null,
+				showDown: true,
 				manager: {},
 				showLoadings: false,
-				currentIndex: 0
+				currentIndex: 0,
+				isFixed: false,
+				nameTop: '',
+				rect: 0,
 			};
 		},
 
@@ -250,29 +262,55 @@
 
 				//uni.hideLoading();
 			});
-			
+			this.scrollVideo()
 		},
-
+		computed: {
+			//滑动组件置顶
+			pageFixed() {
+				if (this.rect > this.nameTop) {
+					this.isFixed = true;
+				} else {
+					this.isFixed = false;
+				}
+			}
+		},
+		onPageScroll(e) {
+			console.log(e)
+			
+				this.rect = e.scrollTop;
+			
+		
+		},
 		methods: {
 			goChapterDetail(index) {
 				console.log(index)
 				// this.videoContexts.stop();
 				//if (index != this.currentIndex) {
-					this.videoContext.stop();
-					this.currentIndex = index;
-					setTimeout(() => {
-						this.videoContext.play();
-					}, 500)
-					
+				this.videoContext.stop();
+				this.currentIndex = index;
+				setTimeout(() => {
+					this.videoContext.play();
+				}, 500)
+
 				//}
 			},
-			goChapterDetails(){
+			goChapterDetails() {
 				console.log(123)
-				 this.videoContexts.stop();
-				  this.videoContexts.pause();
+				this.videoContexts.stop();
+				this.videoContexts.pause();
 			},
 			formateSeconds(v) {
 				return formateSeconds(v)
+			},
+			scrollVideo() {
+				let that = this;
+				const query = wx.createSelectorQuery();
+				query.select('#scrollId').boundingClientRect();
+				query.exec(function(res) {
+					console.log(res)
+					if (res && res[0])
+						that.nameTop = res[0].top
+				})
 			},
 			regAndJoin(e) {
 				//静默注册 然后加入名片圈
@@ -415,7 +453,7 @@
 					// 	this.openCircleDetail()
 					// }
 				}).then(result => {
-					
+
 					//this.manager = result.userMap
 					uni.hideLoading();
 
@@ -979,7 +1017,7 @@
 			text-overflow: ellipsis;
 			width: 150rpx;
 			overflow: hidden;
-			
+
 
 		}
 
@@ -994,4 +1032,13 @@
 			color: rgba(51, 51, 51, 1);
 		}
 	}
+	.is-fixed{
+			position: fixed;
+			top: 0;
+			left: 10;
+			right: 10;
+			width: 100%;
+			background-color: #FFFFFF;
+			z-index: 99;
+		}
 </style>
